@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>HistogramDatasetTest.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">jfreechart (Mar 14, 2025 5:50:17 p.m.)</a> &gt; <a href="../../index.html" class="el_group">jfreechart</a> &gt; <a href="../index.html" class="el_bundle">src/test/java</a> &gt; <a href="index.source.html" class="el_package">org.jfree.data.statistics</a> &gt; <span class="el_source">HistogramDatasetTest.java</span></div><h1>HistogramDatasetTest.java</h1><pre class="source lang-java linenums">/* ===========================================================
+ * JFreeChart : a free chart library for the Java(tm) platform
+ * ===========================================================
+ *
+ * (C) Copyright 2000-2022, by David Gilbert and Contributors.
+ *
+ * Project Info:  http://www.jfree.org/jfreechart/index.html
+ *
+ * This library is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 2.1 of the License, or
+ * (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public
+ * License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301,
+ * USA.
+ *
+ * [Oracle and Java are registered trademarks of Oracle and/or its affiliates. 
+ * Other names may be trademarks of their respective owners.]
+ *
+ * -------------------------
+ * HistogramDatasetTest.java
+ * -------------------------
+ * (C) Copyright 2004-2022, by David Gilbert.
+ *
+ * Original Author:  David Gilbert;
+ * Contributor(s):   -;
+ *
+ */
+
+package org.jfree.data.statistics;
+
+import org.jfree.chart.TestUtils;
+import org.jfree.chart.internal.CloneUtils;
+
+import org.jfree.data.general.DatasetChangeEvent;
+import org.jfree.data.general.DatasetChangeListener;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+/**
+ * Tests for the {@link HistogramDataset} class.
+ */
+<span class="fc" id="L51">public class HistogramDatasetTest implements DatasetChangeListener {</span>
+
+    private static final double EPSILON = 0.0000000001;
+
+    /**
+     * Some checks that the correct values are assigned to bins.
+     */
+    @Test
+    public void testBins() {
+<span class="fc" id="L60">        double[] values = {1.0, 2.0, 3.0, 4.0, 6.0, 12.0, 5.0, 6.3, 4.5};</span>
+<span class="fc" id="L61">        HistogramDataset hd = new HistogramDataset();</span>
+<span class="fc" id="L62">        hd.addSeries(&quot;Series 1&quot;, values, 5);</span>
+<span class="fc" id="L63">        assertEquals(hd.getYValue(0, 0), 3.0, EPSILON);</span>
+<span class="fc" id="L64">        assertEquals(hd.getYValue(0, 1), 3.0, EPSILON);</span>
+<span class="fc" id="L65">        assertEquals(hd.getYValue(0, 2), 2.0, EPSILON);</span>
+<span class="fc" id="L66">        assertEquals(hd.getYValue(0, 3), 0.0, EPSILON);</span>
+<span class="fc" id="L67">        assertEquals(hd.getYValue(0, 4), 1.0, EPSILON);</span>
+<span class="fc" id="L68">    }</span>
+
+    /**
+     * Confirm that the equals method can distinguish all the required fields.
+     */
+    @Test
+    public void testEquals() {
+<span class="fc" id="L75">        double[] values = {1.0, 2.0, 3.0, 4.0, 6.0, 12.0, 5.0, 6.3, 4.5};</span>
+<span class="fc" id="L76">        HistogramDataset d1 = new HistogramDataset();</span>
+<span class="fc" id="L77">        d1.addSeries(&quot;Series 1&quot;, values, 5);</span>
+<span class="fc" id="L78">        HistogramDataset d2 = new HistogramDataset();</span>
+<span class="fc" id="L79">        d2.addSeries(&quot;Series 1&quot;, values, 5);</span>
+
+<span class="fc" id="L81">        assertEquals(d1, d2);</span>
+<span class="fc" id="L82">        assertEquals(d2, d1);</span>
+
+<span class="fc" id="L84">        d1.addSeries(&quot;Series 2&quot;, new double[] {1.0, 2.0, 3.0}, 2);</span>
+<span class="fc" id="L85">        assertNotEquals(d1, d2);</span>
+<span class="fc" id="L86">        d2.addSeries(&quot;Series 2&quot;, new double[] {1.0, 2.0, 3.0}, 2);</span>
+<span class="fc" id="L87">        assertEquals(d1, d2);</span>
+<span class="fc" id="L88">    }</span>
+
+    /**
+     * Confirm that cloning works.
+     */
+    @Test
+    public void testCloning() throws CloneNotSupportedException {
+<span class="fc" id="L95">        double[] values = {1.0, 2.0, 3.0, 4.0, 6.0, 12.0, 5.0, 6.3, 4.5};</span>
+<span class="fc" id="L96">        HistogramDataset d1 = new HistogramDataset();</span>
+<span class="fc" id="L97">        d1.addSeries(&quot;Series 1&quot;, values, 5);</span>
+<span class="fc" id="L98">        HistogramDataset d2 = CloneUtils.clone(d1);</span>
+<span class="fc" id="L99">        assertNotSame(d1, d2);</span>
+<span class="fc" id="L100">        assertSame(d1.getClass(), d2.getClass());</span>
+<span class="fc" id="L101">        assertEquals(d1, d2);</span>
+
+        // simple check for independence
+<span class="fc" id="L104">        d1.addSeries(&quot;Series 2&quot;, new double[] {1.0, 2.0, 3.0}, 2);</span>
+<span class="fc" id="L105">        assertNotEquals(d1, d2);</span>
+<span class="fc" id="L106">        d2.addSeries(&quot;Series 2&quot;, new double[] {1.0, 2.0, 3.0}, 2);</span>
+<span class="fc" id="L107">        assertEquals(d1, d2);</span>
+<span class="fc" id="L108">    }</span>
+
+    /**
+     * Serialize an instance, restore it, and check for equality.
+     */
+    @Test
+    public void testSerialization() {
+<span class="fc" id="L115">        double[] values = {1.0, 2.0, 3.0, 4.0, 6.0, 12.0, 5.0, 6.3, 4.5};</span>
+<span class="fc" id="L116">        HistogramDataset d1 = new HistogramDataset();</span>
+<span class="fc" id="L117">        d1.addSeries(&quot;Series 1&quot;, values, 5);</span>
+<span class="fc" id="L118">        HistogramDataset d2 = TestUtils.serialised(d1);</span>
+<span class="fc" id="L119">        assertEquals(d1, d2);</span>
+
+        // simple check for independence
+<span class="fc" id="L122">        d1.addSeries(&quot;Series 2&quot;, new double[] {1.0, 2.0, 3.0}, 2);</span>
+<span class="fc" id="L123">        assertNotEquals(d1, d2);</span>
+<span class="fc" id="L124">        d2.addSeries(&quot;Series 2&quot;, new double[] {1.0, 2.0, 3.0}, 2);</span>
+<span class="fc" id="L125">        assertEquals(d1, d2);</span>
+<span class="fc" id="L126">    }</span>
+
+    /**
+     * A test for a bug reported in the forum where the series name isn't being
+     * returned correctly.
+     */
+    @Test
+    public void testGetSeriesKey() {
+<span class="fc" id="L134">        double[] values = {1.0, 2.0, 3.0, 4.0, 6.0, 12.0, 5.0, 6.3, 4.5};</span>
+<span class="fc" id="L135">        HistogramDataset d1 = new HistogramDataset();</span>
+<span class="fc" id="L136">        d1.addSeries(&quot;Series 1&quot;, values, 5);</span>
+<span class="fc" id="L137">        assertEquals(&quot;Series 1&quot;, d1.getSeriesKey(0));</span>
+<span class="fc" id="L138">    }</span>
+
+    /**
+     * Some checks for the addSeries() method.
+     */
+    @Test
+    public void testAddSeries() {
+<span class="fc" id="L145">        double[] values = {-1.0, 0.0, 0.1, 0.9, 1.0, 1.1, 1.9, 2.0, 3.0};</span>
+<span class="fc" id="L146">        HistogramDataset d = new HistogramDataset();</span>
+<span class="fc" id="L147">        d.addSeries(&quot;S1&quot;, values, 2, 0.0, 2.0);</span>
+<span class="fc" id="L148">        assertEquals(0.0, d.getStartXValue(0, 0), EPSILON);</span>
+<span class="fc" id="L149">        assertEquals(1.0, d.getEndXValue(0, 0), EPSILON);</span>
+<span class="fc" id="L150">        assertEquals(4.0, d.getYValue(0, 0), EPSILON);</span>
+
+<span class="fc" id="L152">        assertEquals(1.0, d.getStartXValue(0, 1), EPSILON);</span>
+<span class="fc" id="L153">        assertEquals(2.0, d.getEndXValue(0, 1), EPSILON);</span>
+<span class="fc" id="L154">        assertEquals(5.0, d.getYValue(0, 1), EPSILON);</span>
+<span class="fc" id="L155">    }</span>
+
+    /**
+     * Another check for the addSeries() method.
+     */
+    @Test
+    public void testAddSeries2() {
+<span class="fc" id="L162">        double[] values = {0.0, 1.0, 2.0, 3.0, 4.0, 5.0};</span>
+<span class="fc" id="L163">        HistogramDataset hd = new HistogramDataset();</span>
+<span class="fc" id="L164">        hd.addSeries(&quot;S1&quot;, values, 5);</span>
+<span class="fc" id="L165">        assertEquals(0.0, hd.getStartXValue(0, 0), EPSILON);</span>
+<span class="fc" id="L166">        assertEquals(1.0, hd.getEndXValue(0, 0), EPSILON);</span>
+<span class="fc" id="L167">        assertEquals(1.0, hd.getYValue(0, 0), EPSILON);</span>
+<span class="fc" id="L168">        assertEquals(1.0, hd.getStartXValue(0, 1), EPSILON);</span>
+<span class="fc" id="L169">        assertEquals(2.0, hd.getEndXValue(0, 1), EPSILON);</span>
+<span class="fc" id="L170">        assertEquals(1.0, hd.getYValue(0, 1), EPSILON);</span>
+<span class="fc" id="L171">        assertEquals(2.0, hd.getStartXValue(0, 2), EPSILON);</span>
+<span class="fc" id="L172">        assertEquals(3.0, hd.getEndXValue(0, 2), EPSILON);</span>
+<span class="fc" id="L173">        assertEquals(1.0, hd.getYValue(0, 2), EPSILON);</span>
+<span class="fc" id="L174">        assertEquals(3.0, hd.getStartXValue(0, 3), EPSILON);</span>
+<span class="fc" id="L175">        assertEquals(4.0, hd.getEndXValue(0, 3), EPSILON);</span>
+<span class="fc" id="L176">        assertEquals(1.0, hd.getYValue(0, 3), EPSILON);</span>
+<span class="fc" id="L177">        assertEquals(4.0, hd.getStartXValue(0, 4), EPSILON);</span>
+<span class="fc" id="L178">        assertEquals(5.0, hd.getEndXValue(0, 4), EPSILON);</span>
+<span class="fc" id="L179">        assertEquals(2.0, hd.getYValue(0, 4), EPSILON);</span>
+<span class="fc" id="L180">    }</span>
+
+    /**
+     * This test is derived from a reported bug.
+     */
+    @Test
+    public void testBinBoundaries() {
+<span class="fc" id="L187">        double[] values = {-5.000000000000286E-5};</span>
+<span class="fc" id="L188">        int bins = 1260;</span>
+<span class="fc" id="L189">        double minimum = -0.06307522528160199;</span>
+<span class="fc" id="L190">        double maximum = 0.06297522528160199;</span>
+<span class="fc" id="L191">        HistogramDataset d = new HistogramDataset();</span>
+<span class="fc" id="L192">        d.addSeries(&quot;S1&quot;, values, bins, minimum, maximum);</span>
+<span class="fc" id="L193">        assertEquals(0.0, d.getYValue(0, 629), EPSILON);</span>
+<span class="fc" id="L194">        assertEquals(1.0, d.getYValue(0, 630), EPSILON);</span>
+<span class="fc" id="L195">        assertEquals(0.0, d.getYValue(0, 631), EPSILON);</span>
+<span class="pc bpc" id="L196" title="1 of 2 branches missed.">        assertTrue(values[0] &gt; d.getStartXValue(0, 630));</span>
+<span class="pc bpc" id="L197" title="1 of 2 branches missed.">        assertTrue(values[0] &lt; d.getEndXValue(0, 630));</span>
+<span class="fc" id="L198">    }</span>
+
+    /**
+     * Some checks for bug 1553088.  An IndexOutOfBoundsException is thrown
+     * when a data value is *very* close to the upper limit of the last bin.
+     */
+    @Test
+    public void test1553088() {
+<span class="fc" id="L206">        double[] values = {-1.0, 0.0, -Double.MIN_VALUE, 3.0};</span>
+<span class="fc" id="L207">        HistogramDataset d = new HistogramDataset();</span>
+<span class="fc" id="L208">        d.addSeries(&quot;S1&quot;, values, 2, -1.0, 0.0);</span>
+<span class="fc" id="L209">        assertEquals(-1.0, d.getStartXValue(0, 0), EPSILON);</span>
+<span class="fc" id="L210">        assertEquals(-0.5, d.getEndXValue(0, 0), EPSILON);</span>
+<span class="fc" id="L211">        assertEquals(1.0, d.getYValue(0, 0), EPSILON);</span>
+
+<span class="fc" id="L213">        assertEquals(-0.5, d.getStartXValue(0, 1), EPSILON);</span>
+<span class="fc" id="L214">        assertEquals(0.0, d.getEndXValue(0, 1), EPSILON);</span>
+<span class="fc" id="L215">        assertEquals(3.0, d.getYValue(0, 1), EPSILON);</span>
+<span class="fc" id="L216">    }</span>
+
+    /**
+     * A test to show the limitation addressed by patch 2902842.
+     */
+    @Test
+    public void test2902842() {
+<span class="fc" id="L223">        this.lastEvent = null;</span>
+<span class="fc" id="L224">        double[] values = {0.0, 1.0, 2.0, 3.0, 4.0, 5.0};</span>
+<span class="fc" id="L225">        HistogramDataset hd = new HistogramDataset();</span>
+<span class="fc" id="L226">        hd.addChangeListener(this);</span>
+<span class="fc" id="L227">        hd.addSeries(&quot;S1&quot;, values, 5);</span>
+<span class="fc" id="L228">        assertNotNull(this.lastEvent);</span>
+<span class="fc" id="L229">    }</span>
+
+    /**
+     * A reference to the last event received by the datasetChanged() method.
+     */
+    private DatasetChangeEvent lastEvent;
+
+    /**
+     * Receives event notification.
+     *
+     * @param event  the event.
+     */
+    @Override
+    public void datasetChanged(DatasetChangeEvent event) {
+<span class="fc" id="L243">        this.lastEvent = event;</span>
+<span class="fc" id="L244">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span>jfreechart (Mar 14, 2025 5:50:17 p.m.)</div></body></html>

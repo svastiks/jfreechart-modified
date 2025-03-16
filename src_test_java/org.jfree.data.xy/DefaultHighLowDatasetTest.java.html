@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>DefaultHighLowDatasetTest.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">jfreechart (Mar 14, 2025 5:50:17 p.m.)</a> &gt; <a href="../../index.html" class="el_group">jfreechart</a> &gt; <a href="../index.html" class="el_bundle">src/test/java</a> &gt; <a href="index.source.html" class="el_package">org.jfree.data.xy</a> &gt; <span class="el_source">DefaultHighLowDatasetTest.java</span></div><h1>DefaultHighLowDatasetTest.java</h1><pre class="source lang-java linenums">/* ===========================================================
+ * JFreeChart : a free chart library for the Java(tm) platform
+ * ===========================================================
+ *
+ * (C) Copyright 2000-2022, by David Gilbert and Contributors.
+ *
+ * Project Info:  http://www.jfree.org/jfreechart/index.html
+ *
+ * This library is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 2.1 of the License, or
+ * (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public
+ * License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301,
+ * USA.
+ *
+ * [Oracle and Java are registered trademarks of Oracle and/or its affiliates. 
+ * Other names may be trademarks of their respective owners.]
+ *
+ * ------------------------------
+ * DefaultHighLowDatasetTest.java
+ * ------------------------------
+ * (C) Copyright 2006-2022, by David Gilbert and Contributors.
+ *
+ * Original Author:  David Gilbert;
+ * Contributor(s):   -;
+ *
+ */
+
+package org.jfree.data.xy;
+
+import java.util.Date;
+
+import org.jfree.chart.TestUtils;
+import org.jfree.chart.internal.CloneUtils;
+import org.jfree.chart.api.PublicCloneable;
+
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+/**
+ * Tests for the {@link DefaultHighLowDataset} class.
+ */
+<span class="fc" id="L52">public class DefaultHighLowDatasetTest {</span>
+
+    /**
+     * Confirm that the equals method can distinguish all the required fields.
+     */
+    @Test
+    public void testEquals() {
+<span class="fc" id="L59">        DefaultHighLowDataset d1 = new DefaultHighLowDataset(&quot;Series 1&quot;,</span>
+                new Date[0], new double[0], new double[0], new double[0],
+                new double[0], new double[0]);
+<span class="fc" id="L62">        DefaultHighLowDataset d2 = new DefaultHighLowDataset(&quot;Series 1&quot;,</span>
+                new Date[0], new double[0], new double[0], new double[0],
+                new double[0], new double[0]);
+<span class="fc" id="L65">        assertEquals(d1, d2);</span>
+<span class="fc" id="L66">        assertEquals(d2, d1);</span>
+
+<span class="fc" id="L68">        d1 = new DefaultHighLowDataset(&quot;Series 2&quot;,</span>
+                new Date[0], new double[0], new double[0], new double[0],
+                new double[0], new double[0]);
+<span class="fc" id="L71">        assertNotEquals(d1, d2);</span>
+<span class="fc" id="L72">        d2 = new DefaultHighLowDataset(&quot;Series 2&quot;,</span>
+                new Date[0], new double[0], new double[0], new double[0],
+                new double[0], new double[0]);
+<span class="fc" id="L75">        assertEquals(d1, d2);</span>
+
+<span class="fc" id="L77">        d1 = new DefaultHighLowDataset(&quot;Series 2&quot;,</span>
+                new Date[] {new Date(123L)}, new double[1], new double[1],
+                new double[1], new double[1], new double[1]);
+<span class="fc" id="L80">        assertNotEquals(d1, d2);</span>
+<span class="fc" id="L81">        d2 = new DefaultHighLowDataset(&quot;Series 2&quot;,</span>
+                new Date[] {new Date(123L)}, new double[1], new double[1],
+                new double[1], new double[1], new double[1]);
+<span class="fc" id="L84">        assertEquals(d1, d2);</span>
+
+<span class="fc" id="L86">        d1 = new DefaultHighLowDataset(&quot;Series 2&quot;,</span>
+                new Date[] {new Date(123L)}, new double[] {1.2}, new double[1],
+                new double[1], new double[1], new double[1]);
+<span class="fc" id="L89">        assertNotEquals(d1, d2);</span>
+<span class="fc" id="L90">        d2 = new DefaultHighLowDataset(&quot;Series 2&quot;,</span>
+                new Date[] {new Date(123L)}, new double[] {1.2}, new double[1],
+                new double[1], new double[1], new double[1]);
+<span class="fc" id="L93">        assertEquals(d1, d2);</span>
+
+<span class="fc" id="L95">        d1 = new DefaultHighLowDataset(&quot;Series 2&quot;,</span>
+                new Date[] {new Date(123L)}, new double[] {1.2},
+                new double[] {3.4}, new double[1], new double[1],
+                new double[1]);
+<span class="fc" id="L99">        assertNotEquals(d1, d2);</span>
+<span class="fc" id="L100">        d2 = new DefaultHighLowDataset(&quot;Series 2&quot;,</span>
+                new Date[] {new Date(123L)}, new double[] {1.2},
+                new double[] {3.4}, new double[1], new double[1],
+                new double[1]);
+<span class="fc" id="L104">        assertEquals(d1, d2);</span>
+
+<span class="fc" id="L106">        d1 = new DefaultHighLowDataset(&quot;Series 2&quot;,</span>
+                new Date[] {new Date(123L)}, new double[] {1.2},
+                new double[] {3.4}, new double[] {5.6}, new double[1],
+                new double[1]);
+<span class="fc" id="L110">        assertNotEquals(d1, d2);</span>
+<span class="fc" id="L111">        d2 = new DefaultHighLowDataset(&quot;Series 2&quot;,</span>
+                new Date[] {new Date(123L)}, new double[] {1.2},
+                new double[] {3.4}, new double[] {5.6}, new double[1],
+                new double[1]);
+<span class="fc" id="L115">        assertEquals(d1, d2);</span>
+
+<span class="fc" id="L117">        d1 = new DefaultHighLowDataset(&quot;Series 2&quot;,</span>
+                new Date[] {new Date(123L)}, new double[] {1.2},
+                new double[] {3.4}, new double[] {5.6}, new double[] {7.8},
+                new double[1]);
+<span class="fc" id="L121">        assertNotEquals(d1, d2);</span>
+<span class="fc" id="L122">        d2 = new DefaultHighLowDataset(&quot;Series 2&quot;,</span>
+                new Date[] {new Date(123L)}, new double[] {1.2},
+                new double[] {3.4}, new double[] {5.6}, new double[] {7.8},
+                new double[1]);
+<span class="fc" id="L126">        assertEquals(d1, d2);</span>
+
+<span class="fc" id="L128">        d1 = new DefaultHighLowDataset(&quot;Series 2&quot;,</span>
+                new Date[] {new Date(123L)}, new double[] {1.2},
+                new double[] {3.4}, new double[] {5.6}, new double[] {7.8},
+                new double[] {99.9});
+<span class="fc" id="L132">        assertNotEquals(d1, d2);</span>
+<span class="fc" id="L133">        d2 = new DefaultHighLowDataset(&quot;Series 2&quot;,</span>
+                new Date[] {new Date(123L)}, new double[] {1.2},
+                new double[] {3.4}, new double[] {5.6}, new double[] {7.8},
+                new double[] {99.9});
+<span class="fc" id="L137">        assertEquals(d1, d2);</span>
+
+<span class="fc" id="L139">    }</span>
+
+    /**
+     * Confirm that cloning works.
+     */
+    @Test
+    public void testCloning() throws CloneNotSupportedException {
+<span class="fc" id="L146">        DefaultHighLowDataset d1 = new DefaultHighLowDataset(&quot;Series 1&quot;,</span>
+                new Date[] {new Date(123L)}, new double[] {1.2},
+                new double[] {3.4}, new double[] {5.6}, new double[] {7.8},
+                new double[] {99.9});
+<span class="fc" id="L150">        DefaultHighLowDataset d2 = CloneUtils.clone(d1);</span>
+<span class="fc" id="L151">        assertNotSame(d1, d2);</span>
+<span class="fc" id="L152">        assertSame(d1.getClass(), d2.getClass());</span>
+<span class="fc" id="L153">        assertEquals(d1, d2);</span>
+<span class="fc" id="L154">    }</span>
+
+    /**
+     * Verify that this class implements {@link PublicCloneable}.
+     */
+    @Test
+    public void testPublicCloneable() {
+<span class="fc" id="L161">        DefaultHighLowDataset d1 = new DefaultHighLowDataset(&quot;Series 1&quot;,</span>
+                new Date[0], new double[0], new double[0], new double[0],
+                new double[0], new double[0]);
+<span class="fc" id="L164">        assertTrue(d1 instanceof PublicCloneable);</span>
+<span class="fc" id="L165">    }</span>
+
+    /**
+     * Serialize an instance, restore it, and check for equality.
+     */
+    @Test
+    public void testSerialization() {
+<span class="fc" id="L172">        DefaultHighLowDataset d1 = new DefaultHighLowDataset(&quot;Series 1&quot;,</span>
+                new Date[] {new Date(123L)}, new double[] {1.2},
+                new double[] {3.4}, new double[] {5.6}, new double[] {7.8},
+                new double[] {99.9});
+<span class="fc" id="L176">        DefaultHighLowDataset d2 = TestUtils.serialised(d1);</span>
+<span class="fc" id="L177">        assertEquals(d1, d2);</span>
+<span class="fc" id="L178">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span>jfreechart (Mar 14, 2025 5:50:17 p.m.)</div></body></html>

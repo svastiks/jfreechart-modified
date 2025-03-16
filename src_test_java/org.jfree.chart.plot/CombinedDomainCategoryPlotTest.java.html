@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>CombinedDomainCategoryPlotTest.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">jfreechart (Mar 14, 2025 5:50:17 p.m.)</a> &gt; <a href="../../index.html" class="el_group">jfreechart</a> &gt; <a href="../index.html" class="el_bundle">src/test/java</a> &gt; <a href="index.source.html" class="el_package">org.jfree.chart.plot</a> &gt; <span class="el_source">CombinedDomainCategoryPlotTest.java</span></div><h1>CombinedDomainCategoryPlotTest.java</h1><pre class="source lang-java linenums">/* ===========================================================
+ * JFreeChart : a free chart library for the Java(tm) platform
+ * ===========================================================
+ *
+ * (C) Copyright 2000-2022, by David Gilbert and Contributors.
+ *
+ * Project Info:  http://www.jfree.org/jfreechart/index.html
+ *
+ * This library is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 2.1 of the License, or
+ * (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public
+ * License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301,
+ * USA.
+ *
+ * [Oracle and Java are registered trademarks of Oracle and/or its affiliates. 
+ * Other names may be trademarks of their respective owners.]
+ *
+ * -----------------------------------
+ * CombinedDomainCategoryPlotTest.java
+ * -----------------------------------
+ * (C) Copyright 2003-2022, by David Gilbert and Contributors.
+ *
+ * Original Author:  David Gilbert;
+ * Contributor(s):   -;
+ *
+ */
+
+package org.jfree.chart.plot;
+
+import java.awt.Graphics2D;
+import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.TestUtils;
+import org.jfree.chart.axis.CategoryAxis;
+import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.event.ChartChangeEvent;
+import org.jfree.chart.event.ChartChangeListener;
+import org.jfree.chart.labels.StandardCategoryToolTipGenerator;
+import org.jfree.chart.renderer.category.BarRenderer;
+import org.jfree.chart.renderer.category.LineAndShapeRenderer;
+import org.jfree.chart.internal.CloneUtils;
+import org.jfree.data.category.CategoryDataset;
+import org.jfree.data.category.DefaultCategoryDataset;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+/**
+ * Tests for the {@link CombinedDomainCategoryPlot} class.
+ */
+<span class="fc" id="L64">public class CombinedDomainCategoryPlotTest implements ChartChangeListener {</span>
+
+    /** A list of the events received. */
+<span class="fc" id="L67">    private final List&lt;ChartChangeEvent&gt; events = new ArrayList&lt;&gt;();</span>
+
+    /**
+     * Receives a chart change event.
+     *
+     * @param event  the event.
+     */
+    @Override
+    public void chartChanged(ChartChangeEvent event) {
+<span class="fc" id="L76">        this.events.add(event);</span>
+<span class="fc" id="L77">    }</span>
+
+    /**
+     * This is a test to replicate the bug report 987080.
+     */
+    @Test
+    public void testRemoveSubplot() {
+<span class="fc" id="L84">        CombinedDomainCategoryPlot plot = new CombinedDomainCategoryPlot();</span>
+<span class="fc" id="L85">        CategoryPlot&lt;String, String&gt; plot1 = new CategoryPlot&lt;&gt;();</span>
+<span class="fc" id="L86">        CategoryPlot&lt;String, String&gt; plot2 = new CategoryPlot&lt;&gt;();</span>
+<span class="fc" id="L87">        plot.add(plot1);</span>
+<span class="fc" id="L88">        plot.add(plot2);</span>
+        // remove plot2, but plot1 is removed instead
+<span class="fc" id="L90">        plot.remove(plot2);</span>
+<span class="fc" id="L91">        List&lt;CategoryPlot&gt; plots = plot.getSubplots();</span>
+<span class="fc" id="L92">        assertSame(plots.get(0), plot1);</span>
+<span class="fc" id="L93">        assertEquals(1, plots.size());</span>
+<span class="fc" id="L94">    }</span>
+
+    /**
+     * Some checks for the equals() method.
+     */
+    @Test
+    public void testEquals() {
+<span class="fc" id="L101">        CombinedDomainCategoryPlot plot1 = createPlot();</span>
+<span class="fc" id="L102">        CombinedDomainCategoryPlot plot2 = createPlot();</span>
+<span class="fc" id="L103">        assertEquals(plot1, plot2);</span>
+<span class="fc" id="L104">    }</span>
+
+    /**
+     * Some checks for cloning.
+     */
+    @Test
+    public void testCloning() throws CloneNotSupportedException {
+<span class="fc" id="L111">        CombinedDomainCategoryPlot plot1 = createPlot();</span>
+<span class="fc" id="L112">        CombinedDomainCategoryPlot plot2 = CloneUtils.clone(plot1);</span>
+<span class="fc" id="L113">        assertNotSame(plot1, plot2);</span>
+<span class="fc" id="L114">        assertSame(plot1.getClass(), plot2.getClass());</span>
+<span class="fc" id="L115">        assertEquals(plot1, plot2);</span>
+<span class="fc" id="L116">    }</span>
+
+    /**
+     * Serialize an instance, restore it, and check for equality.
+     */
+    @Test
+    public void testSerialization() {
+<span class="fc" id="L123">        CombinedDomainCategoryPlot plot1 = createPlot();</span>
+<span class="fc" id="L124">        CombinedDomainCategoryPlot plot2 = TestUtils.serialised(plot1);</span>
+<span class="fc" id="L125">        assertEquals(plot1, plot2);</span>
+<span class="fc" id="L126">    }</span>
+
+    /**
+     * Check that only one chart change event is generated by a change to a
+     * subplot.
+     */
+    @Test
+    public void testNotification() {
+<span class="fc" id="L134">        CombinedDomainCategoryPlot plot = createPlot();</span>
+<span class="fc" id="L135">        JFreeChart chart = new JFreeChart(plot);</span>
+<span class="fc" id="L136">        chart.addChangeListener(this);</span>
+<span class="fc" id="L137">        CategoryPlot&lt;String, String&gt; subplot1 = plot.getSubplots().get(0);</span>
+<span class="fc" id="L138">        NumberAxis yAxis = (NumberAxis) subplot1.getRangeAxis();</span>
+<span class="pc bpc" id="L139" title="1 of 2 branches missed.">        yAxis.setAutoRangeIncludesZero(!yAxis.getAutoRangeIncludesZero());</span>
+<span class="fc" id="L140">        assertEquals(1, this.events.size());</span>
+
+        // a redraw should NOT trigger another change event
+<span class="fc" id="L143">        BufferedImage image = new BufferedImage(200, 100,</span>
+                BufferedImage.TYPE_INT_RGB);
+<span class="fc" id="L145">        Graphics2D g2 = image.createGraphics();</span>
+<span class="fc" id="L146">        this.events.clear();</span>
+<span class="fc" id="L147">        chart.draw(g2, new Rectangle2D.Double(0.0, 0.0, 200.0, 100.0));</span>
+<span class="fc" id="L148">        assertTrue(this.events.isEmpty());</span>
+<span class="fc" id="L149">    }</span>
+
+    /**
+     * Creates a dataset.
+     *
+     * @return A dataset.
+     */
+    public CategoryDataset&lt;String, String&gt; createDataset1() {
+
+<span class="fc" id="L158">        DefaultCategoryDataset&lt;String, String&gt; result = new DefaultCategoryDataset&lt;&gt;();</span>
+
+        // row keys...
+<span class="fc" id="L161">        String series1 = &quot;First&quot;;</span>
+<span class="fc" id="L162">        String series2 = &quot;Second&quot;;</span>
+
+        // column keys...
+<span class="fc" id="L165">        String type1 = &quot;Type 1&quot;;</span>
+<span class="fc" id="L166">        String type2 = &quot;Type 2&quot;;</span>
+<span class="fc" id="L167">        String type3 = &quot;Type 3&quot;;</span>
+<span class="fc" id="L168">        String type4 = &quot;Type 4&quot;;</span>
+<span class="fc" id="L169">        String type5 = &quot;Type 5&quot;;</span>
+<span class="fc" id="L170">        String type6 = &quot;Type 6&quot;;</span>
+<span class="fc" id="L171">        String type7 = &quot;Type 7&quot;;</span>
+<span class="fc" id="L172">        String type8 = &quot;Type 8&quot;;</span>
+
+<span class="fc" id="L174">        result.addValue(1.0, series1, type1);</span>
+<span class="fc" id="L175">        result.addValue(4.0, series1, type2);</span>
+<span class="fc" id="L176">        result.addValue(3.0, series1, type3);</span>
+<span class="fc" id="L177">        result.addValue(5.0, series1, type4);</span>
+<span class="fc" id="L178">        result.addValue(5.0, series1, type5);</span>
+<span class="fc" id="L179">        result.addValue(7.0, series1, type6);</span>
+<span class="fc" id="L180">        result.addValue(7.0, series1, type7);</span>
+<span class="fc" id="L181">        result.addValue(8.0, series1, type8);</span>
+
+<span class="fc" id="L183">        result.addValue(5.0, series2, type1);</span>
+<span class="fc" id="L184">        result.addValue(7.0, series2, type2);</span>
+<span class="fc" id="L185">        result.addValue(6.0, series2, type3);</span>
+<span class="fc" id="L186">        result.addValue(8.0, series2, type4);</span>
+<span class="fc" id="L187">        result.addValue(4.0, series2, type5);</span>
+<span class="fc" id="L188">        result.addValue(4.0, series2, type6);</span>
+<span class="fc" id="L189">        result.addValue(2.0, series2, type7);</span>
+<span class="fc" id="L190">        result.addValue(1.0, series2, type8);</span>
+
+<span class="fc" id="L192">        return result;</span>
+
+    }
+
+    /**
+     * Creates a dataset.
+     *
+     * @return A dataset.
+     */
+    public CategoryDataset&lt;String, String&gt; createDataset2() {
+
+<span class="fc" id="L203">        DefaultCategoryDataset&lt;String, String&gt; result = new DefaultCategoryDataset&lt;&gt;();</span>
+
+        // row keys...
+<span class="fc" id="L206">        String series1 = &quot;Third&quot;;</span>
+<span class="fc" id="L207">        String series2 = &quot;Fourth&quot;;</span>
+
+        // column keys...
+<span class="fc" id="L210">        String type1 = &quot;Type 1&quot;;</span>
+<span class="fc" id="L211">        String type2 = &quot;Type 2&quot;;</span>
+<span class="fc" id="L212">        String type3 = &quot;Type 3&quot;;</span>
+<span class="fc" id="L213">        String type4 = &quot;Type 4&quot;;</span>
+<span class="fc" id="L214">        String type5 = &quot;Type 5&quot;;</span>
+<span class="fc" id="L215">        String type6 = &quot;Type 6&quot;;</span>
+<span class="fc" id="L216">        String type7 = &quot;Type 7&quot;;</span>
+<span class="fc" id="L217">        String type8 = &quot;Type 8&quot;;</span>
+
+<span class="fc" id="L219">        result.addValue(11.0, series1, type1);</span>
+<span class="fc" id="L220">        result.addValue(14.0, series1, type2);</span>
+<span class="fc" id="L221">        result.addValue(13.0, series1, type3);</span>
+<span class="fc" id="L222">        result.addValue(15.0, series1, type4);</span>
+<span class="fc" id="L223">        result.addValue(15.0, series1, type5);</span>
+<span class="fc" id="L224">        result.addValue(17.0, series1, type6);</span>
+<span class="fc" id="L225">        result.addValue(17.0, series1, type7);</span>
+<span class="fc" id="L226">        result.addValue(18.0, series1, type8);</span>
+
+<span class="fc" id="L228">        result.addValue(15.0, series2, type1);</span>
+<span class="fc" id="L229">        result.addValue(17.0, series2, type2);</span>
+<span class="fc" id="L230">        result.addValue(16.0, series2, type3);</span>
+<span class="fc" id="L231">        result.addValue(18.0, series2, type4);</span>
+<span class="fc" id="L232">        result.addValue(14.0, series2, type5);</span>
+<span class="fc" id="L233">        result.addValue(14.0, series2, type6);</span>
+<span class="fc" id="L234">        result.addValue(12.0, series2, type7);</span>
+<span class="fc" id="L235">        result.addValue(11.0, series2, type8);</span>
+
+<span class="fc" id="L237">        return result;</span>
+
+    }
+
+    /**
+     * Creates a sample plot.
+     *
+     * @return A sample plot.
+     */
+    private CombinedDomainCategoryPlot createPlot() {
+
+<span class="fc" id="L248">        CategoryDataset&lt;String, String&gt; dataset1 = createDataset1();</span>
+<span class="fc" id="L249">        NumberAxis rangeAxis1 = new NumberAxis(&quot;Value&quot;);</span>
+<span class="fc" id="L250">        rangeAxis1.setStandardTickUnits(NumberAxis.createIntegerTickUnits());</span>
+<span class="fc" id="L251">        LineAndShapeRenderer renderer1 = new LineAndShapeRenderer();</span>
+<span class="fc" id="L252">        renderer1.setDefaultToolTipGenerator(</span>
+                new StandardCategoryToolTipGenerator());
+<span class="fc" id="L254">        CategoryPlot&lt;String, String&gt; subplot1 = new CategoryPlot&lt;&gt;(dataset1, null, </span>
+                rangeAxis1, renderer1);
+<span class="fc" id="L256">        subplot1.setDomainGridlinesVisible(true);</span>
+
+<span class="fc" id="L258">        CategoryDataset&lt;String, String&gt; dataset2 = createDataset2();</span>
+<span class="fc" id="L259">        NumberAxis rangeAxis2 = new NumberAxis(&quot;Value&quot;);</span>
+<span class="fc" id="L260">        rangeAxis2.setStandardTickUnits(NumberAxis.createIntegerTickUnits());</span>
+<span class="fc" id="L261">        BarRenderer renderer2 = new BarRenderer();</span>
+<span class="fc" id="L262">        renderer2.setDefaultToolTipGenerator(</span>
+                new StandardCategoryToolTipGenerator());
+<span class="fc" id="L264">        CategoryPlot&lt;String, String&gt; subplot2 = new CategoryPlot&lt;&gt;(dataset2, null, </span>
+                rangeAxis2, renderer2);
+<span class="fc" id="L266">        subplot2.setDomainGridlinesVisible(true);</span>
+
+<span class="fc" id="L268">        CategoryAxis domainAxis = new CategoryAxis(&quot;Category&quot;);</span>
+<span class="fc" id="L269">        CombinedDomainCategoryPlot plot</span>
+                = new CombinedDomainCategoryPlot(domainAxis);
+<span class="fc" id="L271">        plot.add(subplot1, 2);</span>
+<span class="fc" id="L272">        plot.add(subplot2, 1);</span>
+<span class="fc" id="L273">        return plot;</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span>jfreechart (Mar 14, 2025 5:50:17 p.m.)</div></body></html>

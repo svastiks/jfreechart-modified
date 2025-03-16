@@ -1,0 +1,353 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>DefaultIntervalXYDatasetTest.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">jfreechart (Mar 14, 2025 5:50:17 p.m.)</a> &gt; <a href="../../index.html" class="el_group">jfreechart</a> &gt; <a href="../index.html" class="el_bundle">src/test/java</a> &gt; <a href="index.source.html" class="el_package">org.jfree.data.xy</a> &gt; <span class="el_source">DefaultIntervalXYDatasetTest.java</span></div><h1>DefaultIntervalXYDatasetTest.java</h1><pre class="source lang-java linenums">/* ===========================================================
+ * JFreeChart : a free chart library for the Java(tm) platform
+ * ===========================================================
+ *
+ * (C) Copyright 2000-2022, by David Gilbert and Contributors.
+ *
+ * Project Info:  http://www.jfree.org/jfreechart/index.html
+ *
+ * This library is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 2.1 of the License, or
+ * (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public
+ * License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301,
+ * USA.
+ *
+ * [Oracle and Java are registered trademarks of Oracle and/or its affiliates. 
+ * Other names may be trademarks of their respective owners.]
+ *
+ * ---------------------------------
+ * DefaultIntervalXYDatasetTest.java
+ * ---------------------------------
+ * (C) Copyright 2006-2022, by David Gilbert and Contributors.
+ *
+ * Original Author:  David Gilbert;
+ * Contributor(s):   -;
+ *
+ */
+
+package org.jfree.data.xy;
+
+import org.jfree.chart.TestUtils;
+import org.jfree.chart.internal.CloneUtils;
+import org.jfree.chart.api.PublicCloneable;
+
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+/**
+ * Some tests for the {@link DefaultIntervalXYDataset} class.
+ */
+<span class="fc" id="L50">public class DefaultIntervalXYDatasetTest {</span>
+
+    /**
+     * Some checks for the getSeriesCount() method.
+     */
+    @Test
+    public void testGetSeriesCount() {
+<span class="fc" id="L57">        DefaultIntervalXYDataset&lt;String&gt; d = new DefaultIntervalXYDataset&lt;&gt;();</span>
+<span class="fc" id="L58">        assertEquals(0, d.getSeriesCount());</span>
+<span class="fc" id="L59">        d = createSampleDataset1();</span>
+<span class="fc" id="L60">        assertEquals(2, d.getSeriesCount());</span>
+<span class="fc" id="L61">    }</span>
+
+    /**
+     * Some checks for the getSeriesKey(int) method.
+     */
+    @Test
+    public void testGetSeriesKey() {
+<span class="fc" id="L68">        DefaultIntervalXYDataset&lt;String&gt; d = createSampleDataset1();</span>
+<span class="fc" id="L69">        assertEquals(&quot;S1&quot;, d.getSeriesKey(0));</span>
+<span class="fc" id="L70">        assertEquals(&quot;S2&quot;, d.getSeriesKey(1));</span>
+
+        // check for series key out of bounds
+<span class="fc" id="L73">        boolean pass = false;</span>
+        try {
+<span class="nc" id="L75">            /*Comparable k =*/ d.getSeriesKey(-1);</span>
+        }
+<span class="fc" id="L77">        catch (IllegalArgumentException e) {</span>
+<span class="fc" id="L78">            pass = true;</span>
+<span class="nc" id="L79">        }</span>
+<span class="fc" id="L80">        assertTrue(pass);</span>
+
+<span class="fc" id="L82">        pass = false;</span>
+        try {
+<span class="nc" id="L84">            /*Comparable k =*/ d.getSeriesKey(2);</span>
+        }
+<span class="fc" id="L86">        catch (IllegalArgumentException e) {</span>
+<span class="fc" id="L87">            pass = true;</span>
+<span class="nc" id="L88">        }</span>
+<span class="fc" id="L89">        assertTrue(pass);</span>
+<span class="fc" id="L90">    }</span>
+
+    /**
+     * Some checks for the getItemCount() method.
+     */
+    @Test
+    public void testGetItemCount() {
+<span class="fc" id="L97">        DefaultIntervalXYDataset&lt;String&gt; d = createSampleDataset1();</span>
+<span class="fc" id="L98">        assertEquals(3, d.getItemCount(0));</span>
+<span class="fc" id="L99">        assertEquals(3, d.getItemCount(1));</span>
+
+        // try an index out of bounds
+<span class="fc" id="L102">        boolean pass = false;</span>
+        try {
+<span class="nc" id="L104">            d.getItemCount(2);</span>
+        }
+<span class="fc" id="L106">        catch (IllegalArgumentException e) {</span>
+<span class="fc" id="L107">            pass = true;</span>
+<span class="nc" id="L108">        }</span>
+<span class="fc" id="L109">        assertTrue(pass);</span>
+<span class="fc" id="L110">    }</span>
+
+    private static final double EPSILON = 0.0000000001;
+
+    /**
+     * Some checks for the getXValue() method.
+     */
+    @Test
+    public void testGetXValue() {
+<span class="fc" id="L119">        DefaultIntervalXYDataset&lt;String&gt; d = createSampleDataset1();</span>
+<span class="fc" id="L120">        assertEquals(1.0, d.getXValue(0, 0), EPSILON);</span>
+<span class="fc" id="L121">        assertEquals(2.0, d.getXValue(0, 1), EPSILON);</span>
+<span class="fc" id="L122">        assertEquals(3.0, d.getXValue(0, 2), EPSILON);</span>
+<span class="fc" id="L123">        assertEquals(11.0, d.getXValue(1, 0), EPSILON);</span>
+<span class="fc" id="L124">        assertEquals(12.0, d.getXValue(1, 1), EPSILON);</span>
+<span class="fc" id="L125">        assertEquals(13.0, d.getXValue(1, 2), EPSILON);</span>
+<span class="fc" id="L126">    }</span>
+
+    /**
+     * Some checks for the getYValue() method.
+     */
+    @Test
+    public void testGetYValue() {
+<span class="fc" id="L133">        DefaultIntervalXYDataset&lt;String&gt; d = createSampleDataset1();</span>
+<span class="fc" id="L134">        assertEquals(4.0, d.getYValue(0, 0), EPSILON);</span>
+<span class="fc" id="L135">        assertEquals(5.0, d.getYValue(0, 1), EPSILON);</span>
+<span class="fc" id="L136">        assertEquals(6.0, d.getYValue(0, 2), EPSILON);</span>
+<span class="fc" id="L137">        assertEquals(14.0, d.getYValue(1, 0), EPSILON);</span>
+<span class="fc" id="L138">        assertEquals(15.0, d.getYValue(1, 1), EPSILON);</span>
+<span class="fc" id="L139">        assertEquals(16.0, d.getYValue(1, 2), EPSILON);</span>
+<span class="fc" id="L140">    }</span>
+
+    /**
+     * Some checks for the getStartXValue() method.
+     */
+    @Test
+    public void testGetStartXValue() {
+<span class="fc" id="L147">        DefaultIntervalXYDataset&lt;String&gt; d = createSampleDataset1();</span>
+<span class="fc" id="L148">        assertEquals(0.9, d.getStartXValue(0, 0), EPSILON);</span>
+<span class="fc" id="L149">        assertEquals(1.9, d.getStartXValue(0, 1), EPSILON);</span>
+<span class="fc" id="L150">        assertEquals(2.9, d.getStartXValue(0, 2), EPSILON);</span>
+<span class="fc" id="L151">        assertEquals(10.9, d.getStartXValue(1, 0), EPSILON);</span>
+<span class="fc" id="L152">        assertEquals(11.9, d.getStartXValue(1, 1), EPSILON);</span>
+<span class="fc" id="L153">        assertEquals(12.9, d.getStartXValue(1, 2), EPSILON);</span>
+<span class="fc" id="L154">    }</span>
+
+    /**
+     * Some checks for the getEndXValue() method.
+     */
+    @Test
+    public void testGetEndXValue() {
+<span class="fc" id="L161">        DefaultIntervalXYDataset&lt;String&gt; d = createSampleDataset1();</span>
+<span class="fc" id="L162">        assertEquals(1.1, d.getEndXValue(0, 0), EPSILON);</span>
+<span class="fc" id="L163">        assertEquals(2.1, d.getEndXValue(0, 1), EPSILON);</span>
+<span class="fc" id="L164">        assertEquals(3.1, d.getEndXValue(0, 2), EPSILON);</span>
+<span class="fc" id="L165">        assertEquals(11.1, d.getEndXValue(1, 0), EPSILON);</span>
+<span class="fc" id="L166">        assertEquals(12.1, d.getEndXValue(1, 1), EPSILON);</span>
+<span class="fc" id="L167">        assertEquals(13.1, d.getEndXValue(1, 2), EPSILON);</span>
+<span class="fc" id="L168">    }</span>
+
+    /**
+     * Some checks for the getStartYValue() method.
+     */
+    @Test
+    public void testGetStartYValue() {
+<span class="fc" id="L175">        DefaultIntervalXYDataset&lt;String&gt; d = createSampleDataset1();</span>
+<span class="fc" id="L176">        assertEquals(1.09, d.getStartYValue(0, 0), EPSILON);</span>
+<span class="fc" id="L177">        assertEquals(2.09, d.getStartYValue(0, 1), EPSILON);</span>
+<span class="fc" id="L178">        assertEquals(3.09, d.getStartYValue(0, 2), EPSILON);</span>
+<span class="fc" id="L179">        assertEquals(11.09, d.getStartYValue(1, 0), EPSILON);</span>
+<span class="fc" id="L180">        assertEquals(12.09, d.getStartYValue(1, 1), EPSILON);</span>
+<span class="fc" id="L181">        assertEquals(13.09, d.getStartYValue(1, 2), EPSILON);</span>
+<span class="fc" id="L182">    }</span>
+
+    /**
+     * Some checks for the getEndYValue() method.
+     */
+    @Test
+    public void testGetEndYValue() {
+<span class="fc" id="L189">        DefaultIntervalXYDataset&lt;String&gt; d = createSampleDataset1();</span>
+<span class="fc" id="L190">        assertEquals(1.11, d.getEndYValue(0, 0), EPSILON);</span>
+<span class="fc" id="L191">        assertEquals(2.11, d.getEndYValue(0, 1), EPSILON);</span>
+<span class="fc" id="L192">        assertEquals(3.11, d.getEndYValue(0, 2), EPSILON);</span>
+<span class="fc" id="L193">        assertEquals(11.11, d.getEndYValue(1, 0), EPSILON);</span>
+<span class="fc" id="L194">        assertEquals(12.11, d.getEndYValue(1, 1), EPSILON);</span>
+<span class="fc" id="L195">        assertEquals(13.11, d.getEndYValue(1, 2), EPSILON);</span>
+<span class="fc" id="L196">    }</span>
+
+    /**
+     * Confirm that the equals method can distinguish all the required fields.
+     */
+    @Test
+    public void testEquals() {
+<span class="fc" id="L203">        DefaultIntervalXYDataset&lt;String&gt; d1 = new DefaultIntervalXYDataset&lt;&gt;();</span>
+<span class="fc" id="L204">        DefaultIntervalXYDataset&lt;String&gt; d2 = new DefaultIntervalXYDataset&lt;&gt;();</span>
+<span class="fc" id="L205">        assertEquals(d1, d2);</span>
+<span class="fc" id="L206">        assertEquals(d2, d1);</span>
+
+<span class="fc" id="L208">        d1 = createSampleDataset1();</span>
+<span class="fc" id="L209">        assertNotEquals(d1, d2);</span>
+<span class="fc" id="L210">        d2 = createSampleDataset1();</span>
+<span class="fc" id="L211">        assertEquals(d1, d2);</span>
+<span class="fc" id="L212">    }</span>
+
+    /**
+     * Confirm that cloning works.
+     */
+    @Test
+    public void testCloning() throws CloneNotSupportedException {
+<span class="fc" id="L219">        DefaultIntervalXYDataset&lt;String&gt; d1 = new DefaultIntervalXYDataset&lt;&gt;();</span>
+<span class="fc" id="L220">        DefaultIntervalXYDataset&lt;String&gt; d2 = CloneUtils.clone(d1);</span>
+<span class="fc" id="L221">        assertNotSame(d1, d2);</span>
+<span class="fc" id="L222">        assertSame(d1.getClass(), d2.getClass());</span>
+<span class="fc" id="L223">        assertEquals(d1, d2);</span>
+
+        // try a dataset with some content...
+<span class="fc" id="L226">        d1 = createSampleDataset1();</span>
+<span class="fc" id="L227">        d2 = CloneUtils.clone(d1);</span>
+<span class="fc" id="L228">        assertNotSame(d1, d2);</span>
+<span class="fc" id="L229">        assertSame(d1.getClass(), d2.getClass());</span>
+<span class="fc" id="L230">        assertEquals(d1, d2);</span>
+<span class="fc" id="L231">    }</span>
+
+    /**
+     * Another test for cloning.
+     */
+    @Test
+    public void testCloning2() throws CloneNotSupportedException {
+<span class="fc" id="L238">        DefaultIntervalXYDataset&lt;String&gt; d1 = new DefaultIntervalXYDataset&lt;&gt;();</span>
+<span class="fc" id="L239">        double[] x1 = new double[] {1.0, 2.0, 3.0};</span>
+<span class="fc" id="L240">        double[] x1Start = new double[] {0.9, 1.9, 2.9};</span>
+<span class="fc" id="L241">        double[] x1End = new double[] {1.1, 2.1, 3.1};</span>
+<span class="fc" id="L242">        double[] y1 = new double[] {4.0, 5.0, 6.0};</span>
+<span class="fc" id="L243">        double[] y1Start = new double[] {1.09, 2.09, 3.09};</span>
+<span class="fc" id="L244">        double[] y1End = new double[] {1.11, 2.11, 3.11};</span>
+<span class="fc" id="L245">        double[][] data1 = new double[][] {x1, x1Start, x1End, y1, y1Start,</span>
+                y1End};
+<span class="fc" id="L247">        d1.addSeries(&quot;S1&quot;, data1);</span>
+<span class="fc" id="L248">        DefaultIntervalXYDataset&lt;String&gt; d2 = CloneUtils.clone(d1);</span>
+<span class="fc" id="L249">        assertNotSame(d1, d2);</span>
+<span class="fc" id="L250">        assertSame(d1.getClass(), d2.getClass());</span>
+<span class="fc" id="L251">        assertEquals(d1, d2);</span>
+
+        // check independence
+<span class="fc" id="L254">        x1[0] = 111.1;</span>
+<span class="fc" id="L255">        assertNotEquals(d1, d2);</span>
+<span class="fc" id="L256">    }</span>
+
+    /**
+     * Verify that this class implements {@link PublicCloneable}.
+     */
+    @Test
+    public void testPublicCloneable() {
+<span class="fc" id="L263">        DefaultIntervalXYDataset&lt;String&gt; d1 = new DefaultIntervalXYDataset&lt;&gt;();</span>
+<span class="fc" id="L264">        assertTrue(d1 instanceof PublicCloneable);</span>
+<span class="fc" id="L265">    }</span>
+
+    /**
+     * Serialize an instance, restore it, and check for equality.
+     */
+    @Test
+    public void testSerialization() {
+<span class="fc" id="L272">        DefaultIntervalXYDataset&lt;String&gt; d1 = new DefaultIntervalXYDataset&lt;&gt;();</span>
+<span class="fc" id="L273">        DefaultIntervalXYDataset&lt;String&gt; d2 = TestUtils.serialised(d1);</span>
+<span class="fc" id="L274">        assertEquals(d1, d2);</span>
+
+        // try a dataset with some content...
+<span class="fc" id="L277">        d1 = createSampleDataset1();</span>
+<span class="fc" id="L278">        d2 = TestUtils.serialised(d1);</span>
+<span class="fc" id="L279">        assertEquals(d1, d2);</span>
+<span class="fc" id="L280">    }</span>
+
+    /**
+     * Some checks for the indexOf(Comparable) method.
+     */
+    @Test
+    public void testIndexOf() {
+<span class="fc" id="L287">        DefaultIntervalXYDataset&lt;String&gt; d = createSampleDataset1();</span>
+<span class="fc" id="L288">        assertEquals(0, d.indexOf(&quot;S1&quot;));</span>
+<span class="fc" id="L289">        assertEquals(1, d.indexOf(&quot;S2&quot;));</span>
+<span class="fc" id="L290">        assertEquals(-1, d.indexOf(&quot;Green Eggs and Ham&quot;));</span>
+<span class="fc" id="L291">        assertEquals(-1, d.indexOf(null));</span>
+<span class="fc" id="L292">    }</span>
+
+    /**
+     * Some tests for the addSeries() method.
+     */
+    @Test
+    public void testAddSeries() {
+<span class="fc" id="L299">        DefaultIntervalXYDataset&lt;String&gt; d = new DefaultIntervalXYDataset&lt;&gt;();</span>
+<span class="fc" id="L300">        d.addSeries(&quot;S1&quot;, new double[][] {{1.0}, {0.5}, {1.5}, {2.0}, {2.5},</span>
+                {1.5}});
+<span class="fc" id="L302">        assertEquals(1, d.getSeriesCount());</span>
+<span class="fc" id="L303">        assertEquals(&quot;S1&quot;, d.getSeriesKey(0));</span>
+
+        // check that adding a series will overwrite the old series
+<span class="fc" id="L306">        d.addSeries(&quot;S1&quot;, new double[][] {{1.1}, {0.6}, {1.6}, {2.1}, {2.6},</span>
+                {1.6}});
+<span class="fc" id="L308">        assertEquals(1, d.getSeriesCount());</span>
+<span class="fc" id="L309">        assertEquals(2.1, d.getYValue(0, 0), EPSILON);</span>
+
+        // check null key
+<span class="fc" id="L312">        boolean pass = false;</span>
+        try {
+<span class="nc" id="L314">          d.addSeries(null, new double[][] {{1.1}, {0.6}, {1.6}, {2.1}, {2.6},</span>
+                  {1.6}});
+        }
+<span class="fc" id="L317">        catch (IllegalArgumentException e) {</span>
+<span class="fc" id="L318">          pass = true;</span>
+<span class="nc" id="L319">        }</span>
+<span class="fc" id="L320">        assertTrue(pass);</span>
+<span class="fc" id="L321">    }</span>
+
+    /**
+     * Creates a sample dataset for testing.
+     *
+     * @return A sample dataset.
+     */
+    public DefaultIntervalXYDataset&lt;String&gt; createSampleDataset1() {
+<span class="fc" id="L329">        DefaultIntervalXYDataset&lt;String&gt; d = new DefaultIntervalXYDataset&lt;&gt;();</span>
+<span class="fc" id="L330">        double[] x1 = new double[] {1.0, 2.0, 3.0};</span>
+<span class="fc" id="L331">        double[] x1Start = new double[] {0.9, 1.9, 2.9};</span>
+<span class="fc" id="L332">        double[] x1End = new double[] {1.1, 2.1, 3.1};</span>
+<span class="fc" id="L333">        double[] y1 = new double[] {4.0, 5.0, 6.0};</span>
+<span class="fc" id="L334">        double[] y1Start = new double[] {1.09, 2.09, 3.09};</span>
+<span class="fc" id="L335">        double[] y1End = new double[] {1.11, 2.11, 3.11};</span>
+<span class="fc" id="L336">        double[][] data1 = new double[][] {x1, x1Start, x1End, y1, y1Start,</span>
+                y1End};
+<span class="fc" id="L338">        d.addSeries(&quot;S1&quot;, data1);</span>
+
+<span class="fc" id="L340">        double[] x2 = new double[] {11.0, 12.0, 13.0};</span>
+<span class="fc" id="L341">        double[] x2Start = new double[] {10.9, 11.9, 12.9};</span>
+<span class="fc" id="L342">        double[] x2End = new double[] {11.1, 12.1, 13.1};</span>
+<span class="fc" id="L343">        double[] y2 = new double[] {14.0, 15.0, 16.0};</span>
+<span class="fc" id="L344">        double[] y2Start = new double[] {11.09, 12.09, 13.09};</span>
+<span class="fc" id="L345">        double[] y2End = new double[] {11.11, 12.11, 13.11};</span>
+<span class="fc" id="L346">        double[][] data2 = new double[][] {x2, x2Start, x2End, y2, y2Start,</span>
+                y2End};
+<span class="fc" id="L348">        d.addSeries(&quot;S2&quot;, data2);</span>
+<span class="fc" id="L349">        return d;</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span>jfreechart (Mar 14, 2025 5:50:17 p.m.)</div></body></html>

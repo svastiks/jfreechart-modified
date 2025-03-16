@@ -1,0 +1,1419 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>XYPlotTest.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">jfreechart (Mar 14, 2025 5:50:17 p.m.)</a> &gt; <a href="../../index.html" class="el_group">jfreechart</a> &gt; <a href="../index.html" class="el_bundle">src/test/java</a> &gt; <a href="index.source.html" class="el_package">org.jfree.chart.plot</a> &gt; <span class="el_source">XYPlotTest.java</span></div><h1>XYPlotTest.java</h1><pre class="source lang-java linenums">/* ===========================================================
+ * JFreeChart : a free chart library for the Java(tm) platform
+ * ===========================================================
+ *
+ * (C) Copyright 2000-2022, by David Gilbert and Contributors.
+ *
+ * Project Info:  http://www.jfree.org/jfreechart/index.html
+ *
+ * This library is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 2.1 of the License, or
+ * (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public
+ * License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301,
+ * USA.
+ *
+ * [Oracle and Java are registered trademarks of Oracle and/or its affiliates. 
+ * Other names may be trademarks of their respective owners.]
+ *
+ * ---------------
+ * XYPlotTest.java
+ * ---------------
+ * (C) Copyright 2003-2022, by David Gilbert and Contributors.
+ *
+ * Original Author:  David Gilbert;
+ * Contributor(s):   -;
+ *
+ */
+
+package org.jfree.chart.plot;
+
+import org.junit.jupiter.api.Test;
+
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.GradientPaint;
+import java.awt.Graphics2D;
+import java.awt.Stroke;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
+import java.util.Arrays;
+import java.util.EventListener;
+import java.util.List;
+
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.legend.LegendItem;
+import org.jfree.chart.legend.LegendItemCollection;
+import org.jfree.chart.TestUtils;
+import org.jfree.chart.annotations.XYTextAnnotation;
+import org.jfree.chart.axis.AxisLocation;
+import org.jfree.chart.axis.DateAxis;
+import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.date.MonthConstants;
+import org.jfree.chart.event.MarkerChangeListener;
+import org.jfree.chart.labels.StandardXYToolTipGenerator;
+import org.jfree.chart.renderer.xy.DefaultXYItemRenderer;
+import org.jfree.chart.renderer.xy.StandardXYItemRenderer;
+import org.jfree.chart.renderer.xy.XYBarRenderer;
+import org.jfree.chart.renderer.xy.XYItemRenderer;
+import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
+import org.jfree.chart.api.Layer;
+import org.jfree.chart.api.RectangleInsets;
+import org.jfree.chart.internal.CloneUtils;
+import org.jfree.chart.util.DefaultShadowGenerator;
+import org.jfree.data.Range;
+import org.jfree.data.time.Day;
+import org.jfree.data.time.TimeSeries;
+import org.jfree.data.time.TimeSeriesCollection;
+import org.jfree.data.xy.DefaultXYDataset;
+import org.jfree.data.xy.IntervalXYDataset;
+import org.jfree.data.xy.XYDataset;
+import org.jfree.data.xy.XYSeries;
+import org.jfree.data.xy.XYSeriesCollection;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+/**
+ * Tests for the {@link XYPlot} class.
+ */
+<span class="fc" id="L89">public class XYPlotTest {</span>
+
+    /**
+     * Added this test in response to a bug report.
+     */
+    @Test
+    public void testGetDatasetCount() {
+<span class="fc" id="L96">        XYPlot&lt;String&gt; plot = new XYPlot&lt;&gt;();</span>
+<span class="fc" id="L97">        assertEquals(0, plot.getDatasetCount());</span>
+<span class="fc" id="L98">    }</span>
+
+    /**
+     * Some checks for the equals() method.
+     */
+    @Test
+    public void testEquals() {
+
+<span class="fc" id="L106">        XYPlot&lt;String&gt; plot1 = new XYPlot&lt;&gt;();</span>
+<span class="fc" id="L107">        XYPlot&lt;String&gt; plot2 = new XYPlot&lt;&gt;();</span>
+<span class="fc" id="L108">        assertEquals(plot1, plot2);</span>
+
+        // orientation...
+<span class="fc" id="L111">        plot1.setOrientation(PlotOrientation.HORIZONTAL);</span>
+<span class="fc" id="L112">        assertNotEquals(plot1, plot2);</span>
+<span class="fc" id="L113">        plot2.setOrientation(PlotOrientation.HORIZONTAL);</span>
+<span class="fc" id="L114">        assertEquals(plot1, plot2);</span>
+
+        // axisOffset...
+<span class="fc" id="L117">        plot1.setAxisOffset(new RectangleInsets(0.05, 0.05, 0.05, 0.05));</span>
+<span class="fc" id="L118">        assertNotEquals(plot1, plot2);</span>
+<span class="fc" id="L119">        plot2.setAxisOffset(new RectangleInsets(0.05, 0.05, 0.05, 0.05));</span>
+<span class="fc" id="L120">        assertEquals(plot1, plot2);</span>
+
+        // domainAxis...
+<span class="fc" id="L123">        plot1.setDomainAxis(new NumberAxis(&quot;Domain Axis&quot;));</span>
+<span class="fc" id="L124">        assertNotEquals(plot1, plot2);</span>
+<span class="fc" id="L125">        plot2.setDomainAxis(new NumberAxis(&quot;Domain Axis&quot;));</span>
+<span class="fc" id="L126">        assertEquals(plot1, plot2);</span>
+
+        // domainAxisLocation...
+<span class="fc" id="L129">        plot1.setDomainAxisLocation(AxisLocation.TOP_OR_RIGHT);</span>
+<span class="fc" id="L130">        assertNotEquals(plot1, plot2);</span>
+<span class="fc" id="L131">        plot2.setDomainAxisLocation(AxisLocation.TOP_OR_RIGHT);</span>
+<span class="fc" id="L132">        assertEquals(plot1, plot2);</span>
+
+        // secondary DomainAxes...
+<span class="fc" id="L135">        plot1.setDomainAxis(11, new NumberAxis(&quot;Secondary Domain Axis&quot;));</span>
+<span class="fc" id="L136">        assertNotEquals(plot1, plot2);</span>
+<span class="fc" id="L137">        plot2.setDomainAxis(11, new NumberAxis(&quot;Secondary Domain Axis&quot;));</span>
+<span class="fc" id="L138">        assertEquals(plot1, plot2);</span>
+
+        // secondary DomainAxisLocations...
+<span class="fc" id="L141">        plot1.setDomainAxisLocation(11, AxisLocation.TOP_OR_RIGHT);</span>
+<span class="fc" id="L142">        assertNotEquals(plot1, plot2);</span>
+<span class="fc" id="L143">        plot2.setDomainAxisLocation(11, AxisLocation.TOP_OR_RIGHT);</span>
+<span class="fc" id="L144">        assertEquals(plot1, plot2);</span>
+
+        // rangeAxis...
+<span class="fc" id="L147">        plot1.setRangeAxis(new NumberAxis(&quot;Range Axis&quot;));</span>
+<span class="fc" id="L148">        assertNotEquals(plot1, plot2);</span>
+<span class="fc" id="L149">        plot2.setRangeAxis(new NumberAxis(&quot;Range Axis&quot;));</span>
+<span class="fc" id="L150">        assertEquals(plot1, plot2);</span>
+
+        // rangeAxisLocation...
+<span class="fc" id="L153">        plot1.setRangeAxisLocation(AxisLocation.TOP_OR_RIGHT);</span>
+<span class="fc" id="L154">        assertNotEquals(plot1, plot2);</span>
+<span class="fc" id="L155">        plot2.setRangeAxisLocation(AxisLocation.TOP_OR_RIGHT);</span>
+<span class="fc" id="L156">        assertEquals(plot1, plot2);</span>
+
+        // secondary RangeAxes...
+<span class="fc" id="L159">        plot1.setRangeAxis(11, new NumberAxis(&quot;Secondary Range Axis&quot;));</span>
+<span class="fc" id="L160">        assertNotEquals(plot1, plot2);</span>
+<span class="fc" id="L161">        plot2.setRangeAxis(11, new NumberAxis(&quot;Secondary Range Axis&quot;));</span>
+<span class="fc" id="L162">        assertEquals(plot1, plot2);</span>
+
+        // secondary RangeAxisLocations...
+<span class="fc" id="L165">        plot1.setRangeAxisLocation(11, AxisLocation.TOP_OR_RIGHT);</span>
+<span class="fc" id="L166">        assertNotEquals(plot1, plot2);</span>
+<span class="fc" id="L167">        plot2.setRangeAxisLocation(11, AxisLocation.TOP_OR_RIGHT);</span>
+<span class="fc" id="L168">        assertEquals(plot1, plot2);</span>
+
+        // secondary DatasetDomainAxisMap...
+<span class="fc" id="L171">        plot1.mapDatasetToDomainAxis(11, 11);</span>
+<span class="fc" id="L172">        assertNotEquals(plot1, plot2);</span>
+<span class="fc" id="L173">        plot2.mapDatasetToDomainAxis(11, 11);</span>
+<span class="fc" id="L174">        assertEquals(plot1, plot2);</span>
+
+        // secondaryDatasetRangeAxisMap...
+<span class="fc" id="L177">        plot1.mapDatasetToRangeAxis(11, 11);</span>
+<span class="fc" id="L178">        assertNotEquals(plot1, plot2);</span>
+<span class="fc" id="L179">        plot2.mapDatasetToRangeAxis(11, 11);</span>
+<span class="fc" id="L180">        assertEquals(plot1, plot2);</span>
+
+        // renderer
+<span class="fc" id="L183">        plot1.setRenderer(new DefaultXYItemRenderer());</span>
+<span class="fc" id="L184">        assertNotEquals(plot1, plot2);</span>
+<span class="fc" id="L185">        plot2.setRenderer(new DefaultXYItemRenderer());</span>
+<span class="fc" id="L186">        assertEquals(plot1, plot2);</span>
+
+        // secondary renderers
+<span class="fc" id="L189">        plot1.setRenderer(11, new DefaultXYItemRenderer());</span>
+<span class="fc" id="L190">        assertNotEquals(plot1, plot2);</span>
+<span class="fc" id="L191">        plot2.setRenderer(11, new DefaultXYItemRenderer());</span>
+<span class="fc" id="L192">        assertEquals(plot1, plot2);</span>
+
+        // domainGridlinesVisible
+<span class="fc" id="L195">        plot1.setDomainGridlinesVisible(false);</span>
+<span class="fc" id="L196">        assertNotEquals(plot1, plot2);</span>
+<span class="fc" id="L197">        plot2.setDomainGridlinesVisible(false);</span>
+<span class="fc" id="L198">        assertEquals(plot1, plot2);</span>
+
+        // domainGridlineStroke
+<span class="fc" id="L201">        Stroke stroke = new BasicStroke(2.0f);</span>
+<span class="fc" id="L202">        plot1.setDomainGridlineStroke(stroke);</span>
+<span class="fc" id="L203">        assertNotEquals(plot1, plot2);</span>
+<span class="fc" id="L204">        plot2.setDomainGridlineStroke(stroke);</span>
+<span class="fc" id="L205">        assertEquals(plot1, plot2);</span>
+
+        // domainGridlinePaint
+<span class="fc" id="L208">        plot1.setDomainGridlinePaint(new GradientPaint(1.0f, 2.0f, Color.BLUE,</span>
+                3.0f, 4.0f, Color.RED));
+<span class="fc" id="L210">        assertNotEquals(plot1, plot2);</span>
+<span class="fc" id="L211">        plot2.setDomainGridlinePaint(new GradientPaint(1.0f, 2.0f, Color.BLUE,</span>
+                3.0f, 4.0f, Color.RED));
+<span class="fc" id="L213">        assertEquals(plot1, plot2);</span>
+
+        // rangeGridlinesVisible
+<span class="fc" id="L216">        plot1.setRangeGridlinesVisible(false);</span>
+<span class="fc" id="L217">        assertNotEquals(plot1, plot2);</span>
+<span class="fc" id="L218">        plot2.setRangeGridlinesVisible(false);</span>
+<span class="fc" id="L219">        assertEquals(plot1, plot2);</span>
+
+        // rangeGridlineStroke
+<span class="fc" id="L222">        plot1.setRangeGridlineStroke(stroke);</span>
+<span class="fc" id="L223">        assertNotEquals(plot1, plot2);</span>
+<span class="fc" id="L224">        plot2.setRangeGridlineStroke(stroke);</span>
+<span class="fc" id="L225">        assertEquals(plot1, plot2);</span>
+
+        // rangeGridlinePaint
+<span class="fc" id="L228">        plot1.setRangeGridlinePaint(new GradientPaint(1.0f, 2.0f, Color.GREEN,</span>
+                3.0f, 4.0f, Color.RED));
+<span class="fc" id="L230">        assertNotEquals(plot1, plot2);</span>
+<span class="fc" id="L231">        plot2.setRangeGridlinePaint(new GradientPaint(1.0f, 2.0f, Color.GREEN,</span>
+                3.0f, 4.0f, Color.RED));
+<span class="fc" id="L233">        assertEquals(plot1, plot2);</span>
+
+        // rangeZeroBaselineVisible
+<span class="fc" id="L236">        plot1.setRangeZeroBaselineVisible(true);</span>
+<span class="fc" id="L237">        assertNotEquals(plot1, plot2);</span>
+<span class="fc" id="L238">        plot2.setRangeZeroBaselineVisible(true);</span>
+<span class="fc" id="L239">        assertEquals(plot1, plot2);</span>
+
+        // rangeZeroBaselineStroke
+<span class="fc" id="L242">        plot1.setRangeZeroBaselineStroke(stroke);</span>
+<span class="fc" id="L243">        assertNotEquals(plot1, plot2);</span>
+<span class="fc" id="L244">        plot2.setRangeZeroBaselineStroke(stroke);</span>
+<span class="fc" id="L245">        assertEquals(plot1, plot2);</span>
+
+        // rangeZeroBaselinePaint
+<span class="fc" id="L248">        plot1.setRangeZeroBaselinePaint(new GradientPaint(1.0f, 2.0f, Color.WHITE,</span>
+                3.0f, 4.0f, Color.RED));
+<span class="fc" id="L250">        assertNotEquals(plot1, plot2);</span>
+<span class="fc" id="L251">        plot2.setRangeZeroBaselinePaint(new GradientPaint(1.0f, 2.0f, Color.WHITE,</span>
+                3.0f, 4.0f, Color.RED));
+<span class="fc" id="L253">        assertEquals(plot1, plot2);</span>
+
+        // rangeCrosshairVisible
+<span class="fc" id="L256">        plot1.setRangeCrosshairVisible(true);</span>
+<span class="fc" id="L257">        assertNotEquals(plot1, plot2);</span>
+<span class="fc" id="L258">        plot2.setRangeCrosshairVisible(true);</span>
+<span class="fc" id="L259">        assertEquals(plot1, plot2);</span>
+
+        // rangeCrosshairValue
+<span class="fc" id="L262">        plot1.setRangeCrosshairValue(100.0);</span>
+<span class="fc" id="L263">        assertNotEquals(plot1, plot2);</span>
+<span class="fc" id="L264">        plot2.setRangeCrosshairValue(100.0);</span>
+<span class="fc" id="L265">        assertEquals(plot1, plot2);</span>
+
+        // rangeCrosshairStroke
+<span class="fc" id="L268">        plot1.setRangeCrosshairStroke(stroke);</span>
+<span class="fc" id="L269">        assertNotEquals(plot1, plot2);</span>
+<span class="fc" id="L270">        plot2.setRangeCrosshairStroke(stroke);</span>
+<span class="fc" id="L271">        assertEquals(plot1, plot2);</span>
+
+        // rangeCrosshairPaint
+<span class="fc" id="L274">        plot1.setRangeCrosshairPaint(new GradientPaint(1.0f, 2.0f, Color.PINK,</span>
+                3.0f, 4.0f, Color.RED));
+<span class="fc" id="L276">        assertNotEquals(plot1, plot2);</span>
+<span class="fc" id="L277">        plot2.setRangeCrosshairPaint(new GradientPaint(1.0f, 2.0f, Color.PINK,</span>
+                3.0f, 4.0f, Color.RED));
+<span class="fc" id="L279">        assertEquals(plot1, plot2);</span>
+
+        // rangeCrosshairLockedOnData
+<span class="fc" id="L282">        plot1.setRangeCrosshairLockedOnData(false);</span>
+<span class="fc" id="L283">        assertNotEquals(plot1, plot2);</span>
+<span class="fc" id="L284">        plot2.setRangeCrosshairLockedOnData(false);</span>
+<span class="fc" id="L285">        assertEquals(plot1, plot2);</span>
+
+        // range markers
+<span class="fc" id="L288">        plot1.addRangeMarker(new ValueMarker(4.0));</span>
+<span class="fc" id="L289">        assertNotEquals(plot1, plot2);</span>
+<span class="fc" id="L290">        plot2.addRangeMarker(new ValueMarker(4.0));</span>
+<span class="fc" id="L291">        assertEquals(plot1, plot2);</span>
+
+        // secondary range markers
+<span class="fc" id="L294">        plot1.addRangeMarker(1, new ValueMarker(4.0), Layer.FOREGROUND);</span>
+<span class="fc" id="L295">        assertNotEquals(plot1, plot2);</span>
+<span class="fc" id="L296">        plot2.addRangeMarker(1, new ValueMarker(4.0), Layer.FOREGROUND);</span>
+<span class="fc" id="L297">        assertEquals(plot1, plot2);</span>
+
+<span class="fc" id="L299">        plot1.addRangeMarker(1, new ValueMarker(99.0), Layer.BACKGROUND);</span>
+<span class="fc" id="L300">        assertNotEquals(plot1, plot2);</span>
+<span class="fc" id="L301">        plot2.addRangeMarker(1, new ValueMarker(99.0), Layer.BACKGROUND);</span>
+<span class="fc" id="L302">        assertEquals(plot1, plot2);</span>
+
+        // fixed legend items
+<span class="fc" id="L305">        plot1.setFixedLegendItems(new LegendItemCollection());</span>
+<span class="fc" id="L306">        assertNotEquals(plot1, plot2);</span>
+<span class="fc" id="L307">        plot2.setFixedLegendItems(new LegendItemCollection());</span>
+<span class="fc" id="L308">        assertEquals(plot1, plot2);</span>
+
+        // weight
+<span class="fc" id="L311">        plot1.setWeight(3);</span>
+<span class="fc" id="L312">        assertNotEquals(plot1, plot2);</span>
+<span class="fc" id="L313">        plot2.setWeight(3);</span>
+<span class="fc" id="L314">        assertEquals(plot1, plot2);</span>
+
+        // quadrant origin
+<span class="fc" id="L317">        plot1.setQuadrantOrigin(new Point2D.Double(12.3, 45.6));</span>
+<span class="fc" id="L318">        assertNotEquals(plot1, plot2);</span>
+<span class="fc" id="L319">        plot2.setQuadrantOrigin(new Point2D.Double(12.3, 45.6));</span>
+<span class="fc" id="L320">        assertEquals(plot1, plot2);</span>
+
+        // quadrant paint
+<span class="fc" id="L323">        plot1.setQuadrantPaint(0, new GradientPaint(1.0f, 2.0f, Color.RED,</span>
+                3.0f, 4.0f, Color.BLUE));
+<span class="fc" id="L325">        assertNotEquals(plot1, plot2);</span>
+<span class="fc" id="L326">        plot2.setQuadrantPaint(0, new GradientPaint(1.0f, 2.0f, Color.RED,</span>
+                3.0f, 4.0f, Color.BLUE));
+<span class="fc" id="L328">        assertEquals(plot1, plot2);</span>
+<span class="fc" id="L329">        plot1.setQuadrantPaint(1, new GradientPaint(2.0f, 3.0f, Color.RED,</span>
+                4.0f, 5.0f, Color.BLUE));
+<span class="fc" id="L331">        assertNotEquals(plot1, plot2);</span>
+<span class="fc" id="L332">        plot2.setQuadrantPaint(1, new GradientPaint(2.0f, 3.0f, Color.RED,</span>
+                4.0f, 5.0f, Color.BLUE));
+<span class="fc" id="L334">        assertEquals(plot1, plot2);</span>
+<span class="fc" id="L335">        plot1.setQuadrantPaint(2, new GradientPaint(3.0f, 4.0f, Color.RED,</span>
+                5.0f, 6.0f, Color.BLUE));
+<span class="fc" id="L337">        assertNotEquals(plot1, plot2);</span>
+<span class="fc" id="L338">        plot2.setQuadrantPaint(2, new GradientPaint(3.0f, 4.0f, Color.RED,</span>
+                5.0f, 6.0f, Color.BLUE));
+<span class="fc" id="L340">        assertEquals(plot1, plot2);</span>
+<span class="fc" id="L341">        plot1.setQuadrantPaint(3, new GradientPaint(4.0f, 5.0f, Color.RED,</span>
+                6.0f, 7.0f, Color.BLUE));
+<span class="fc" id="L343">        assertNotEquals(plot1, plot2);</span>
+<span class="fc" id="L344">        plot2.setQuadrantPaint(3, new GradientPaint(4.0f, 5.0f, Color.RED,</span>
+                6.0f, 7.0f, Color.BLUE));
+<span class="fc" id="L346">        assertEquals(plot1, plot2);</span>
+
+<span class="fc" id="L348">        plot1.setDomainTickBandPaint(Color.RED);</span>
+<span class="fc" id="L349">        assertNotEquals(plot1, plot2);</span>
+<span class="fc" id="L350">        plot2.setDomainTickBandPaint(Color.RED);</span>
+<span class="fc" id="L351">        assertEquals(plot1, plot2);</span>
+
+<span class="fc" id="L353">        plot1.setRangeTickBandPaint(Color.BLUE);</span>
+<span class="fc" id="L354">        assertNotEquals(plot1, plot2);</span>
+<span class="fc" id="L355">        plot2.setRangeTickBandPaint(Color.BLUE);</span>
+<span class="fc" id="L356">        assertEquals(plot1, plot2);</span>
+
+<span class="fc" id="L358">        plot1.setDomainMinorGridlinesVisible(true);</span>
+<span class="fc" id="L359">        assertNotEquals(plot1, plot2);</span>
+<span class="fc" id="L360">        plot2.setDomainMinorGridlinesVisible(true);</span>
+<span class="fc" id="L361">        assertEquals(plot1, plot2);</span>
+
+<span class="fc" id="L363">        plot1.setDomainMinorGridlinePaint(Color.RED);</span>
+<span class="fc" id="L364">        assertNotEquals(plot1, plot2);</span>
+<span class="fc" id="L365">        plot2.setDomainMinorGridlinePaint(Color.RED);</span>
+<span class="fc" id="L366">        assertEquals(plot1, plot2);</span>
+
+<span class="fc" id="L368">        plot1.setDomainGridlineStroke(new BasicStroke(1.1f));</span>
+<span class="fc" id="L369">        assertNotEquals(plot1, plot2);</span>
+<span class="fc" id="L370">        plot2.setDomainGridlineStroke(new BasicStroke(1.1f));</span>
+<span class="fc" id="L371">        assertEquals(plot1, plot2);</span>
+
+<span class="fc" id="L373">        plot1.setRangeMinorGridlinesVisible(true);</span>
+<span class="fc" id="L374">        assertNotEquals(plot1, plot2);</span>
+<span class="fc" id="L375">        plot2.setRangeMinorGridlinesVisible(true);</span>
+<span class="fc" id="L376">        assertEquals(plot1, plot2);</span>
+
+<span class="fc" id="L378">        plot1.setRangeMinorGridlinePaint(Color.BLUE);</span>
+<span class="fc" id="L379">        assertNotEquals(plot1, plot2);</span>
+<span class="fc" id="L380">        plot2.setRangeMinorGridlinePaint(Color.BLUE);</span>
+<span class="fc" id="L381">        assertEquals(plot1, plot2);</span>
+
+<span class="fc" id="L383">        plot1.setRangeMinorGridlineStroke(new BasicStroke(1.23f));</span>
+<span class="fc" id="L384">        assertNotEquals(plot1, plot2);</span>
+<span class="fc" id="L385">        plot2.setRangeMinorGridlineStroke(new BasicStroke(1.23f));</span>
+<span class="fc" id="L386">        assertEquals(plot1, plot2);</span>
+
+<span class="fc" id="L388">        List&lt;Integer&gt; axisIndices = Arrays.asList(new Integer[] {0, 1});</span>
+<span class="fc" id="L389">        plot1.mapDatasetToDomainAxes(0, axisIndices);</span>
+<span class="fc" id="L390">        assertNotEquals(plot1, plot2);</span>
+<span class="fc" id="L391">        plot2.mapDatasetToDomainAxes(0, axisIndices);</span>
+<span class="fc" id="L392">        assertEquals(plot1, plot2);</span>
+
+<span class="fc" id="L394">        plot1.mapDatasetToRangeAxes(0, axisIndices);</span>
+<span class="fc" id="L395">        assertNotEquals(plot1, plot2);</span>
+<span class="fc" id="L396">        plot2.mapDatasetToRangeAxes(0, axisIndices);</span>
+<span class="fc" id="L397">        assertEquals(plot1, plot2);</span>
+        
+        // shadowGenerator
+<span class="fc" id="L400">        plot1.setShadowGenerator(new DefaultShadowGenerator(5, Color.GRAY,</span>
+                0.6f, 4, -Math.PI / 4));
+<span class="fc" id="L402">        assertNotEquals(plot1, plot2);</span>
+<span class="fc" id="L403">        plot2.setShadowGenerator(new DefaultShadowGenerator(5, Color.GRAY,</span>
+                0.6f, 4, -Math.PI / 4));
+<span class="fc" id="L405">        assertEquals(plot1, plot2);</span>
+
+<span class="fc" id="L407">        plot1.setShadowGenerator(null);</span>
+<span class="fc" id="L408">        assertNotEquals(plot1, plot2);</span>
+<span class="fc" id="L409">        plot2.setShadowGenerator(null);</span>
+<span class="fc" id="L410">        assertEquals(plot1, plot2);</span>
+
+<span class="fc" id="L412">        LegendItemCollection lic1 = new LegendItemCollection();</span>
+<span class="fc" id="L413">        lic1.add(new LegendItem(&quot;XYZ&quot;, Color.RED));</span>
+<span class="fc" id="L414">        plot1.setFixedLegendItems(lic1);</span>
+<span class="fc" id="L415">        assertNotEquals(plot1, plot2);</span>
+<span class="fc" id="L416">        LegendItemCollection lic2 = new LegendItemCollection();</span>
+<span class="fc" id="L417">        lic2.add(new LegendItem(&quot;XYZ&quot;, Color.RED));</span>
+<span class="fc" id="L418">        plot2.setFixedLegendItems(lic2);</span>
+<span class="fc" id="L419">        assertEquals(plot1, plot2);</span>
+<span class="fc" id="L420">    }</span>
+
+    /**
+     * This test covers a flaw in the ObjectList equals() method.
+     */
+    @Test
+    public void testEquals_ObjectList() {
+<span class="fc" id="L427">        XYPlot&lt;String&gt; p1 = new XYPlot&lt;&gt;();</span>
+<span class="fc" id="L428">        p1.setDomainAxis(new NumberAxis(&quot;A&quot;));</span>
+<span class="fc" id="L429">        XYPlot&lt;String&gt; p2 = new XYPlot&lt;&gt;();</span>
+<span class="fc" id="L430">        p2.setDomainAxis(new NumberAxis(&quot;A&quot;));</span>
+<span class="fc" id="L431">        assertEquals(p1, p2);</span>
+<span class="fc" id="L432">        p2.setDomainAxis(1, new NumberAxis(&quot;B&quot;));</span>
+<span class="fc" id="L433">        assertNotEquals(p1, p2);</span>
+<span class="fc" id="L434">    }</span>
+    
+    /**
+     * This test covers a flaw in the ObjectList equals() method.
+     */
+    @Test
+    public void testEquals_ObjectList2() {
+<span class="fc" id="L441">        XYPlot&lt;String&gt; p1 = new XYPlot&lt;&gt;();</span>
+<span class="fc" id="L442">        p1.setDomainAxisLocation(AxisLocation.BOTTOM_OR_RIGHT);</span>
+<span class="fc" id="L443">        XYPlot&lt;String&gt; p2 = new XYPlot&lt;&gt;();</span>
+<span class="fc" id="L444">        p2.setDomainAxisLocation(AxisLocation.BOTTOM_OR_RIGHT);</span>
+<span class="fc" id="L445">        assertEquals(p1, p2);</span>
+<span class="fc" id="L446">        p2.setDomainAxisLocation(1, AxisLocation.TOP_OR_LEFT);</span>
+<span class="fc" id="L447">        assertNotEquals(p1, p2);</span>
+<span class="fc" id="L448">    }</span>
+
+    /**
+     * This test covers a flaw in the ObjectList equals() method.
+     */
+    @Test
+    public void testEquals_ObjectList3() {
+<span class="fc" id="L455">        XYPlot&lt;String&gt; p1 = new XYPlot&lt;&gt;();</span>
+<span class="fc" id="L456">        p1.setRangeAxis(new NumberAxis(&quot;A&quot;));</span>
+<span class="fc" id="L457">        XYPlot&lt;String&gt; p2 = new XYPlot&lt;&gt;();</span>
+<span class="fc" id="L458">        p2.setRangeAxis(new NumberAxis(&quot;A&quot;));</span>
+<span class="fc" id="L459">        assertEquals(p1, p2);</span>
+<span class="fc" id="L460">        p2.setRangeAxis(1, new NumberAxis(&quot;B&quot;));</span>
+<span class="fc" id="L461">        assertNotEquals(p1, p2);</span>
+<span class="fc" id="L462">    }</span>
+    
+    /**
+     * This test covers a flaw in the ObjectList equals() method.
+     */
+    @Test
+    public void testEquals_ObjectList4() {
+<span class="fc" id="L469">        XYPlot&lt;String&gt; p1 = new XYPlot&lt;&gt;();</span>
+<span class="fc" id="L470">        p1.setRangeAxisLocation(AxisLocation.BOTTOM_OR_RIGHT);</span>
+<span class="fc" id="L471">        XYPlot&lt;String&gt; p2 = new XYPlot&lt;&gt;();</span>
+<span class="fc" id="L472">        p2.setRangeAxisLocation(AxisLocation.BOTTOM_OR_RIGHT);</span>
+<span class="fc" id="L473">        assertEquals(p1, p2);</span>
+<span class="fc" id="L474">        p2.setRangeAxisLocation(1, AxisLocation.TOP_OR_LEFT);</span>
+<span class="fc" id="L475">        assertNotEquals(p1, p2);</span>
+<span class="fc" id="L476">    }</span>
+
+    /**
+     * This test covers a flaw in the ObjectList equals() method.
+     */
+    @Test
+    public void testEquals_ObjectList5() {
+<span class="fc" id="L483">        XYPlot&lt;String&gt; p1 = new XYPlot&lt;&gt;();</span>
+<span class="fc" id="L484">        p1.setRenderer(new XYBarRenderer());</span>
+<span class="fc" id="L485">        XYPlot&lt;String&gt; p2 = new XYPlot&lt;&gt;();</span>
+<span class="fc" id="L486">        p2.setRenderer(new XYBarRenderer());</span>
+<span class="fc" id="L487">        assertEquals(p1, p2);</span>
+<span class="fc" id="L488">        p2.setRenderer(1, new XYLineAndShapeRenderer());</span>
+<span class="fc" id="L489">        assertNotEquals(p1, p2);</span>
+<span class="fc" id="L490">    }</span>
+
+    /**
+     * Confirm that basic cloning works.
+     * 
+     * @throws java.lang.CloneNotSupportedException
+     */
+    @Test
+    public void testCloning() throws CloneNotSupportedException {
+<span class="fc" id="L499">        XYPlot&lt;String&gt; p1 = new XYPlot&lt;&gt;();</span>
+<span class="fc" id="L500">        XYPlot&lt;String&gt; p2 = CloneUtils.clone(p1);</span>
+<span class="fc" id="L501">        assertNotSame(p1, p2);</span>
+<span class="fc" id="L502">        assertSame(p1.getClass(), p2.getClass());</span>
+<span class="fc" id="L503">        assertEquals(p1, p2);</span>
+<span class="fc" id="L504">    }</span>
+
+    /**
+     * Tests cloning for a more complex plot.
+     * @throws java.lang.CloneNotSupportedException
+     */
+    @Test
+    public void testCloning2() throws CloneNotSupportedException {
+<span class="fc" id="L512">        XYPlot&lt;String&gt; p1 = new XYPlot&lt;&gt;(null, new NumberAxis(&quot;Domain Axis&quot;),</span>
+                new NumberAxis(&quot;Range Axis&quot;), new StandardXYItemRenderer());
+<span class="fc" id="L514">        p1.setRangeAxis(1, new NumberAxis(&quot;Range Axis 2&quot;));</span>
+<span class="fc" id="L515">        List&lt;Integer&gt; axisIndices = Arrays.asList(new Integer[] {0, 1});</span>
+<span class="fc" id="L516">        p1.mapDatasetToDomainAxes(0, axisIndices);</span>
+<span class="fc" id="L517">        p1.mapDatasetToRangeAxes(0, axisIndices);</span>
+<span class="fc" id="L518">        p1.setRenderer(1, new XYBarRenderer());</span>
+<span class="fc" id="L519">        XYPlot&lt;String&gt; p2 = CloneUtils.clone(p1);</span>
+<span class="fc" id="L520">        assertNotSame(p1, p2);</span>
+<span class="fc" id="L521">        assertSame(p1.getClass(), p2.getClass());</span>
+<span class="fc" id="L522">        assertEquals(p1, p2);</span>
+<span class="fc" id="L523">    }</span>
+
+    /**
+     * Tests cloning for a plot where the fixed legend items have been
+     * specified.
+     * @throws java.lang.CloneNotSupportedException
+     */
+    @Test
+    public void testCloning3() throws CloneNotSupportedException {
+<span class="fc" id="L532">        XYPlot&lt;String&gt; p1 = new XYPlot&lt;&gt;(null, new NumberAxis(&quot;Domain Axis&quot;),</span>
+                new NumberAxis(&quot;Range Axis&quot;), new StandardXYItemRenderer());
+<span class="fc" id="L534">        LegendItemCollection c1 = new LegendItemCollection();</span>
+<span class="fc" id="L535">        p1.setFixedLegendItems(c1);</span>
+<span class="fc" id="L536">        XYPlot&lt;String&gt; p2 = CloneUtils.clone(p1);</span>
+<span class="fc" id="L537">        assertNotSame(p1, p2);</span>
+<span class="fc" id="L538">        assertSame(p1.getClass(), p2.getClass());</span>
+<span class="fc" id="L539">        assertEquals(p1, p2);</span>
+
+        // verify independence of fixed legend item collection
+<span class="fc" id="L542">        c1.add(new LegendItem(&quot;X&quot;));</span>
+<span class="fc" id="L543">        assertNotEquals(p1, p2);</span>
+<span class="fc" id="L544">    }</span>
+
+    /**
+     * Tests cloning to ensure that the cloned plot is registered as a listener
+     * on the cloned renderer.
+     * @throws java.lang.CloneNotSupportedException
+     */
+    @Test
+    public void testCloning4() throws CloneNotSupportedException {
+<span class="fc" id="L553">        XYLineAndShapeRenderer r1 = new XYLineAndShapeRenderer();</span>
+<span class="fc" id="L554">        XYPlot&lt;String&gt; p1 = new XYPlot&lt;&gt;(null, new NumberAxis(&quot;Domain Axis&quot;),</span>
+                new NumberAxis(&quot;Range Axis&quot;), r1);
+<span class="fc" id="L556">        XYPlot&lt;String&gt; p2 = CloneUtils.clone(p1);</span>
+<span class="fc" id="L557">        assertNotSame(p1, p2);</span>
+<span class="fc" id="L558">        assertSame(p1.getClass(), p2.getClass());</span>
+<span class="fc" id="L559">        assertEquals(p1, p2);</span>
+
+        // verify that the plot is listening to the cloned renderer
+<span class="fc" id="L562">        XYLineAndShapeRenderer r2 = (XYLineAndShapeRenderer) p2.getRenderer();</span>
+<span class="fc" id="L563">        assertTrue(r2.hasListener(p2));</span>
+<span class="fc" id="L564">    }</span>
+
+    /**
+     * Confirm that cloning captures the quadrantOrigin field.
+     * @throws java.lang.CloneNotSupportedException
+     */
+    @Test
+    public void testCloning_QuadrantOrigin() throws CloneNotSupportedException {
+<span class="fc" id="L572">        XYPlot&lt;String&gt; p1 = new XYPlot&lt;&gt;();</span>
+<span class="fc" id="L573">        Point2D p = new Point2D.Double(1.2, 3.4);</span>
+<span class="fc" id="L574">        p1.setQuadrantOrigin(p);</span>
+<span class="fc" id="L575">        XYPlot&lt;String&gt; p2 = CloneUtils.clone(p1);</span>
+<span class="fc" id="L576">        assertNotSame(p1, p2);</span>
+<span class="fc" id="L577">        assertSame(p1.getClass(), p2.getClass());</span>
+<span class="fc" id="L578">        assertEquals(p1, p2);</span>
+<span class="fc" id="L579">        assertNotSame(p2.getQuadrantOrigin(), p);</span>
+<span class="fc" id="L580">    }</span>
+
+    /**
+     * Confirm that cloning captures the quadrantOrigin field.
+     * @throws java.lang.CloneNotSupportedException
+     */
+    @Test
+    public void testCloning_QuadrantPaint() throws CloneNotSupportedException {
+<span class="fc" id="L588">        XYPlot&lt;String&gt; p1 = new XYPlot&lt;&gt;();</span>
+<span class="fc" id="L589">        p1.setQuadrantPaint(3, new GradientPaint(1.0f, 2.0f, Color.RED,</span>
+                3.0f, 4.0f, Color.BLUE));
+<span class="fc" id="L591">        XYPlot&lt;String&gt; p2 = CloneUtils.clone(p1);</span>
+<span class="fc" id="L592">        assertNotSame(p1, p2);</span>
+<span class="fc" id="L593">        assertSame(p1.getClass(), p2.getClass());</span>
+<span class="fc" id="L594">        assertEquals(p1, p2);</span>
+
+        // check for independence
+<span class="fc" id="L597">        p1.setQuadrantPaint(1, Color.RED);</span>
+<span class="fc" id="L598">        assertNotEquals(p1, p2);</span>
+<span class="fc" id="L599">        p2.setQuadrantPaint(1, Color.RED);</span>
+<span class="fc" id="L600">        assertEquals(p1, p2);</span>
+<span class="fc" id="L601">    }</span>
+
+    /**
+     * Renderers that belong to the plot are being cloned but they are
+     * retaining a reference to the original plot.
+     * @throws java.lang.CloneNotSupportedException
+     */
+    @Test
+    public void testBug2817504() throws CloneNotSupportedException {
+<span class="fc" id="L610">        XYPlot&lt;String&gt; p1 = new XYPlot&lt;&gt;();</span>
+<span class="fc" id="L611">        XYLineAndShapeRenderer r1 = new XYLineAndShapeRenderer();</span>
+<span class="fc" id="L612">        p1.setRenderer(r1);</span>
+<span class="fc" id="L613">        XYPlot&lt;String&gt; p2 = CloneUtils.clone(p1);</span>
+<span class="fc" id="L614">        assertNotSame(p1, p2);</span>
+<span class="fc" id="L615">        assertSame(p1.getClass(), p2.getClass());</span>
+<span class="fc" id="L616">        assertEquals(p1, p2);</span>
+
+        // check for independence
+<span class="fc" id="L619">        XYLineAndShapeRenderer r2 = (XYLineAndShapeRenderer) p2.getRenderer();</span>
+<span class="fc" id="L620">        assertSame(r2.getPlot(), p2);</span>
+<span class="fc" id="L621">    }</span>
+
+    /**
+     * Tests the independence of the clones.
+     * @throws java.lang.CloneNotSupportedException
+     */
+    @Test
+    public void testCloneIndependence() throws CloneNotSupportedException {
+<span class="fc" id="L629">        XYPlot&lt;String&gt; p1 = new XYPlot&lt;&gt;(null, new NumberAxis(&quot;Domain Axis&quot;),</span>
+                new NumberAxis(&quot;Range Axis&quot;), new StandardXYItemRenderer());
+<span class="fc" id="L631">        p1.setDomainAxis(1, new NumberAxis(&quot;Domain Axis 2&quot;));</span>
+<span class="fc" id="L632">        p1.setDomainAxisLocation(1, AxisLocation.BOTTOM_OR_LEFT);</span>
+<span class="fc" id="L633">        p1.setRangeAxis(1, new NumberAxis(&quot;Range Axis 2&quot;));</span>
+<span class="fc" id="L634">        p1.setRangeAxisLocation(1, AxisLocation.TOP_OR_RIGHT);</span>
+<span class="fc" id="L635">        p1.setRenderer(1, new XYBarRenderer());</span>
+<span class="fc" id="L636">        XYPlot&lt;String&gt; p2 = CloneUtils.clone(p1);</span>
+<span class="fc" id="L637">        assertEquals(p1, p2);</span>
+
+<span class="fc" id="L639">        p1.getDomainAxis().setLabel(&quot;Label&quot;);</span>
+<span class="fc" id="L640">        assertNotEquals(p1, p2);</span>
+<span class="fc" id="L641">        p2.getDomainAxis().setLabel(&quot;Label&quot;);</span>
+<span class="fc" id="L642">        assertEquals(p1, p2);</span>
+
+<span class="fc" id="L644">        p1.getDomainAxis(1).setLabel(&quot;S1&quot;);</span>
+<span class="fc" id="L645">        assertNotEquals(p1, p2);</span>
+<span class="fc" id="L646">        p2.getDomainAxis(1).setLabel(&quot;S1&quot;);</span>
+<span class="fc" id="L647">        assertEquals(p1, p2);</span>
+
+<span class="fc" id="L649">        p1.setDomainAxisLocation(1, AxisLocation.TOP_OR_RIGHT);</span>
+<span class="fc" id="L650">        assertNotEquals(p1, p2);</span>
+<span class="fc" id="L651">        p2.setDomainAxisLocation(1, AxisLocation.TOP_OR_RIGHT);</span>
+<span class="fc" id="L652">        assertEquals(p1, p2);</span>
+
+<span class="fc" id="L654">        p1.mapDatasetToDomainAxis(2, 1);</span>
+<span class="fc" id="L655">        assertNotEquals(p1, p2);</span>
+<span class="fc" id="L656">        p2.mapDatasetToDomainAxis(2, 1);</span>
+<span class="fc" id="L657">        assertEquals(p1, p2);</span>
+
+<span class="fc" id="L659">        p1.getRangeAxis().setLabel(&quot;Label&quot;);</span>
+<span class="fc" id="L660">        assertNotEquals(p1, p2);</span>
+<span class="fc" id="L661">        p2.getRangeAxis().setLabel(&quot;Label&quot;);</span>
+<span class="fc" id="L662">        assertEquals(p1, p2);</span>
+
+<span class="fc" id="L664">        p1.getRangeAxis(1).setLabel(&quot;S1&quot;);</span>
+<span class="fc" id="L665">        assertNotEquals(p1, p2);</span>
+<span class="fc" id="L666">        p2.getRangeAxis(1).setLabel(&quot;S1&quot;);</span>
+<span class="fc" id="L667">        assertEquals(p1, p2);</span>
+
+<span class="fc" id="L669">        p1.setRangeAxisLocation(1, AxisLocation.TOP_OR_LEFT);</span>
+<span class="fc" id="L670">        assertNotEquals(p1, p2);</span>
+<span class="fc" id="L671">        p2.setRangeAxisLocation(1, AxisLocation.TOP_OR_LEFT);</span>
+<span class="fc" id="L672">        assertEquals(p1, p2);</span>
+
+<span class="fc" id="L674">        p1.mapDatasetToRangeAxis(2, 1);</span>
+<span class="fc" id="L675">        assertNotEquals(p1, p2);</span>
+<span class="fc" id="L676">        p2.mapDatasetToRangeAxis(2, 1);</span>
+<span class="fc" id="L677">        assertEquals(p1, p2);</span>
+
+<span class="fc" id="L679">    }</span>
+
+    /**
+     * Setting a null renderer should be allowed, but is generating a null
+     * pointer exception in 0.9.7.
+     */
+    @Test
+    public void testSetNullRenderer() {
+<span class="fc" id="L687">        boolean failed = false;</span>
+        try {
+<span class="fc" id="L689">            XYPlot&lt;String&gt; plot = new XYPlot&lt;&gt;(null, new NumberAxis(&quot;X&quot;),</span>
+                    new NumberAxis(&quot;Y&quot;), null);
+<span class="fc" id="L691">            plot.setRenderer(null);</span>
+        }
+<span class="nc" id="L693">        catch (Exception e) {</span>
+<span class="nc" id="L694">            failed = true;</span>
+<span class="fc" id="L695">        }</span>
+<span class="fc" id="L696">        assertFalse(failed);</span>
+<span class="fc" id="L697">    }</span>
+
+    /**
+     * Serialize an instance, restore it, and check for equality.
+     */
+    @Test
+    public void testSerialization1() {
+<span class="fc" id="L704">        XYDataset&lt;String&gt; data = new XYSeriesCollection&lt;&gt;();</span>
+<span class="fc" id="L705">        NumberAxis domainAxis = new NumberAxis(&quot;Domain&quot;);</span>
+<span class="fc" id="L706">        NumberAxis rangeAxis = new NumberAxis(&quot;Range&quot;);</span>
+<span class="fc" id="L707">        StandardXYItemRenderer renderer = new StandardXYItemRenderer();</span>
+<span class="fc" id="L708">        XYPlot&lt;String&gt; p1 = new XYPlot&lt;&gt;(data, domainAxis, rangeAxis, renderer);</span>
+<span class="fc" id="L709">        XYPlot&lt;String&gt; p2 = TestUtils.serialised(p1);</span>
+<span class="fc" id="L710">        assertEquals(p1, p2);</span>
+<span class="fc" id="L711">    }</span>
+
+    /**
+     * Serialize an instance, restore it, and check for equality.  This test
+     * uses a {@link DateAxis} and a {@link StandardXYToolTipGenerator}.
+     */
+    @Test
+    public void testSerialization2() {
+<span class="fc" id="L719">        IntervalXYDataset&lt;String&gt; data1 = createDataset1();</span>
+<span class="fc" id="L720">        XYItemRenderer renderer1 = new XYBarRenderer(0.20);</span>
+<span class="fc" id="L721">        renderer1.setDefaultToolTipGenerator(</span>
+<span class="fc" id="L722">                StandardXYToolTipGenerator.getTimeSeriesInstance());</span>
+<span class="fc" id="L723">        XYPlot&lt;String&gt; p1 = new XYPlot&lt;&gt;(data1, new DateAxis(&quot;Date&quot;), null, renderer1);</span>
+<span class="fc" id="L724">        XYPlot&lt;String&gt; p2 = TestUtils.serialised(p1);</span>
+<span class="fc" id="L725">        assertEquals(p1, p2);</span>
+<span class="fc" id="L726">    }</span>
+
+    /**
+     * Problem to reproduce a bug in serialization.  The bug (first reported
+     * against the {@link org.jfree.chart.plot.CategoryPlot} class) is a null
+     * pointer exception that occurs when drawing a plot after deserialization.
+     * It is caused by four temporary storage structures (axesAtTop,
+     * axesAtBottom, axesAtLeft and axesAtRight - all initialized as empty
+     * lists in the constructor) not being initialized by the readObject()
+     * method following deserialization.  This test has been written to
+     * reproduce the bug (now fixed).
+     */
+    @Test
+    public void testSerialization3() {
+
+<span class="fc" id="L741">        XYSeriesCollection&lt;String&gt; dataset = new XYSeriesCollection&lt;&gt;();</span>
+<span class="fc" id="L742">        JFreeChart chart = ChartFactory.createXYLineChart(&quot;Test Chart&quot;,</span>
+                &quot;Domain Axis&quot;, &quot;Range Axis&quot;, dataset);
+<span class="fc" id="L744">        JFreeChart chart2 = TestUtils.serialised(chart);</span>
+<span class="fc" id="L745">        assertEquals(chart, chart2);</span>
+        try {
+<span class="fc" id="L747">            chart2.createBufferedImage(300, 200);</span>
+        }
+<span class="nc" id="L749">        catch (Exception e) {</span>
+<span class="nc" id="L750">            fail(&quot;No exception should be thrown.&quot;);</span>
+<span class="fc" id="L751">        }</span>
+<span class="fc" id="L752">    }</span>
+
+    /**
+     * A test to reproduce a bug in serialization: the domain and/or range
+     * markers for a plot are not being serialized.
+     */
+    @Test
+    public void testSerialization4() {
+
+<span class="fc" id="L761">        XYSeriesCollection&lt;String&gt; dataset = new XYSeriesCollection&lt;&gt;();</span>
+<span class="fc" id="L762">        JFreeChart chart = ChartFactory.createXYLineChart(&quot;Test Chart&quot;,</span>
+                &quot;Domain Axis&quot;, &quot;Range Axis&quot;, dataset);
+<span class="fc" id="L764">        XYPlot&lt;?&gt; plot = (XYPlot) chart.getPlot();</span>
+<span class="fc" id="L765">        plot.addDomainMarker(new ValueMarker(1.0), Layer.FOREGROUND);</span>
+<span class="fc" id="L766">        plot.addDomainMarker(new IntervalMarker(2.0, 3.0), Layer.BACKGROUND);</span>
+<span class="fc" id="L767">        plot.addRangeMarker(new ValueMarker(4.0), Layer.FOREGROUND);</span>
+<span class="fc" id="L768">        plot.addRangeMarker(new IntervalMarker(5.0, 6.0), Layer.BACKGROUND);</span>
+<span class="fc" id="L769">        JFreeChart chart2 = TestUtils.serialised(chart);</span>
+<span class="fc" id="L770">        assertEquals(chart, chart2);</span>
+        try {
+<span class="fc" id="L772">            chart2.createBufferedImage(300, 200);</span>
+        }
+<span class="nc" id="L774">        catch (Exception e) {</span>
+<span class="nc" id="L775">            fail(&quot;No exception should be thrown.&quot;);</span>
+<span class="fc" id="L776">        }</span>
+<span class="fc" id="L777">    }</span>
+
+    /**
+     * Tests a bug where the plot is no longer registered as a listener
+     * with the dataset(s) and axes after deserialization.  See patch 1209475
+     * at SourceForge.
+     */
+    @Test
+    public void testSerialization5() {
+<span class="fc" id="L786">        XYSeriesCollection&lt;String&gt; dataset1 = new XYSeriesCollection&lt;&gt;();</span>
+<span class="fc" id="L787">        NumberAxis domainAxis1 = new NumberAxis(&quot;Domain 1&quot;);</span>
+<span class="fc" id="L788">        NumberAxis rangeAxis1 = new NumberAxis(&quot;Range 1&quot;);</span>
+<span class="fc" id="L789">        StandardXYItemRenderer renderer1 = new StandardXYItemRenderer();</span>
+<span class="fc" id="L790">        XYPlot&lt;String&gt; p1 = new XYPlot&lt;&gt;(dataset1, domainAxis1, rangeAxis1, renderer1);</span>
+<span class="fc" id="L791">        NumberAxis domainAxis2 = new NumberAxis(&quot;Domain 2&quot;);</span>
+<span class="fc" id="L792">        NumberAxis rangeAxis2 = new NumberAxis(&quot;Range 2&quot;);</span>
+<span class="fc" id="L793">        StandardXYItemRenderer renderer2 = new StandardXYItemRenderer();</span>
+<span class="fc" id="L794">        XYSeriesCollection&lt;String&gt; dataset2 = new XYSeriesCollection&lt;&gt;();</span>
+<span class="fc" id="L795">        p1.setDataset(1, dataset2);</span>
+<span class="fc" id="L796">        p1.setDomainAxis(1, domainAxis2);</span>
+<span class="fc" id="L797">        p1.setRangeAxis(1, rangeAxis2);</span>
+<span class="fc" id="L798">        p1.setRenderer(1, renderer2);</span>
+<span class="fc" id="L799">        XYPlot&lt;String&gt; p2 = TestUtils.serialised(p1);</span>
+<span class="fc" id="L800">        assertEquals(p1, p2);</span>
+
+        // now check that all datasets, renderers and axes are being listened
+        // too...
+<span class="fc" id="L804">        NumberAxis domainAxisA = (NumberAxis) p2.getDomainAxis(0);</span>
+<span class="fc" id="L805">        NumberAxis rangeAxisA = (NumberAxis) p2.getRangeAxis(0);</span>
+<span class="fc" id="L806">        XYSeriesCollection&lt;?&gt; datasetA = (XYSeriesCollection) p2.getDataset(0);</span>
+<span class="fc" id="L807">        StandardXYItemRenderer rendererA</span>
+<span class="fc" id="L808">            = (StandardXYItemRenderer) p2.getRenderer(0);</span>
+<span class="fc" id="L809">        NumberAxis domainAxisB = (NumberAxis) p2.getDomainAxis(1);</span>
+<span class="fc" id="L810">        NumberAxis rangeAxisB = (NumberAxis) p2.getRangeAxis(1);</span>
+<span class="fc" id="L811">        XYSeriesCollection&lt;?&gt; datasetB = (XYSeriesCollection) p2.getDataset(1);</span>
+<span class="fc" id="L812">        StandardXYItemRenderer rendererB</span>
+<span class="fc" id="L813">            = (StandardXYItemRenderer) p2.getRenderer(1);</span>
+<span class="fc" id="L814">        assertTrue(datasetA.hasListener(p2));</span>
+<span class="fc" id="L815">        assertTrue(domainAxisA.hasListener(p2));</span>
+<span class="fc" id="L816">        assertTrue(rangeAxisA.hasListener(p2));</span>
+<span class="fc" id="L817">        assertTrue(rendererA.hasListener(p2));</span>
+<span class="fc" id="L818">        assertTrue(datasetB.hasListener(p2));</span>
+<span class="fc" id="L819">        assertTrue(domainAxisB.hasListener(p2));</span>
+<span class="fc" id="L820">        assertTrue(rangeAxisB.hasListener(p2));</span>
+<span class="fc" id="L821">        assertTrue(rendererB.hasListener(p2));</span>
+<span class="fc" id="L822">    }</span>
+
+    /**
+     * Some checks for the getRendererForDataset() method.
+     */
+    @Test
+    public void testGetRendererForDataset() {
+<span class="fc" id="L829">        XYDataset&lt;String&gt; d0 = new XYSeriesCollection&lt;&gt;();</span>
+<span class="fc" id="L830">        XYDataset&lt;String&gt; d1 = new XYSeriesCollection&lt;&gt;();</span>
+<span class="fc" id="L831">        XYDataset&lt;String&gt; d2 = new XYSeriesCollection&lt;&gt;();</span>
+<span class="fc" id="L832">        XYDataset&lt;String&gt; d3 = new XYSeriesCollection&lt;&gt;();  // not used by plot</span>
+<span class="fc" id="L833">        XYItemRenderer r0 = new XYLineAndShapeRenderer();</span>
+<span class="fc" id="L834">        XYItemRenderer r2 = new XYLineAndShapeRenderer();</span>
+<span class="fc" id="L835">        XYPlot&lt;String&gt; plot = new XYPlot&lt;&gt;();</span>
+<span class="fc" id="L836">        plot.setDataset(0, d0);</span>
+<span class="fc" id="L837">        plot.setDataset(1, d1);</span>
+<span class="fc" id="L838">        plot.setDataset(2, d2);</span>
+<span class="fc" id="L839">        plot.setRenderer(0, r0);</span>
+        // no renderer 1
+<span class="fc" id="L841">        plot.setRenderer(2, r2);</span>
+<span class="fc" id="L842">        assertEquals(r0, plot.getRendererForDataset(d0));</span>
+<span class="fc" id="L843">        assertEquals(r0, plot.getRendererForDataset(d1));</span>
+<span class="fc" id="L844">        assertEquals(r2, plot.getRendererForDataset(d2));</span>
+<span class="fc" id="L845">        assertNull(plot.getRendererForDataset(d3));</span>
+<span class="fc" id="L846">        assertNull(plot.getRendererForDataset(null));</span>
+<span class="fc" id="L847">    }</span>
+
+    /**
+     * Some checks for the getLegendItems() method.
+     */
+    @Test
+    public void testGetLegendItems() {
+        // check the case where there is a secondary dataset that doesn't
+        // have a renderer (i.e. falls back to renderer 0)
+<span class="fc" id="L856">        XYDataset&lt;String&gt; d0 = createDataset1();</span>
+<span class="fc" id="L857">        XYDataset&lt;String&gt; d1 = createDataset2();</span>
+<span class="fc" id="L858">        XYItemRenderer r0 = new XYLineAndShapeRenderer();</span>
+<span class="fc" id="L859">        XYPlot&lt;String&gt; plot = new XYPlot&lt;&gt;();</span>
+<span class="fc" id="L860">        plot.setDataset(0, d0);</span>
+<span class="fc" id="L861">        plot.setDataset(1, d1);</span>
+<span class="fc" id="L862">        plot.setRenderer(0, r0);</span>
+<span class="fc" id="L863">        LegendItemCollection items = plot.getLegendItems();</span>
+<span class="fc" id="L864">        assertEquals(2, items.getItemCount());</span>
+<span class="fc" id="L865">    }</span>
+
+    /**
+     * Creates a sample dataset.
+     *
+     * @return Series 1.
+     */
+    private IntervalXYDataset&lt;String&gt; createDataset1() {
+
+        // create dataset 1...
+<span class="fc" id="L875">        TimeSeries&lt;String&gt; series1 = new TimeSeries&lt;&gt;(&quot;Series 1&quot;);</span>
+<span class="fc" id="L876">        series1.add(new Day(1, MonthConstants.MARCH, 2002), 12353.3);</span>
+<span class="fc" id="L877">        series1.add(new Day(2, MonthConstants.MARCH, 2002), 13734.4);</span>
+<span class="fc" id="L878">        series1.add(new Day(3, MonthConstants.MARCH, 2002), 14525.3);</span>
+<span class="fc" id="L879">        series1.add(new Day(4, MonthConstants.MARCH, 2002), 13984.3);</span>
+<span class="fc" id="L880">        series1.add(new Day(5, MonthConstants.MARCH, 2002), 12999.4);</span>
+<span class="fc" id="L881">        series1.add(new Day(6, MonthConstants.MARCH, 2002), 14274.3);</span>
+<span class="fc" id="L882">        series1.add(new Day(7, MonthConstants.MARCH, 2002), 15943.5);</span>
+<span class="fc" id="L883">        series1.add(new Day(8, MonthConstants.MARCH, 2002), 14845.3);</span>
+<span class="fc" id="L884">        series1.add(new Day(9, MonthConstants.MARCH, 2002), 14645.4);</span>
+<span class="fc" id="L885">        series1.add(new Day(10, MonthConstants.MARCH, 2002), 16234.6);</span>
+<span class="fc" id="L886">        series1.add(new Day(11, MonthConstants.MARCH, 2002), 17232.3);</span>
+<span class="fc" id="L887">        series1.add(new Day(12, MonthConstants.MARCH, 2002), 14232.2);</span>
+<span class="fc" id="L888">        series1.add(new Day(13, MonthConstants.MARCH, 2002), 13102.2);</span>
+<span class="fc" id="L889">        series1.add(new Day(14, MonthConstants.MARCH, 2002), 14230.2);</span>
+<span class="fc" id="L890">        series1.add(new Day(15, MonthConstants.MARCH, 2002), 11235.2);</span>
+
+<span class="fc" id="L892">        TimeSeriesCollection&lt;String&gt; collection = new TimeSeriesCollection&lt;&gt;(series1);</span>
+<span class="fc" id="L893">        return collection;</span>
+
+    }
+
+    /**
+     * Creates a sample dataset.
+     *
+     * @return A sample dataset.
+     */
+    private XYDataset&lt;String&gt; createDataset2() {
+        // create dataset 1...
+<span class="fc" id="L904">        XYSeries&lt;String&gt; series = new XYSeries&lt;&gt;(&quot;Series 2&quot;);</span>
+<span class="fc" id="L905">        XYSeriesCollection&lt;String&gt; collection = new XYSeriesCollection&lt;&gt;(series);</span>
+<span class="fc" id="L906">        return collection;</span>
+
+    }
+
+    /**
+     * A test for a bug where setting the renderer doesn't register the plot
+     * as a RendererChangeListener.
+     */
+    @Test
+    public void testSetRenderer() {
+<span class="fc" id="L916">        XYPlot&lt;String&gt; plot = new XYPlot&lt;&gt;();</span>
+<span class="fc" id="L917">        XYItemRenderer renderer = new XYLineAndShapeRenderer();</span>
+<span class="fc" id="L918">        plot.setRenderer(renderer);</span>
+        // now make a change to the renderer and see if it triggers a plot
+        // change event...
+<span class="fc" id="L921">        MyPlotChangeListener listener = new MyPlotChangeListener();</span>
+<span class="fc" id="L922">        plot.addChangeListener(listener);</span>
+<span class="fc" id="L923">        renderer.setSeriesPaint(0, Color.BLACK);</span>
+<span class="fc" id="L924">        assertNotNull(listener.getEvent());</span>
+<span class="fc" id="L925">    }</span>
+
+    /**
+     * Some checks for the removeAnnotation() method.
+     */
+    @Test
+    public void testRemoveAnnotation() {
+<span class="fc" id="L932">        XYPlot&lt;String&gt; plot = new XYPlot&lt;&gt;();</span>
+<span class="fc" id="L933">        XYTextAnnotation a1 = new XYTextAnnotation(&quot;X&quot;, 1.0, 2.0);</span>
+<span class="fc" id="L934">        XYTextAnnotation a2 = new XYTextAnnotation(&quot;X&quot;, 3.0, 4.0);</span>
+<span class="fc" id="L935">        XYTextAnnotation a3 = new XYTextAnnotation(&quot;X&quot;, 1.0, 2.0);</span>
+<span class="fc" id="L936">        plot.addAnnotation(a1);</span>
+<span class="fc" id="L937">        plot.addAnnotation(a2);</span>
+<span class="fc" id="L938">        plot.addAnnotation(a3);</span>
+<span class="fc" id="L939">        plot.removeAnnotation(a2);</span>
+<span class="fc" id="L940">        XYTextAnnotation x = (XYTextAnnotation) plot.getAnnotations().get(0);</span>
+<span class="fc" id="L941">        assertEquals(x, a1);</span>
+
+        // now remove a3, but since a3.equals(a1), this will in fact remove
+        // a1...
+<span class="fc" id="L945">        assertEquals(a1, a3);</span>
+<span class="fc" id="L946">        plot.removeAnnotation(a3);  // actually removes a1</span>
+<span class="fc" id="L947">        x = (XYTextAnnotation) plot.getAnnotations().get(0);</span>
+<span class="fc" id="L948">        assertEquals(x, a3);</span>
+<span class="fc" id="L949">    }</span>
+
+    /**
+     * Some tests for the addDomainMarker() method(s).
+     */
+    @Test
+    public void testAddDomainMarker() {
+<span class="fc" id="L956">        XYPlot&lt;String&gt; plot = new XYPlot&lt;&gt;();</span>
+<span class="fc" id="L957">        Marker m = new ValueMarker(1.0);</span>
+<span class="fc" id="L958">        plot.addDomainMarker(m);</span>
+<span class="fc" id="L959">        List&lt;EventListener&gt; listeners = Arrays.asList(m.getListeners(</span>
+                MarkerChangeListener.class));
+<span class="fc" id="L961">        assertTrue(listeners.contains(plot));</span>
+<span class="fc" id="L962">        plot.clearDomainMarkers();</span>
+<span class="fc" id="L963">        listeners = Arrays.asList(m.getListeners(MarkerChangeListener.class));</span>
+<span class="fc" id="L964">        assertFalse(listeners.contains(plot));</span>
+<span class="fc" id="L965">    }</span>
+
+    /**
+     * Some tests for the addRangeMarker() method(s).
+     */
+    @Test
+    public void testAddRangeMarker() {
+<span class="fc" id="L972">        XYPlot&lt;String&gt; plot = new XYPlot&lt;&gt;();</span>
+<span class="fc" id="L973">        Marker m = new ValueMarker(1.0);</span>
+<span class="fc" id="L974">        plot.addRangeMarker(m);</span>
+<span class="fc" id="L975">        List&lt;EventListener&gt; listeners = Arrays.asList(m.getListeners(</span>
+                MarkerChangeListener.class));
+<span class="fc" id="L977">        assertTrue(listeners.contains(plot));</span>
+<span class="fc" id="L978">        plot.clearRangeMarkers();</span>
+<span class="fc" id="L979">        listeners = Arrays.asList(m.getListeners(MarkerChangeListener.class));</span>
+<span class="fc" id="L980">        assertFalse(listeners.contains(plot));</span>
+<span class="fc" id="L981">    }</span>
+
+    /**
+     * A test for bug 1654215 (where a renderer is added to the plot without
+     * a corresponding dataset and it throws an exception at drawing time).
+     */
+    @Test
+    public void test1654215() {
+<span class="fc" id="L989">        DefaultXYDataset&lt;String&gt; dataset = new DefaultXYDataset&lt;&gt;();</span>
+<span class="fc" id="L990">        JFreeChart chart = ChartFactory.createXYLineChart(&quot;Title&quot;, &quot;X&quot;, &quot;Y&quot;,</span>
+                dataset, PlotOrientation.VERTICAL, true, false, false);
+<span class="fc" id="L992">        XYPlot&lt;?&gt; plot = (XYPlot) chart.getPlot();</span>
+<span class="fc" id="L993">        plot.setRenderer(1, new XYLineAndShapeRenderer());</span>
+        try {
+<span class="fc" id="L995">            BufferedImage image = new BufferedImage(200 , 100,</span>
+                    BufferedImage.TYPE_INT_RGB);
+<span class="fc" id="L997">            Graphics2D g2 = image.createGraphics();</span>
+<span class="fc" id="L998">            chart.draw(g2, new Rectangle2D.Double(0, 0, 200, 100), null, null);</span>
+<span class="fc" id="L999">            g2.dispose();</span>
+        }
+<span class="nc" id="L1001">        catch (Exception e) {</span>
+<span class="nc" id="L1002">            fail(&quot;No exception should be thrown.&quot;);</span>
+<span class="fc" id="L1003">        }</span>
+<span class="fc" id="L1004">    }</span>
+
+    /**
+     * A test for drawing range grid lines when there is no primary renderer.
+     * In 1.0.4, this is throwing a NullPointerException.
+     */
+    @Test
+    public void testDrawRangeGridlines() {
+<span class="fc" id="L1012">        DefaultXYDataset&lt;String&gt; dataset = new DefaultXYDataset&lt;&gt;();</span>
+<span class="fc" id="L1013">        JFreeChart chart = ChartFactory.createXYLineChart(&quot;Title&quot;, &quot;X&quot;, &quot;Y&quot;,</span>
+                dataset, PlotOrientation.VERTICAL, true, false, false);
+<span class="fc" id="L1015">        XYPlot&lt;?&gt; plot = (XYPlot) chart.getPlot();</span>
+<span class="fc" id="L1016">        plot.setRenderer(null);</span>
+        try {
+<span class="fc" id="L1018">            BufferedImage image = new BufferedImage(200 , 100,</span>
+                    BufferedImage.TYPE_INT_RGB);
+<span class="fc" id="L1020">            Graphics2D g2 = image.createGraphics();</span>
+<span class="fc" id="L1021">            chart.draw(g2, new Rectangle2D.Double(0, 0, 200, 100), null, null);</span>
+<span class="fc" id="L1022">            g2.dispose();</span>
+        }
+<span class="nc" id="L1024">        catch (Exception e) {</span>
+<span class="nc" id="L1025">            fail(&quot;No exception should be thrown.&quot;);</span>
+<span class="fc" id="L1026">        }</span>
+<span class="fc" id="L1027">    }</span>
+
+    /**
+     * A test for drawing a plot where a series has zero items.  With
+     * JFreeChart 1.0.5+cvs this was throwing an exception at one point.
+     */
+    @Test
+    public void testDrawSeriesWithZeroItems() {
+<span class="fc" id="L1035">        DefaultXYDataset&lt;String&gt; dataset = new DefaultXYDataset&lt;&gt;();</span>
+<span class="fc" id="L1036">        dataset.addSeries(&quot;Series 1&quot;, new double[][] {{1.0, 2.0}, {3.0, 4.0}});</span>
+<span class="fc" id="L1037">        dataset.addSeries(&quot;Series 2&quot;, new double[][] {{}, {}});</span>
+<span class="fc" id="L1038">        JFreeChart chart = ChartFactory.createXYLineChart(&quot;Title&quot;, &quot;X&quot;, &quot;Y&quot;,</span>
+                dataset, PlotOrientation.VERTICAL, true, false, false);
+        try {
+<span class="fc" id="L1041">            BufferedImage image = new BufferedImage(200 , 100,</span>
+                    BufferedImage.TYPE_INT_RGB);
+<span class="fc" id="L1043">            Graphics2D g2 = image.createGraphics();</span>
+<span class="fc" id="L1044">            chart.draw(g2, new Rectangle2D.Double(0, 0, 200, 100), null, null);</span>
+<span class="fc" id="L1045">            g2.dispose();</span>
+        }
+<span class="nc" id="L1047">        catch (Exception e) {</span>
+<span class="nc" id="L1048">            fail(&quot;No exception should be thrown.&quot;);</span>
+<span class="fc" id="L1049">        }</span>
+<span class="fc" id="L1050">    }</span>
+
+    /**
+     * Check that removing a marker that isn't assigned to the plot returns
+     * false.
+     */
+    @Test
+    public void testRemoveDomainMarker() {
+<span class="fc" id="L1058">        XYPlot&lt;String&gt; plot = new XYPlot&lt;&gt;();</span>
+<span class="fc" id="L1059">        assertFalse(plot.removeDomainMarker(new ValueMarker(0.5)));</span>
+<span class="fc" id="L1060">    }</span>
+
+    /**
+     * Check that removing a marker that isn't assigned to the plot returns
+     * false.
+     */
+    @Test
+    public void testRemoveRangeMarker() {
+<span class="fc" id="L1068">        XYPlot&lt;String&gt; plot = new XYPlot&lt;&gt;();</span>
+<span class="fc" id="L1069">        assertFalse(plot.removeRangeMarker(new ValueMarker(0.5)));</span>
+<span class="fc" id="L1070">    }</span>
+
+    /**
+     * Some tests for the getDomainAxisForDataset() method.
+     */
+    @Test
+    public void testGetDomainAxisForDataset() {
+<span class="fc" id="L1077">        XYDataset&lt;String&gt; dataset = new XYSeriesCollection&lt;&gt;();</span>
+<span class="fc" id="L1078">        NumberAxis xAxis = new NumberAxis(&quot;X&quot;);</span>
+<span class="fc" id="L1079">        NumberAxis yAxis = new NumberAxis(&quot;Y&quot;);</span>
+<span class="fc" id="L1080">        XYItemRenderer renderer = new DefaultXYItemRenderer();</span>
+<span class="fc" id="L1081">        XYPlot&lt;String&gt; plot = new XYPlot&lt;&gt;(dataset, xAxis, yAxis, renderer);</span>
+<span class="fc" id="L1082">        assertEquals(xAxis, plot.getDomainAxisForDataset(0));</span>
+
+        // should get IllegalArgumentException for negative index
+<span class="fc" id="L1085">        boolean pass = false;</span>
+        try {
+<span class="nc" id="L1087">            plot.getDomainAxisForDataset(-1);</span>
+        }
+<span class="fc" id="L1089">        catch (IllegalArgumentException e) {</span>
+<span class="fc" id="L1090">            pass = true;</span>
+<span class="nc" id="L1091">        }</span>
+<span class="fc" id="L1092">        assertTrue(pass);</span>
+
+        // if multiple axes are mapped, the first in the list should be
+        // returned...
+<span class="fc" id="L1096">        NumberAxis xAxis2 = new NumberAxis(&quot;X2&quot;);</span>
+<span class="fc" id="L1097">        plot.setDomainAxis(1, xAxis2);</span>
+<span class="fc" id="L1098">        assertEquals(xAxis, plot.getDomainAxisForDataset(0));</span>
+
+<span class="fc" id="L1100">        plot.mapDatasetToDomainAxis(0, 1);</span>
+<span class="fc" id="L1101">        assertEquals(xAxis2, plot.getDomainAxisForDataset(0));</span>
+
+<span class="fc" id="L1103">        List&lt;Integer&gt; axisIndices = Arrays.asList(new Integer[] {0, 1});</span>
+<span class="fc" id="L1104">        plot.mapDatasetToDomainAxes(0, axisIndices);</span>
+<span class="fc" id="L1105">        assertEquals(xAxis, plot.getDomainAxisForDataset(0));</span>
+
+<span class="fc" id="L1107">        axisIndices = Arrays.asList(new Integer[] {1, 2});</span>
+<span class="fc" id="L1108">        plot.mapDatasetToDomainAxes(0, axisIndices);</span>
+<span class="fc" id="L1109">        assertEquals(xAxis2, plot.getDomainAxisForDataset(0));</span>
+<span class="fc" id="L1110">    }</span>
+
+    /**
+     * Some tests for the getRangeAxisForDataset() method.
+     */
+    @Test
+    public void testGetRangeAxisForDataset() {
+<span class="fc" id="L1117">        XYDataset&lt;String&gt; dataset = new XYSeriesCollection&lt;&gt;();</span>
+<span class="fc" id="L1118">        NumberAxis xAxis = new NumberAxis(&quot;X&quot;);</span>
+<span class="fc" id="L1119">        NumberAxis yAxis = new NumberAxis(&quot;Y&quot;);</span>
+<span class="fc" id="L1120">        XYItemRenderer renderer = new DefaultXYItemRenderer();</span>
+<span class="fc" id="L1121">        XYPlot&lt;String&gt; plot = new XYPlot&lt;&gt;(dataset, xAxis, yAxis, renderer);</span>
+<span class="fc" id="L1122">        assertEquals(yAxis, plot.getRangeAxisForDataset(0));</span>
+
+        // should get IllegalArgumentException for negative index
+<span class="fc" id="L1125">        boolean pass = false;</span>
+        try {
+<span class="nc" id="L1127">            plot.getRangeAxisForDataset(-1);</span>
+        }
+<span class="fc" id="L1129">        catch (IllegalArgumentException e) {</span>
+<span class="fc" id="L1130">            pass = true;</span>
+<span class="nc" id="L1131">        }</span>
+<span class="fc" id="L1132">        assertTrue(pass);</span>
+
+        // if multiple axes are mapped, the first in the list should be
+        // returned...
+<span class="fc" id="L1136">        NumberAxis yAxis2 = new NumberAxis(&quot;Y2&quot;);</span>
+<span class="fc" id="L1137">        plot.setRangeAxis(1, yAxis2);</span>
+<span class="fc" id="L1138">        assertEquals(yAxis, plot.getRangeAxisForDataset(0));</span>
+
+<span class="fc" id="L1140">        plot.mapDatasetToRangeAxis(0, 1);</span>
+<span class="fc" id="L1141">        assertEquals(yAxis2, plot.getRangeAxisForDataset(0));</span>
+
+<span class="fc" id="L1143">        List&lt;Integer&gt; axisIndices = Arrays.asList(new Integer[] {0, 1});</span>
+<span class="fc" id="L1144">        plot.mapDatasetToRangeAxes(0, axisIndices);</span>
+<span class="fc" id="L1145">        assertEquals(yAxis, plot.getRangeAxisForDataset(0));</span>
+
+<span class="fc" id="L1147">        axisIndices = Arrays.asList(new Integer[] {1, 2});</span>
+<span class="fc" id="L1148">        plot.mapDatasetToRangeAxes(0, axisIndices);</span>
+<span class="fc" id="L1149">        assertEquals(yAxis2, plot.getRangeAxisForDataset(0));</span>
+<span class="fc" id="L1150">    }</span>
+    
+    /**
+     * Datasets are now stored in a Map, and it should be possible to assign
+     * them an arbitrary key (index).
+     */
+    @Test
+    public void testDatasetIndices() {
+<span class="fc" id="L1158">        XYDataset&lt;String&gt; dataset = new XYSeriesCollection&lt;&gt;();</span>
+<span class="fc" id="L1159">        NumberAxis xAxis = new NumberAxis(&quot;X&quot;);</span>
+<span class="fc" id="L1160">        NumberAxis yAxis = new NumberAxis(&quot;Y&quot;);</span>
+<span class="fc" id="L1161">        XYItemRenderer renderer = new DefaultXYItemRenderer();</span>
+<span class="fc" id="L1162">        XYPlot&lt;String&gt; plot = new XYPlot&lt;&gt;(dataset, xAxis, yAxis, renderer);</span>
+        
+<span class="fc" id="L1164">        assertEquals(dataset, plot.getDataset(0));</span>
+        
+<span class="fc" id="L1166">        XYSeriesCollection&lt;String&gt; dataset2 = new XYSeriesCollection&lt;&gt;();</span>
+<span class="fc" id="L1167">        dataset2.addSeries(new XYSeries&lt;&gt;(&quot;Series in dataset 2&quot;));</span>
+        
+        // we should be able to give a dataset an arbitrary index
+<span class="fc" id="L1170">        plot.setDataset(99, dataset2);</span>
+<span class="fc" id="L1171">        assertEquals(2, plot.getDatasetCount());</span>
+<span class="fc" id="L1172">        assertEquals(dataset2, plot.getDataset(99));</span>
+        
+<span class="fc" id="L1174">        assertEquals(0, plot.indexOf(dataset));</span>
+<span class="fc" id="L1175">        assertEquals(99, plot.indexOf(dataset2));</span>
+<span class="fc" id="L1176">    }</span>
+    
+    @Test
+    public void testAxisIndices() {
+<span class="fc" id="L1180">        XYDataset&lt;String&gt; dataset = new XYSeriesCollection&lt;&gt;();</span>
+<span class="fc" id="L1181">        NumberAxis xAxis = new NumberAxis(&quot;X&quot;);</span>
+<span class="fc" id="L1182">        NumberAxis yAxis = new NumberAxis(&quot;Y&quot;);</span>
+<span class="fc" id="L1183">        XYItemRenderer renderer = new DefaultXYItemRenderer();</span>
+<span class="fc" id="L1184">        XYPlot&lt;String&gt; plot = new XYPlot&lt;&gt;(dataset, xAxis, yAxis, renderer);</span>
+<span class="fc" id="L1185">        assertEquals(xAxis, plot.getDomainAxis(0));        </span>
+<span class="fc" id="L1186">        assertEquals(yAxis, plot.getRangeAxis(0)); </span>
+        
+<span class="fc" id="L1188">        NumberAxis xAxis2 = new NumberAxis(&quot;X2&quot;);</span>
+<span class="fc" id="L1189">        plot.setDomainAxis(99, xAxis2);</span>
+<span class="fc" id="L1190">        assertEquals(xAxis2, plot.getDomainAxis(99));</span>
+        
+<span class="fc" id="L1192">        NumberAxis yAxis2 = new NumberAxis(&quot;Y2&quot;);</span>
+<span class="fc" id="L1193">        plot.setRangeAxis(99, yAxis2);</span>
+<span class="fc" id="L1194">        assertEquals(yAxis2, plot.getRangeAxis(99));</span>
+<span class="fc" id="L1195">    }</span>
+    
+    @Test 
+    public void testAxisLocationIndices() {
+<span class="fc" id="L1199">        XYDataset&lt;String&gt; dataset = new XYSeriesCollection&lt;&gt;();</span>
+<span class="fc" id="L1200">        NumberAxis xAxis = new NumberAxis(&quot;X&quot;);</span>
+<span class="fc" id="L1201">        NumberAxis yAxis = new NumberAxis(&quot;Y&quot;);</span>
+<span class="fc" id="L1202">        XYItemRenderer renderer = new DefaultXYItemRenderer();</span>
+<span class="fc" id="L1203">        XYPlot&lt;String&gt; plot = new XYPlot&lt;&gt;(dataset, xAxis, yAxis, renderer);</span>
+
+<span class="fc" id="L1205">        NumberAxis xAxis2 = new NumberAxis(&quot;X2&quot;);</span>
+<span class="fc" id="L1206">        NumberAxis yAxis2 = new NumberAxis(&quot;Y2&quot;);</span>
+<span class="fc" id="L1207">        plot.setDomainAxis(99, xAxis2);</span>
+<span class="fc" id="L1208">        plot.setRangeAxis(99, yAxis2);</span>
+        
+<span class="fc" id="L1210">        plot.setDomainAxisLocation(99, AxisLocation.BOTTOM_OR_RIGHT);</span>
+<span class="fc" id="L1211">        assertEquals(AxisLocation.BOTTOM_OR_RIGHT, </span>
+<span class="fc" id="L1212">                plot.getDomainAxisLocation(99));</span>
+<span class="fc" id="L1213">        plot.setRangeAxisLocation(99, AxisLocation.BOTTOM_OR_LEFT);</span>
+<span class="fc" id="L1214">        assertEquals(AxisLocation.BOTTOM_OR_LEFT, </span>
+<span class="fc" id="L1215">                plot.getRangeAxisLocation(99));</span>
+<span class="fc" id="L1216">    }</span>
+    
+    @Test 
+    public void testRendererIndices() {
+<span class="fc" id="L1220">        XYDataset&lt;String&gt; dataset = new XYSeriesCollection&lt;&gt;();</span>
+<span class="fc" id="L1221">        NumberAxis xAxis = new NumberAxis(&quot;X&quot;);</span>
+<span class="fc" id="L1222">        NumberAxis yAxis = new NumberAxis(&quot;Y&quot;);</span>
+<span class="fc" id="L1223">        XYItemRenderer renderer = new DefaultXYItemRenderer();</span>
+<span class="fc" id="L1224">        XYPlot&lt;String&gt; plot = new XYPlot&lt;&gt;(dataset, xAxis, yAxis, renderer);</span>
+        
+<span class="fc" id="L1226">        assertEquals(renderer, plot.getRenderer(0));</span>
+        
+        // we should be able to give a renderer an arbitrary index
+<span class="fc" id="L1229">        XYLineAndShapeRenderer renderer2 = new XYLineAndShapeRenderer();</span>
+<span class="fc" id="L1230">        plot.setRenderer(20, renderer2);</span>
+<span class="fc" id="L1231">        assertEquals(2, plot.getRendererCount());</span>
+<span class="fc" id="L1232">        assertEquals(renderer2, plot.getRenderer(20));</span>
+        
+<span class="fc" id="L1234">        assertEquals(20, plot.getIndexOf(renderer2));</span>
+<span class="fc" id="L1235">    }</span>
+
+    @Test 
+    public void testGetRendererForDataset2() {
+<span class="fc" id="L1239">        XYDataset&lt;String&gt; dataset = new XYSeriesCollection&lt;&gt;();</span>
+<span class="fc" id="L1240">        NumberAxis xAxis = new NumberAxis(&quot;X&quot;);</span>
+<span class="fc" id="L1241">        NumberAxis yAxis = new NumberAxis(&quot;Y&quot;);</span>
+<span class="fc" id="L1242">        XYItemRenderer renderer = new DefaultXYItemRenderer();</span>
+<span class="fc" id="L1243">        XYPlot&lt;String&gt; plot = new XYPlot&lt;&gt;(dataset, xAxis, yAxis, renderer);</span>
+
+        // add a second dataset
+<span class="fc" id="L1246">        XYSeriesCollection&lt;String&gt; dataset2 = new XYSeriesCollection&lt;&gt;();</span>
+<span class="fc" id="L1247">        dataset2.addSeries(new XYSeries&lt;&gt;(&quot;Series in dataset 2&quot;));</span>
+<span class="fc" id="L1248">        plot.setDataset(99, dataset2);</span>
+       
+        // by default, the renderer with index 0 is used
+<span class="fc" id="L1251">        assertEquals(renderer, plot.getRendererForDataset(dataset2));</span>
+        
+        // add a second renderer with the same index as dataset2, now it will
+        // be used
+<span class="fc" id="L1255">        XYLineAndShapeRenderer renderer2 = new XYLineAndShapeRenderer();</span>
+<span class="fc" id="L1256">        plot.setRenderer(99, renderer);</span>
+<span class="fc" id="L1257">        assertEquals(renderer2, plot.getRendererForDataset(dataset2));</span>
+<span class="fc" id="L1258">    }</span>
+    
+    @Test
+    public void testMapDatasetToDomainAxis() {
+<span class="fc" id="L1262">        XYDataset&lt;String&gt; dataset = new XYSeriesCollection&lt;&gt;();</span>
+<span class="fc" id="L1263">        NumberAxis xAxis = new NumberAxis(&quot;X&quot;);</span>
+<span class="fc" id="L1264">        NumberAxis yAxis = new NumberAxis(&quot;Y&quot;);</span>
+<span class="fc" id="L1265">        XYItemRenderer renderer = new DefaultXYItemRenderer();</span>
+<span class="fc" id="L1266">        XYPlot&lt;String&gt; plot = new XYPlot&lt;&gt;(dataset, xAxis, yAxis, renderer);</span>
+
+<span class="fc" id="L1268">        NumberAxis xAxis2 = new NumberAxis(&quot;X2&quot;);</span>
+<span class="fc" id="L1269">        plot.setDomainAxis(11, xAxis2);</span>
+        
+        // add a second dataset
+<span class="fc" id="L1272">        XYSeriesCollection&lt;String&gt; dataset2 = new XYSeriesCollection&lt;&gt;();</span>
+<span class="fc" id="L1273">        dataset2.addSeries(new XYSeries&lt;&gt;(&quot;Series in dataset 2&quot;));</span>
+<span class="fc" id="L1274">        plot.setDataset(99, dataset);    </span>
+        
+<span class="fc" id="L1276">        assertEquals(xAxis, plot.getDomainAxisForDataset(99));</span>
+
+        // now map the dataset to the second xAxis
+<span class="fc" id="L1279">        plot.mapDatasetToDomainAxis(99, 11);</span>
+<span class="fc" id="L1280">        assertEquals(xAxis2, plot.getDomainAxisForDataset(99));</span>
+<span class="fc" id="L1281">    }</span>
+
+    @Test
+    public void testMapDatasetToRangeAxis() {
+<span class="fc" id="L1285">        XYDataset&lt;String&gt; dataset = new XYSeriesCollection&lt;&gt;();</span>
+<span class="fc" id="L1286">        NumberAxis xAxis = new NumberAxis(&quot;X&quot;);</span>
+<span class="fc" id="L1287">        NumberAxis yAxis = new NumberAxis(&quot;Y&quot;);</span>
+<span class="fc" id="L1288">        XYItemRenderer renderer = new DefaultXYItemRenderer();</span>
+<span class="fc" id="L1289">        XYPlot&lt;String&gt; plot = new XYPlot&lt;&gt;(dataset, xAxis, yAxis, renderer);</span>
+
+<span class="fc" id="L1291">        NumberAxis yAxis2 = new NumberAxis(&quot;Y2&quot;);</span>
+<span class="fc" id="L1292">        plot.setRangeAxis(22, yAxis2);</span>
+        
+        // add a second dataset
+<span class="fc" id="L1295">        XYSeriesCollection&lt;String&gt; dataset2 = new XYSeriesCollection&lt;&gt;();</span>
+<span class="fc" id="L1296">        dataset2.addSeries(new XYSeries&lt;&gt;(&quot;Series in dataset 2&quot;));</span>
+<span class="fc" id="L1297">        plot.setDataset(99, dataset);    </span>
+        
+<span class="fc" id="L1299">        assertEquals(yAxis, plot.getRangeAxisForDataset(99));</span>
+
+        // now map the dataset to the second xAxis
+<span class="fc" id="L1302">        plot.mapDatasetToRangeAxis(99, 22);</span>
+<span class="fc" id="L1303">        assertEquals(yAxis2, plot.getRangeAxisForDataset(99));</span>
+<span class="fc" id="L1304">    }</span>
+    
+    @Test
+    public void testDomainMarkerIndices() {
+<span class="fc" id="L1308">        XYDataset&lt;String&gt; dataset = new XYSeriesCollection&lt;&gt;();</span>
+<span class="fc" id="L1309">        NumberAxis xAxis = new NumberAxis(&quot;X&quot;);</span>
+<span class="fc" id="L1310">        NumberAxis yAxis = new NumberAxis(&quot;Y&quot;);</span>
+<span class="fc" id="L1311">        XYItemRenderer renderer = new DefaultXYItemRenderer();</span>
+<span class="fc" id="L1312">        XYPlot&lt;String&gt; plot = new XYPlot&lt;&gt;(dataset, xAxis, yAxis, renderer);</span>
+        
+        // add a second dataset, plotted against a second x axis
+<span class="fc" id="L1315">        XYSeriesCollection&lt;String&gt; dataset2 = new XYSeriesCollection&lt;&gt;();</span>
+<span class="fc" id="L1316">        dataset2.addSeries(new XYSeries&lt;&gt;(&quot;Series in dataset 2&quot;));</span>
+<span class="fc" id="L1317">        plot.setDataset(99, dataset);    </span>
+<span class="fc" id="L1318">        NumberAxis xAxis2 = new NumberAxis(&quot;X2&quot;);</span>
+<span class="fc" id="L1319">        plot.setDomainAxis(1, xAxis2);</span>
+<span class="fc" id="L1320">        XYLineAndShapeRenderer renderer2 = new XYLineAndShapeRenderer();</span>
+<span class="fc" id="L1321">        plot.setRenderer(99, renderer2);</span>
+<span class="fc" id="L1322">        plot.mapDatasetToDomainAxis(99, 1);</span>
+        
+<span class="fc" id="L1324">        ValueMarker xMarker1 = new ValueMarker(123);</span>
+<span class="fc" id="L1325">        plot.addDomainMarker(99, xMarker1, Layer.FOREGROUND);</span>
+<span class="fc" id="L1326">        assertTrue(plot.getDomainMarkers(99, Layer.FOREGROUND).contains(</span>
+                xMarker1));
+<span class="fc" id="L1328">    }</span>
+
+    @Test
+    public void testRangeMarkerIndices() {
+<span class="fc" id="L1332">        XYDataset&lt;String&gt; dataset = new XYSeriesCollection&lt;&gt;();</span>
+<span class="fc" id="L1333">        NumberAxis xAxis = new NumberAxis(&quot;X&quot;);</span>
+<span class="fc" id="L1334">        NumberAxis yAxis = new NumberAxis(&quot;Y&quot;);</span>
+<span class="fc" id="L1335">        XYItemRenderer renderer = new DefaultXYItemRenderer();</span>
+<span class="fc" id="L1336">        XYPlot&lt;String&gt; plot = new XYPlot&lt;&gt;(dataset, xAxis, yAxis, renderer);</span>
+        
+        // add a second dataset, plotted against a second axis
+<span class="fc" id="L1339">        XYSeriesCollection&lt;String&gt; dataset2 = new XYSeriesCollection&lt;&gt;();</span>
+<span class="fc" id="L1340">        dataset2.addSeries(new XYSeries&lt;&gt;(&quot;Series in dataset 2&quot;));</span>
+<span class="fc" id="L1341">        plot.setDataset(99, dataset);    </span>
+<span class="fc" id="L1342">        NumberAxis yAxis2 = new NumberAxis(&quot;Y2&quot;);</span>
+<span class="fc" id="L1343">        plot.setRangeAxis(1, yAxis2);</span>
+<span class="fc" id="L1344">        XYLineAndShapeRenderer renderer2 = new XYLineAndShapeRenderer();</span>
+<span class="fc" id="L1345">        plot.setRenderer(99, renderer2);</span>
+<span class="fc" id="L1346">        plot.mapDatasetToRangeAxis(99, 1);</span>
+        
+<span class="fc" id="L1348">        ValueMarker yMarker1 = new ValueMarker(123);</span>
+<span class="fc" id="L1349">        plot.addRangeMarker(99, yMarker1, Layer.FOREGROUND);</span>
+<span class="fc" id="L1350">        assertTrue(plot.getRangeMarkers(99, Layer.FOREGROUND).contains(yMarker1));</span>
+<span class="fc" id="L1351">    }</span>
+    
+    /** 
+     * Some tests for the getDataRange() method.
+     */
+    @Test
+    public void testGetDataRange() {
+<span class="fc" id="L1358">        XYSeriesCollection&lt;String&gt; dataset = new XYSeriesCollection&lt;&gt;();</span>
+<span class="fc" id="L1359">        NumberAxis xAxis = new NumberAxis(&quot;X&quot;);</span>
+<span class="fc" id="L1360">        NumberAxis yAxis = new NumberAxis(&quot;Y&quot;);</span>
+<span class="fc" id="L1361">        XYItemRenderer renderer = new DefaultXYItemRenderer();</span>
+<span class="fc" id="L1362">        XYPlot&lt;String&gt; plot = new XYPlot&lt;&gt;(dataset, xAxis, yAxis, renderer);</span>
+<span class="fc" id="L1363">        assertNull(plot.getDataRange(xAxis));</span>
+<span class="fc" id="L1364">        assertNull(plot.getDataRange(yAxis));</span>
+        
+<span class="fc" id="L1366">        XYSeries&lt;String&gt; s1 = new XYSeries&lt;&gt;(&quot;S1&quot;);</span>
+<span class="fc" id="L1367">        s1.add(1.0, 2.0);</span>
+<span class="fc" id="L1368">        dataset.addSeries(s1);</span>
+<span class="fc" id="L1369">        assertEquals(new Range(1.0, 1.0), plot.getDataRange(xAxis));</span>
+<span class="fc" id="L1370">        assertEquals(new Range(2.0, 2.0), plot.getDataRange(yAxis));</span>
+        
+<span class="fc" id="L1372">        s1.add(5.0, null);</span>
+<span class="fc" id="L1373">        assertEquals(new Range(1.0, 5.0), plot.getDataRange(xAxis));</span>
+<span class="fc" id="L1374">        assertEquals(new Range(2.0, 2.0), plot.getDataRange(yAxis));</span>
+        
+<span class="fc" id="L1376">        s1.add(6.0, Double.NaN);</span>
+<span class="fc" id="L1377">        assertEquals(new Range(1.0, 6.0), plot.getDataRange(xAxis));</span>
+<span class="fc" id="L1378">        assertEquals(new Range(2.0, 2.0), plot.getDataRange(yAxis));</span>
+<span class="fc" id="L1379">    }</span>
+    
+    /** 
+     * Some tests for the getDataRange() method.
+     */
+    @Test
+    public void testGetDataRangeWithMultipleDatasets() {
+<span class="fc" id="L1386">        XYSeriesCollection&lt;String&gt; dataset1 = new XYSeriesCollection&lt;&gt;();</span>
+<span class="fc" id="L1387">        XYSeriesCollection&lt;String&gt; dataset2 = new XYSeriesCollection&lt;&gt;();</span>
+<span class="fc" id="L1388">        NumberAxis xAxis = new NumberAxis(&quot;X&quot;);</span>
+<span class="fc" id="L1389">        NumberAxis yAxis = new NumberAxis(&quot;Y&quot;);</span>
+<span class="fc" id="L1390">        XYItemRenderer renderer = new DefaultXYItemRenderer();</span>
+<span class="fc" id="L1391">        XYPlot&lt;String&gt; plot = new XYPlot&lt;&gt;(dataset1, xAxis, yAxis, renderer);</span>
+<span class="fc" id="L1392">        plot.setDataset(1, dataset2);</span>
+<span class="fc" id="L1393">        plot.mapDatasetToDomainAxis(1, 0);</span>
+<span class="fc" id="L1394">        plot.mapDatasetToRangeAxis(1, 0);</span>
+<span class="fc" id="L1395">        assertNull(plot.getDataRange(xAxis));</span>
+<span class="fc" id="L1396">        assertNull(plot.getDataRange(yAxis));</span>
+        
+<span class="fc" id="L1398">        XYSeries&lt;String&gt; s1 = new XYSeries&lt;&gt;(&quot;S1&quot;);</span>
+<span class="fc" id="L1399">        s1.add(1.0, 2.0);</span>
+<span class="fc" id="L1400">        dataset1.addSeries(s1);</span>
+<span class="fc" id="L1401">        assertEquals(new Range(1.0, 1.0), plot.getDataRange(xAxis));</span>
+<span class="fc" id="L1402">        assertEquals(new Range(2.0, 2.0), plot.getDataRange(yAxis));</span>
+        
+<span class="fc" id="L1404">        XYSeries&lt;String&gt; s2 = new XYSeries&lt;&gt;(&quot;S2&quot;);</span>
+<span class="fc" id="L1405">        s2.add(5.0, 10.0);</span>
+<span class="fc" id="L1406">        dataset2.addSeries(s2);</span>
+<span class="fc" id="L1407">        assertEquals(new Range(1.0, 5.0), plot.getDataRange(xAxis));</span>
+<span class="fc" id="L1408">        assertEquals(new Range(2.0, 10.0), plot.getDataRange(yAxis));</span>
+        
+<span class="fc" id="L1410">        s2.add(6.0, Double.NaN);</span>
+<span class="fc" id="L1411">        assertEquals(new Range(1.0, 6.0), plot.getDataRange(xAxis));</span>
+<span class="fc" id="L1412">        assertEquals(new Range(2.0, 10.0), plot.getDataRange(yAxis));</span>
+        
+<span class="fc" id="L1414">        s2.add(Double.NaN, 0.5); </span>
+<span class="fc" id="L1415">        assertEquals(new Range(1.0, 6.0), plot.getDataRange(xAxis));</span>
+<span class="fc" id="L1416">        assertEquals(new Range(2.0, 10.0), plot.getDataRange(yAxis)); // only y-values for items in the x-range        </span>
+<span class="fc" id="L1417">    }    </span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span>jfreechart (Mar 14, 2025 5:50:17 p.m.)</div></body></html>

@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>IntervalBarRendererTest.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">jfreechart (Mar 14, 2025 5:50:17 p.m.)</a> &gt; <a href="../../index.html" class="el_group">jfreechart</a> &gt; <a href="../index.html" class="el_bundle">src/test/java</a> &gt; <a href="index.source.html" class="el_package">org.jfree.chart.renderer.category</a> &gt; <span class="el_source">IntervalBarRendererTest.java</span></div><h1>IntervalBarRendererTest.java</h1><pre class="source lang-java linenums">/* ===========================================================
+ * JFreeChart : a free chart library for the Java(tm) platform
+ * ===========================================================
+ *
+ * (C) Copyright 2000-2022, by David Gilbert and Contributors.
+ *
+ * Project Info:  http://www.jfree.org/jfreechart/index.html
+ *
+ * This library is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 2.1 of the License, or
+ * (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public
+ * License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301,
+ * USA.
+ *
+ * [Oracle and Java are registered trademarks of Oracle and/or its affiliates. 
+ * Other names may be trademarks of their respective owners.]
+ *
+ * ----------------------------
+ * IntervalBarRendererTest.java
+ * ----------------------------
+ * (C) Copyright 2003-2022, by David Gilbert and Contributors.
+ *
+ * Original Author:  David Gilbert;
+ * Contributor(s):   -;
+ *
+ */
+
+package org.jfree.chart.renderer.category;
+
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.TestUtils;
+import org.jfree.chart.axis.CategoryAxis;
+import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.plot.CategoryPlot;
+import org.jfree.chart.internal.CloneUtils;
+import org.jfree.chart.api.PublicCloneable;
+import org.jfree.data.Range;
+import org.jfree.data.category.DefaultIntervalCategoryDataset;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+/**
+ * Tests for the {@link IntervalBarRenderer} class.
+ */
+<span class="fc" id="L55">public class IntervalBarRendererTest {</span>
+
+    /**
+     * Problem that the equals() method distinguishes all fields.
+     */
+    @Test
+    public void testEquals() {
+<span class="fc" id="L62">        IntervalBarRenderer r1 = new IntervalBarRenderer();</span>
+<span class="fc" id="L63">        IntervalBarRenderer r2 = new IntervalBarRenderer();</span>
+<span class="fc" id="L64">        assertEquals(r1, r2);</span>
+
+        // the renderer should not be equal to a BarRenderer
+<span class="fc" id="L67">        BarRenderer br = new BarRenderer();</span>
+<span class="fc" id="L68">        assertNotEquals(r1, br);</span>
+<span class="fc" id="L69">    }</span>
+
+    /**
+     * Two objects that are equal are required to return the same hashCode.
+     */
+    @Test
+    public void testHashcode() {
+<span class="fc" id="L76">        IntervalBarRenderer r1 = new IntervalBarRenderer();</span>
+<span class="fc" id="L77">        IntervalBarRenderer r2 = new IntervalBarRenderer();</span>
+<span class="fc" id="L78">        assertEquals(r1, r2);</span>
+<span class="fc" id="L79">        int h1 = r1.hashCode();</span>
+<span class="fc" id="L80">        int h2 = r2.hashCode();</span>
+<span class="fc" id="L81">        assertEquals(h1, h2);</span>
+<span class="fc" id="L82">    }</span>
+
+    /**
+     * Confirm that cloning works.
+     * 
+     * @throws CloneNotSupportedException
+     */
+    @Test
+    public void testCloning() throws CloneNotSupportedException {
+<span class="fc" id="L91">        IntervalBarRenderer r1 = new IntervalBarRenderer();</span>
+<span class="fc" id="L92">        IntervalBarRenderer r2 = CloneUtils.clone(r1);</span>
+<span class="fc" id="L93">        assertNotSame(r1, r2);</span>
+<span class="fc" id="L94">        assertSame(r1.getClass(), r2.getClass());</span>
+<span class="fc" id="L95">        assertEquals(r1, r2);</span>
+<span class="fc" id="L96">        TestUtils.checkIndependence(r1, r2);</span>
+<span class="fc" id="L97">    }</span>
+
+    /**
+     * Check that this class implements PublicCloneable.
+     */
+    @Test
+    public void testPublicCloneable() {
+<span class="fc" id="L104">        IntervalBarRenderer r1 = new IntervalBarRenderer();</span>
+<span class="fc" id="L105">        assertTrue(r1 instanceof PublicCloneable);</span>
+<span class="fc" id="L106">    }</span>
+
+    /**
+     * Serialize an instance, restore it, and check for equality.
+     */
+    @Test
+    public void testSerialization() {
+<span class="fc" id="L113">        IntervalBarRenderer r1 = new IntervalBarRenderer();</span>
+<span class="fc" id="L114">        IntervalBarRenderer r2 = TestUtils.serialised(r1);</span>
+<span class="fc" id="L115">        assertEquals(r1, r2);</span>
+<span class="fc" id="L116">        TestUtils.checkIndependence(r1, r2);</span>
+<span class="fc" id="L117">    }</span>
+
+    /**
+     * Draws the chart with a {@code null} info object to make sure that
+     * no exceptions are thrown (particularly by code in the renderer).
+     */
+    @Test
+    public void testDrawWithNullInfo() {
+        try {
+<span class="fc" id="L126">            double[][] starts = new double[][] {{0.1, 0.2, 0.3},</span>
+                    {0.3, 0.4, 0.5}};
+<span class="fc" id="L128">            double[][] ends = new double[][] {{0.5, 0.6, 0.7}, {0.7, 0.8, 0.9}};</span>
+<span class="fc" id="L129">            DefaultIntervalCategoryDataset dataset</span>
+                    = new DefaultIntervalCategoryDataset(starts, ends);
+<span class="fc" id="L131">            IntervalBarRenderer renderer = new IntervalBarRenderer();</span>
+<span class="fc" id="L132">            CategoryPlot&lt;String, String&gt; plot = new CategoryPlot&lt;&gt;(dataset,</span>
+                    new CategoryAxis(&quot;Category&quot;), new NumberAxis(&quot;Value&quot;),
+                    renderer);
+<span class="fc" id="L135">            JFreeChart chart = new JFreeChart(plot);</span>
+<span class="fc" id="L136">            /* BufferedImage image = */ chart.createBufferedImage(300, 200,</span>
+                    null);
+        }
+<span class="nc" id="L139">        catch (NullPointerException e) {</span>
+<span class="nc" id="L140">            fail(&quot;No exception should be thrown.&quot;);</span>
+<span class="fc" id="L141">        }</span>
+<span class="fc" id="L142">    }</span>
+
+    /**
+     * Some checks for the findRangeBounds() method.
+     */
+    @Test
+    public void testFindRangeBounds() {
+<span class="fc" id="L149">        IntervalBarRenderer r = new IntervalBarRenderer();</span>
+<span class="fc" id="L150">        assertNull(r.findRangeBounds(null));</span>
+
+        // an empty dataset should return a null range
+<span class="fc" id="L153">        DefaultIntervalCategoryDataset dataset</span>
+                = new DefaultIntervalCategoryDataset(new double[0][0],
+                new double[0][0]);
+<span class="fc" id="L156">        assertNull(r.findRangeBounds(dataset));</span>
+
+<span class="fc" id="L158">        double[][] starts = new double[][] {{0.1, 0.2, 0.3}, {0.3, 0.4, 0.5}};</span>
+<span class="fc" id="L159">        double[][] ends = new double[][] {{0.5, 0.6, 0.7}, {0.7, 0.8, 0.9}};</span>
+<span class="fc" id="L160">        dataset = new DefaultIntervalCategoryDataset(starts, ends);</span>
+<span class="fc" id="L161">        assertEquals(new Range(0.0, 0.9), r.findRangeBounds(dataset));</span>
+<span class="fc" id="L162">        r.setIncludeBaseInRange(false);</span>
+<span class="fc" id="L163">        assertEquals(new Range(0.1, 0.9), r.findRangeBounds(dataset));</span>
+<span class="fc" id="L164">        r.setIncludeBaseInRange(true);</span>
+
+<span class="fc" id="L166">        r.setSeriesVisible(1, Boolean.FALSE);</span>
+<span class="fc" id="L167">        assertEquals(new Range(0.0, 0.7), r.findRangeBounds(dataset));</span>
+<span class="fc" id="L168">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span>jfreechart (Mar 14, 2025 5:50:17 p.m.)</div></body></html>

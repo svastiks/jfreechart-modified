@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>StandardDialRangeTest.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">jfreechart (Mar 14, 2025 5:50:17 p.m.)</a> &gt; <a href="../../index.html" class="el_group">jfreechart</a> &gt; <a href="../index.html" class="el_bundle">src/test/java</a> &gt; <a href="index.source.html" class="el_package">org.jfree.chart.plot.dial</a> &gt; <span class="el_source">StandardDialRangeTest.java</span></div><h1>StandardDialRangeTest.java</h1><pre class="source lang-java linenums">/* ===========================================================
+ * JFreeChart : a free chart library for the Java(tm) platform
+ * ===========================================================
+ *
+ * (C) Copyright 2000-2022, by David Gilbert and Contributors.
+ *
+ * Project Info:  http://www.jfree.org/jfreechart/index.html
+ *
+ * This library is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 2.1 of the License, or
+ * (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public
+ * License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301,
+ * USA.
+ *
+ * [Oracle and Java are registered trademarks of Oracle and/or its affiliates. 
+ * Other names may be trademarks of their respective owners.]
+ *
+ * ------------------------
+ * SimpleDialRangeTest.java
+ * ------------------------
+ * (C) Copyright 2006-2022, by David Gilbert and Contributors.
+ *
+ * Original Author:  David Gilbert;
+ * Contributor(s):   -;
+ *
+ */
+
+package org.jfree.chart.plot.dial;
+
+import java.awt.Color;
+import java.awt.GradientPaint;
+
+import org.jfree.chart.TestUtils;
+import org.jfree.chart.internal.CloneUtils;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+/**
+ * Tests for the {@link StandardDialRange} class.
+ */
+<span class="fc" id="L51">public class StandardDialRangeTest {</span>
+
+    /**
+     * Confirm that the equals method can distinguish all the required fields.
+     */
+    @Test
+    public void testEquals() {
+<span class="fc" id="L58">        StandardDialRange r1 = new StandardDialRange();</span>
+<span class="fc" id="L59">        StandardDialRange r2 = new StandardDialRange();</span>
+<span class="fc" id="L60">        assertEquals(r1, r2);</span>
+
+        // lowerBound
+<span class="fc" id="L63">        r1.setLowerBound(1.1);</span>
+<span class="fc" id="L64">        assertNotEquals(r1, r2);</span>
+<span class="fc" id="L65">        r2.setLowerBound(1.1);</span>
+<span class="fc" id="L66">        assertEquals(r1, r2);</span>
+
+        // upperBound
+<span class="fc" id="L69">        r1.setUpperBound(11.1);</span>
+<span class="fc" id="L70">        assertNotEquals(r1, r2);</span>
+<span class="fc" id="L71">        r2.setUpperBound(11.1);</span>
+<span class="fc" id="L72">        assertEquals(r1, r2);</span>
+
+        // paint
+<span class="fc" id="L75">        r1.setPaint(new GradientPaint(1.0f, 2.0f, Color.RED, 3.0f, 4.0f,</span>
+                Color.BLUE));
+<span class="fc" id="L77">        assertNotEquals(r1, r2);</span>
+<span class="fc" id="L78">        r2.setPaint(new GradientPaint(1.0f, 2.0f, Color.RED, 3.0f, 4.0f,</span>
+                Color.BLUE));
+<span class="fc" id="L80">        assertEquals(r1, r2);</span>
+
+        // check an inherited attribute
+<span class="fc" id="L83">        r1.setVisible(false);</span>
+<span class="fc" id="L84">        assertNotEquals(r1, r2);</span>
+<span class="fc" id="L85">        r2.setVisible(false);</span>
+<span class="fc" id="L86">        assertEquals(r1, r2);</span>
+<span class="fc" id="L87">    }</span>
+
+    /**
+     * Two objects that are equal are required to return the same hashCode.
+     */
+    @Test
+    public void testHashCode() {
+<span class="fc" id="L94">        StandardDialRange r1 = new StandardDialRange();</span>
+<span class="fc" id="L95">        StandardDialRange r2 = new StandardDialRange();</span>
+<span class="fc" id="L96">        assertEquals(r1, r2);</span>
+<span class="fc" id="L97">        int h1 = r1.hashCode();</span>
+<span class="fc" id="L98">        int h2 = r2.hashCode();</span>
+<span class="fc" id="L99">        assertEquals(h1, h2);</span>
+<span class="fc" id="L100">    }</span>
+
+    /**
+     * Confirm that cloning works.
+     */
+    @Test
+    public void testCloning() throws CloneNotSupportedException {
+<span class="fc" id="L107">        StandardDialRange r1 = new StandardDialRange();</span>
+<span class="fc" id="L108">        StandardDialRange r2 = CloneUtils.clone(r1);</span>
+<span class="fc" id="L109">        assertNotSame(r1, r2);</span>
+<span class="fc" id="L110">        assertSame(r1.getClass(), r2.getClass());</span>
+<span class="fc" id="L111">        assertEquals(r1, r2);</span>
+
+        // check that the listener lists are independent
+<span class="fc" id="L114">        MyDialLayerChangeListener l1 = new MyDialLayerChangeListener();</span>
+<span class="fc" id="L115">        r1.addChangeListener(l1);</span>
+<span class="fc" id="L116">        assertTrue(r1.hasListener(l1));</span>
+<span class="fc" id="L117">        assertFalse(r2.hasListener(l1));</span>
+<span class="fc" id="L118">    }</span>
+
+    /**
+     * Serialize an instance, restore it, and check for equality.
+     */
+    @Test
+    public void testSerialization() {
+<span class="fc" id="L125">        StandardDialRange r1 = new StandardDialRange();</span>
+<span class="fc" id="L126">        StandardDialRange r2 = TestUtils.serialised(r1);</span>
+<span class="fc" id="L127">        assertEquals(r1, r2);</span>
+<span class="fc" id="L128">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span>jfreechart (Mar 14, 2025 5:50:17 p.m.)</div></body></html>

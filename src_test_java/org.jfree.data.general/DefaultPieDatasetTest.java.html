@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>DefaultPieDatasetTest.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">jfreechart (Mar 14, 2025 5:50:17 p.m.)</a> &gt; <a href="../../index.html" class="el_group">jfreechart</a> &gt; <a href="../index.html" class="el_bundle">src/test/java</a> &gt; <a href="index.source.html" class="el_package">org.jfree.data.general</a> &gt; <span class="el_source">DefaultPieDatasetTest.java</span></div><h1>DefaultPieDatasetTest.java</h1><pre class="source lang-java linenums">/* ===========================================================
+ * JFreeChart : a free chart library for the Java(tm) platform
+ * ===========================================================
+ *
+ * (C) Copyright 2000-2022, by David Gilbert and Contributors.
+ *
+ * Project Info:  http://www.jfree.org/jfreechart/index.html
+ *
+ * This library is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 2.1 of the License, or
+ * (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public
+ * License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301,
+ * USA.
+ *
+ * [Oracle and Java are registered trademarks of Oracle and/or its affiliates. 
+ * Other names may be trademarks of their respective owners.]
+ *
+ * -------------------
+ * PieDatasetTest.java
+ * -------------------
+ * (C) Copyright 2003-2022, by David Gilbert and Contributors.
+ *
+ * Original Author:  David Gilbert;
+ * Contributor(s):   -;
+ *
+ */
+
+package org.jfree.data.general;
+
+import org.jfree.chart.TestUtils;
+import org.jfree.chart.internal.CloneUtils;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+/**
+ * Tests for the {@link org.jfree.data.general.PieDataset} class.
+ */
+<span class="fc" id="L48">public class DefaultPieDatasetTest implements DatasetChangeListener {</span>
+
+    private DatasetChangeEvent lastEvent;
+
+    /**
+     * Records the last event.
+     *
+     * @param event  the last event.
+     */
+    @Override
+    public void datasetChanged(DatasetChangeEvent event) {
+<span class="fc" id="L59">        this.lastEvent = event;</span>
+<span class="fc" id="L60">    }</span>
+
+    /**
+     * Some tests for the clear() method.
+     */
+    @Test
+    public void testClear() {
+<span class="fc" id="L67">        DefaultPieDataset&lt;String&gt; d = new DefaultPieDataset&lt;&gt;();</span>
+<span class="fc" id="L68">        d.addChangeListener(this);</span>
+        // no event is generated if the dataset is already empty
+<span class="fc" id="L70">        d.clear();</span>
+<span class="fc" id="L71">        assertNull(this.lastEvent);</span>
+<span class="fc" id="L72">        d.setValue(&quot;A&quot;, 1.0);</span>
+<span class="fc" id="L73">        assertEquals(1, d.getItemCount());</span>
+<span class="fc" id="L74">        this.lastEvent = null;</span>
+<span class="fc" id="L75">        d.clear();</span>
+<span class="fc" id="L76">        assertNotNull(this.lastEvent);</span>
+<span class="fc" id="L77">        assertEquals(0, d.getItemCount());</span>
+<span class="fc" id="L78">    }</span>
+
+    /**
+     * Some checks for the getKey(int) method.
+     */
+    @Test
+    public void testGetKey() {
+<span class="fc" id="L85">        DefaultPieDataset&lt;String&gt; d = new DefaultPieDataset&lt;&gt;();</span>
+<span class="fc" id="L86">        d.setValue(&quot;A&quot;, 1.0);</span>
+<span class="fc" id="L87">        d.setValue(&quot;B&quot;, 2.0);</span>
+<span class="fc" id="L88">        assertEquals(&quot;A&quot;, d.getKey(0));</span>
+<span class="fc" id="L89">        assertEquals(&quot;B&quot;, d.getKey(1));</span>
+
+<span class="fc" id="L91">        boolean pass = false;</span>
+        try {
+<span class="nc" id="L93">            d.getKey(-1);</span>
+        }
+<span class="fc" id="L95">        catch (IndexOutOfBoundsException e) {</span>
+<span class="fc" id="L96">            pass = true;</span>
+<span class="nc" id="L97">        }</span>
+<span class="fc" id="L98">        assertTrue(pass);</span>
+
+<span class="fc" id="L100">        pass = false;</span>
+        try {
+<span class="nc" id="L102">            d.getKey(2);</span>
+        }
+<span class="fc" id="L104">        catch (IndexOutOfBoundsException e) {</span>
+<span class="fc" id="L105">            pass = true;</span>
+<span class="nc" id="L106">        }</span>
+<span class="fc" id="L107">        assertTrue(pass);</span>
+<span class="fc" id="L108">    }</span>
+
+    /**
+     * Some checks for the getIndex() method.
+     */
+    @Test
+    public void testGetIndex() {
+<span class="fc" id="L115">        DefaultPieDataset&lt;String&gt; d = new DefaultPieDataset&lt;&gt;();</span>
+<span class="fc" id="L116">        d.setValue(&quot;A&quot;, 1.0);</span>
+<span class="fc" id="L117">        d.setValue(&quot;B&quot;, 2.0);</span>
+<span class="fc" id="L118">        assertEquals(0, d.getIndex(&quot;A&quot;));</span>
+<span class="fc" id="L119">        assertEquals(1, d.getIndex(&quot;B&quot;));</span>
+<span class="fc" id="L120">        assertEquals(-1, d.getIndex(&quot;XX&quot;));</span>
+
+<span class="fc" id="L122">        boolean pass = false;</span>
+        try {
+<span class="nc" id="L124">            d.getIndex(null);</span>
+        }
+<span class="fc" id="L126">        catch (IllegalArgumentException e) {</span>
+<span class="fc" id="L127">            pass = true;</span>
+<span class="nc" id="L128">        }</span>
+<span class="fc" id="L129">        assertTrue(pass);</span>
+<span class="fc" id="L130">    }</span>
+
+    /**
+     * Confirm that cloning works.
+     * @throws java.lang.CloneNotSupportedException
+     */
+    @Test
+    public void testCloning() throws CloneNotSupportedException {
+<span class="fc" id="L138">        DefaultPieDataset&lt;String&gt; d1 = new DefaultPieDataset&lt;&gt;();</span>
+<span class="fc" id="L139">        d1.setValue(&quot;V1&quot;, 1);</span>
+<span class="fc" id="L140">        d1.setValue(&quot;V2&quot;, null);</span>
+<span class="fc" id="L141">        d1.setValue(&quot;V3&quot;, 3);</span>
+<span class="fc" id="L142">        DefaultPieDataset&lt;String&gt; d2 = CloneUtils.clone(d1);</span>
+
+<span class="fc" id="L144">        assertNotSame(d1, d2);</span>
+<span class="fc" id="L145">        assertSame(d1.getClass(), d2.getClass());</span>
+<span class="fc" id="L146">        assertEquals(d1, d2);</span>
+<span class="fc" id="L147">    }</span>
+
+    /**
+     * Serialize an instance, restore it, and check for equality.
+     */
+    @Test
+    public void testSerialization() {
+<span class="fc" id="L154">        DefaultPieDataset&lt;String&gt; d1 = new DefaultPieDataset&lt;&gt;();</span>
+<span class="fc" id="L155">        d1.setValue(&quot;C1&quot;, 234.2);</span>
+<span class="fc" id="L156">        d1.setValue(&quot;C2&quot;, null);</span>
+<span class="fc" id="L157">        d1.setValue(&quot;C3&quot;, 345.9);</span>
+<span class="fc" id="L158">        d1.setValue(&quot;C4&quot;, 452.7);</span>
+
+<span class="fc" id="L160">        DefaultPieDataset&lt;String&gt; d2 = TestUtils.serialised(d1);</span>
+<span class="fc" id="L161">        assertEquals(d1, d2);</span>
+<span class="fc" id="L162">    }</span>
+
+    /**
+     * A test for bug report https://github.com/jfree/jfreechart/issues/212
+     */
+    @Test
+    public void testBug212() {
+<span class="fc" id="L169">        DefaultPieDataset&lt;String&gt; d = new DefaultPieDataset&lt;&gt;();</span>
+<span class="pc" id="L170">        assertThrows(IndexOutOfBoundsException.class, () -&gt;  d.getValue(-1));</span>
+<span class="pc" id="L171">        assertThrows(IndexOutOfBoundsException.class, () -&gt;  d.getValue(0));</span>
+<span class="fc" id="L172">        d.setValue(&quot;A&quot;, 1.0);</span>
+<span class="fc" id="L173">        assertEquals(1.0, d.getValue(0));</span>
+<span class="pc" id="L174">        assertThrows(IndexOutOfBoundsException.class, () -&gt;  d.getValue(1));        </span>
+<span class="fc" id="L175">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span>jfreechart (Mar 14, 2025 5:50:17 p.m.)</div></body></html>

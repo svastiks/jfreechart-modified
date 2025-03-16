@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>DefaultStatisticalCategoryDatasetTest.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">jfreechart (Mar 14, 2025 5:50:17 p.m.)</a> &gt; <a href="../../index.html" class="el_group">jfreechart</a> &gt; <a href="../index.html" class="el_bundle">src/test/java</a> &gt; <a href="index.source.html" class="el_package">org.jfree.data.statistics</a> &gt; <span class="el_source">DefaultStatisticalCategoryDatasetTest.java</span></div><h1>DefaultStatisticalCategoryDatasetTest.java</h1><pre class="source lang-java linenums">/* ===========================================================
+ * JFreeChart : a free chart library for the Java(tm) platform
+ * ===========================================================
+ *
+ * (C) Copyright 2000-2022, by David Gilbert and Contributors.
+ *
+ * Project Info:  http://www.jfree.org/jfreechart/index.html
+ *
+ * This library is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 2.1 of the License, or
+ * (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public
+ * License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301,
+ * USA.
+ *
+ * [Oracle and Java are registered trademarks of Oracle and/or its affiliates. 
+ * Other names may be trademarks of their respective owners.]
+ *
+ * ------------------------------------------
+ * DefaultStatisticalCategoryDatasetTest.java
+ * ------------------------------------------
+ * (C) Copyright 2005-2022, by David Gilbert and Contributors.
+ *
+ * Original Author:  David Gilbert;
+ * Contributor(s):   -;
+ *
+ */
+
+package org.jfree.data.statistics;
+
+import org.jfree.chart.TestUtils;
+import org.jfree.chart.internal.CloneUtils;
+
+import org.jfree.data.Range;
+import org.jfree.data.UnknownKeyException;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+/**
+ * Tests for the {@link DefaultStatisticalCategoryDataset} class.
+ */
+<span class="fc" id="L51">public class DefaultStatisticalCategoryDatasetTest {</span>
+
+    /**
+     * Some checks for the getRangeBounds() method.
+     */
+    @Test
+    public void testGetRangeBounds() {
+<span class="fc" id="L58">        DefaultStatisticalCategoryDataset&lt;String, String&gt; d</span>
+                = new DefaultStatisticalCategoryDataset&lt;&gt;();
+
+        // an empty dataset should return null for bounds
+<span class="fc" id="L62">        assertNull(d.getRangeBounds(true));</span>
+
+        // try a dataset with a single value
+<span class="fc" id="L65">        d.add(4.5, 1.0, &quot;R1&quot;, &quot;C1&quot;);</span>
+<span class="fc" id="L66">        assertEquals(new Range(4.5, 4.5), d.getRangeBounds(false));</span>
+<span class="fc" id="L67">        assertEquals(new Range(3.5, 5.5), d.getRangeBounds(true));</span>
+
+        // try a dataset with two values
+<span class="fc" id="L70">        d.add(0.5, 2.0, &quot;R1&quot;, &quot;C2&quot;);</span>
+<span class="fc" id="L71">        assertEquals(new Range(0.5, 4.5), d.getRangeBounds(false));</span>
+<span class="fc" id="L72">        assertEquals(new Range(-1.5, 5.5), d.getRangeBounds(true));</span>
+
+        // try a Double.NaN
+<span class="fc" id="L75">        d.add(Double.NaN, 0.0, &quot;R1&quot;, &quot;C3&quot;);</span>
+<span class="fc" id="L76">        assertEquals(new Range(0.5, 4.5), d.getRangeBounds(false));</span>
+<span class="fc" id="L77">        assertEquals(new Range(-1.5, 5.5), d.getRangeBounds(true));</span>
+
+        // try a Double.NEGATIVE_INFINITY
+<span class="fc" id="L80">        d.add(Double.NEGATIVE_INFINITY, 0.0, &quot;R1&quot;, &quot;C3&quot;);</span>
+<span class="fc" id="L81">        assertEquals(new Range(Double.NEGATIVE_INFINITY, 4.5),</span>
+<span class="fc" id="L82">                d.getRangeBounds(false));</span>
+<span class="fc" id="L83">        assertEquals(new Range(Double.NEGATIVE_INFINITY, 5.5),</span>
+<span class="fc" id="L84">                d.getRangeBounds(true));</span>
+
+        // try a Double.POSITIVE_INFINITY
+<span class="fc" id="L87">        d.add(Double.POSITIVE_INFINITY, 0.0, &quot;R1&quot;, &quot;C3&quot;);</span>
+<span class="fc" id="L88">        assertEquals(new Range(0.5, Double.POSITIVE_INFINITY),</span>
+<span class="fc" id="L89">                d.getRangeBounds(false));</span>
+<span class="fc" id="L90">        assertEquals(new Range(-1.5, Double.POSITIVE_INFINITY),</span>
+<span class="fc" id="L91">                d.getRangeBounds(true));</span>
+<span class="fc" id="L92">    }</span>
+
+    /**
+     * Confirm that the equals method can distinguish all the required fields.
+     */
+    @Test
+    public void testEquals() {
+<span class="fc" id="L99">        DefaultStatisticalCategoryDataset&lt;String, String&gt; d1</span>
+                = new DefaultStatisticalCategoryDataset&lt;&gt;();
+<span class="fc" id="L101">        DefaultStatisticalCategoryDataset&lt;String, String&gt; d2</span>
+                = new DefaultStatisticalCategoryDataset&lt;&gt;();
+<span class="fc" id="L103">        assertEquals(d1, d2);</span>
+<span class="fc" id="L104">        assertEquals(d2, d1);</span>
+
+<span class="fc" id="L106">    }</span>
+
+    /**
+     * Some checks for cloning.
+     */
+    @Test
+    public void testCloning() {
+<span class="fc" id="L113">        DefaultStatisticalCategoryDataset&lt;String, String&gt; d1</span>
+                = new DefaultStatisticalCategoryDataset&lt;&gt;();
+<span class="fc" id="L115">        d1.add(1.1, 2.2, &quot;R1&quot;, &quot;C1&quot;);</span>
+<span class="fc" id="L116">        d1.add(3.3, 4.4, &quot;R1&quot;, &quot;C2&quot;);</span>
+<span class="fc" id="L117">        d1.add(null, 5.5, &quot;R1&quot;, &quot;C3&quot;);</span>
+<span class="fc" id="L118">        d1.add(6.6, null, &quot;R2&quot;, &quot;C3&quot;);</span>
+<span class="fc" id="L119">        DefaultStatisticalCategoryDataset&lt;String, String&gt; d2 = null;</span>
+        try {
+<span class="fc" id="L121">            d2 = CloneUtils.clone(d1);</span>
+        }
+<span class="nc" id="L123">        catch (CloneNotSupportedException e) {</span>
+<span class="nc" id="L124">            fail(e.toString());</span>
+<span class="fc" id="L125">        }</span>
+<span class="fc" id="L126">        assertNotSame(d1, d2);</span>
+<span class="fc" id="L127">        assertSame(d1.getClass(), d2.getClass());</span>
+<span class="fc" id="L128">        assertEquals(d1, d2);</span>
+
+        // check independence
+<span class="fc" id="L131">        d1.add(1.1, 2.2, &quot;R3&quot;, &quot;C1&quot;);</span>
+<span class="fc" id="L132">        assertNotEquals(d1, d2);</span>
+<span class="fc" id="L133">    }</span>
+
+    /**
+     * Check serialization of a default instance.
+     */
+    @Test
+    public void testSerialization1() {
+<span class="fc" id="L140">        DefaultStatisticalCategoryDataset&lt;String, String&gt; d1</span>
+            = new DefaultStatisticalCategoryDataset&lt;&gt;();
+<span class="fc" id="L142">        d1.add(1.1, 2.2, &quot;R1&quot;, &quot;C1&quot;);</span>
+<span class="fc" id="L143">        d1.add(3.3, 4.4, &quot;R1&quot;, &quot;C2&quot;);</span>
+<span class="fc" id="L144">        d1.add(null, 5.5, &quot;R1&quot;, &quot;C3&quot;);</span>
+<span class="fc" id="L145">        d1.add(6.6, null, &quot;R2&quot;, &quot;C3&quot;);</span>
+<span class="fc" id="L146">        DefaultStatisticalCategoryDataset&lt;String, String&gt; d2 = TestUtils.serialised(d1);</span>
+<span class="fc" id="L147">        assertEquals(d1, d2);</span>
+<span class="fc" id="L148">    }</span>
+
+    /**
+     * Check serialization of a more complex instance.
+     */
+    @Test
+    public void testSerialization2() {
+<span class="fc" id="L155">        DefaultStatisticalCategoryDataset&lt;String, String&gt; d1</span>
+            = new DefaultStatisticalCategoryDataset&lt;&gt;();
+<span class="fc" id="L157">        d1.add(1.2, 3.4, &quot;Row 1&quot;, &quot;Column 1&quot;);</span>
+<span class="fc" id="L158">        DefaultStatisticalCategoryDataset&lt;String, String&gt; d2 = TestUtils.serialised(d1);</span>
+<span class="fc" id="L159">        assertEquals(d1, d2);</span>
+<span class="fc" id="L160">    }</span>
+
+    private static final double EPSILON = 0.0000000001;
+
+    /**
+     * Some checks for the add() method.
+     */
+    @Test
+    public void testAdd() {
+<span class="fc" id="L169">        DefaultStatisticalCategoryDataset&lt;String, String&gt; d1</span>
+                = new DefaultStatisticalCategoryDataset&lt;&gt;();
+<span class="fc" id="L171">        d1.add(1.0, 2.0, &quot;R1&quot;, &quot;C1&quot;);</span>
+<span class="fc" id="L172">        assertEquals(1.0, d1.getValue(&quot;R1&quot;, &quot;C1&quot;).doubleValue(), EPSILON);</span>
+<span class="fc" id="L173">        assertEquals(2.0, d1.getStdDevValue(&quot;R1&quot;, &quot;C1&quot;).doubleValue(), EPSILON);</span>
+
+        // overwrite the value
+<span class="fc" id="L176">        d1.add(10.0, 20.0, &quot;R1&quot;, &quot;C1&quot;);</span>
+<span class="fc" id="L177">        assertEquals(10.0, d1.getValue(&quot;R1&quot;, &quot;C1&quot;).doubleValue(), EPSILON);</span>
+<span class="fc" id="L178">        assertEquals(20.0, d1.getStdDevValue(&quot;R1&quot;, &quot;C1&quot;).doubleValue(), EPSILON);</span>
+<span class="fc" id="L179">    }</span>
+
+    /**
+     * Some checks for the getRangeLowerBound() method.
+     */
+    @Test
+    public void testGetRangeLowerBound() {
+<span class="fc" id="L186">        DefaultStatisticalCategoryDataset&lt;String, String&gt; d1</span>
+                = new DefaultStatisticalCategoryDataset&lt;&gt;();
+<span class="fc" id="L188">        d1.add(1.0, 2.0, &quot;R1&quot;, &quot;C1&quot;);</span>
+<span class="fc" id="L189">        assertEquals(1.0, d1.getRangeLowerBound(false), EPSILON);</span>
+<span class="fc" id="L190">        assertEquals(-1.0, d1.getRangeLowerBound(true), EPSILON);</span>
+<span class="fc" id="L191">    }</span>
+
+    /**
+     * Some checks for the getRangeUpperBound() method.
+     */
+    @Test
+    public void testGetRangeUpperBound() {
+<span class="fc" id="L198">        DefaultStatisticalCategoryDataset&lt;String, String&gt; d1</span>
+                = new DefaultStatisticalCategoryDataset&lt;&gt;();
+<span class="fc" id="L200">        d1.add(1.0, 2.0, &quot;R1&quot;, &quot;C1&quot;);</span>
+<span class="fc" id="L201">        assertEquals(1.0, d1.getRangeUpperBound(false), EPSILON);</span>
+<span class="fc" id="L202">        assertEquals(3.0, d1.getRangeUpperBound(true), EPSILON);</span>
+<span class="fc" id="L203">    }</span>
+
+    /**
+     * Some checks for the getRangeBounds() method.
+     */
+    @Test
+    public void testGetRangeBounds2() {
+<span class="fc" id="L210">        DefaultStatisticalCategoryDataset&lt;String, String&gt; d1</span>
+                = new DefaultStatisticalCategoryDataset&lt;&gt;();
+<span class="fc" id="L212">        d1.add(1.0, 2.0, &quot;R1&quot;, &quot;C1&quot;);</span>
+<span class="fc" id="L213">        assertEquals(new Range(1.0, 1.0), d1.getRangeBounds(false));</span>
+<span class="fc" id="L214">        assertEquals(new Range(-1.0, 3.0), d1.getRangeBounds(true));</span>
+
+<span class="fc" id="L216">        d1.add(10.0, 20.0, &quot;R1&quot;, &quot;C1&quot;);</span>
+<span class="fc" id="L217">        assertEquals(new Range(10.0, 10.0), d1.getRangeBounds(false));</span>
+<span class="fc" id="L218">        assertEquals(new Range(-10.0, 30.0), d1.getRangeBounds(true));</span>
+<span class="fc" id="L219">    }</span>
+
+    /**
+     * Some checks for the remove method.
+     */
+    @Test
+    public void testRemove() {
+<span class="fc" id="L226">        DefaultStatisticalCategoryDataset&lt;String, String&gt; data</span>
+                = new DefaultStatisticalCategoryDataset&lt;&gt;();
+
+<span class="fc" id="L229">        boolean pass = false;</span>
+        try {
+<span class="nc" id="L231">            data.remove(&quot;R1&quot;, &quot;R2&quot;);</span>
+        }
+<span class="fc" id="L233">        catch (UnknownKeyException e) {</span>
+<span class="fc" id="L234">            pass = true;</span>
+<span class="nc" id="L235">        }</span>
+<span class="fc" id="L236">        assertTrue(pass);</span>
+<span class="fc" id="L237">        data.add(1.0, 0.5, &quot;R1&quot;, &quot;C1&quot;);</span>
+<span class="fc" id="L238">        assertEquals(new Range(1.0, 1.0), data.getRangeBounds(false));</span>
+<span class="fc" id="L239">        assertEquals(new Range(0.5, 1.5), data.getRangeBounds(true));</span>
+
+<span class="fc" id="L241">        data.add(1.4, 0.2, &quot;R2&quot;, &quot;C1&quot;);</span>
+
+<span class="fc" id="L243">        assertEquals(1.0, data.getRangeLowerBound(false), EPSILON);</span>
+<span class="fc" id="L244">        assertEquals(1.4, data.getRangeUpperBound(false), EPSILON);</span>
+<span class="fc" id="L245">        assertEquals(0.5, data.getRangeLowerBound(true), EPSILON);</span>
+<span class="fc" id="L246">        assertEquals(1.6, data.getRangeUpperBound(true), EPSILON);</span>
+
+<span class="fc" id="L248">        data.remove(&quot;R1&quot;, &quot;C1&quot;);</span>
+
+<span class="fc" id="L250">        assertEquals(1.4, data.getRangeLowerBound(false), EPSILON);</span>
+<span class="fc" id="L251">        assertEquals(1.4, data.getRangeUpperBound(false), EPSILON);</span>
+<span class="fc" id="L252">        assertEquals(1.2, data.getRangeLowerBound(true), EPSILON);</span>
+<span class="fc" id="L253">        assertEquals(1.6, data.getRangeUpperBound(true), EPSILON);</span>
+<span class="fc" id="L254">    }</span>
+
+    /**
+     * A test for bug 3072674.
+     */
+    @Test
+    public void test3072674() {
+<span class="fc" id="L261">        DefaultStatisticalCategoryDataset&lt;String, String&gt; dataset</span>
+                = new DefaultStatisticalCategoryDataset&lt;&gt;();
+<span class="fc" id="L263">        dataset.add(1.0, Double.NaN, &quot;R1&quot;, &quot;C1&quot;);</span>
+<span class="fc" id="L264">        assertEquals(1.0, dataset.getRangeLowerBound(true), EPSILON);</span>
+<span class="fc" id="L265">        assertEquals(1.0, dataset.getRangeUpperBound(true), EPSILON);</span>
+        
+<span class="fc" id="L267">        Range r = dataset.getRangeBounds(true);</span>
+<span class="fc" id="L268">        assertEquals(1.0, r.getLowerBound(), EPSILON);</span>
+<span class="fc" id="L269">        assertEquals(1.0, r.getUpperBound(), EPSILON);</span>
+<span class="fc" id="L270">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span>jfreechart (Mar 14, 2025 5:50:17 p.m.)</div></body></html>

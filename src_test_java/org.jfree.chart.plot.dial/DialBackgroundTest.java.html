@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>DialBackgroundTest.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">jfreechart (Mar 14, 2025 5:50:17 p.m.)</a> &gt; <a href="../../index.html" class="el_group">jfreechart</a> &gt; <a href="../index.html" class="el_bundle">src/test/java</a> &gt; <a href="index.source.html" class="el_package">org.jfree.chart.plot.dial</a> &gt; <span class="el_source">DialBackgroundTest.java</span></div><h1>DialBackgroundTest.java</h1><pre class="source lang-java linenums">/* ===========================================================
+ * JFreeChart : a free chart library for the Java(tm) platform
+ * ===========================================================
+ *
+ * (C) Copyright 2000-2022, by David Gilbert and Contributors.
+ *
+ * Project Info:  http://www.jfree.org/jfreechart/index.html
+ *
+ * This library is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 2.1 of the License, or
+ * (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public
+ * License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301,
+ * USA.
+ *
+ * [Oracle and Java are registered trademarks of Oracle and/or its affiliates. 
+ * Other names may be trademarks of their respective owners.]
+ *
+ * -----------------------
+ * DialBackgroundTest.java
+ * -----------------------
+ * (C) Copyright 2006-2022, by David Gilbert and Contributors.
+ *
+ * Original Author:  David Gilbert;
+ * Contributor(s):   -;
+ *
+ */
+
+package org.jfree.chart.plot.dial;
+
+import java.awt.Color;
+import java.awt.GradientPaint;
+
+import org.jfree.chart.TestUtils;
+import org.jfree.chart.util.GradientPaintTransformType;
+import org.jfree.chart.util.StandardGradientPaintTransformer;
+import org.jfree.chart.internal.CloneUtils;
+
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+/**
+ * Tests for the {@link DialBackground} class.
+ */
+<span class="fc" id="L54">public class DialBackgroundTest {</span>
+
+    /**
+     * Confirm that the equals method can distinguish all the required fields.
+     */
+    @Test
+    public void testEquals() {
+<span class="fc" id="L61">        DialBackground b1 = new DialBackground();</span>
+<span class="fc" id="L62">        DialBackground b2 = new DialBackground();</span>
+<span class="fc" id="L63">        assertEquals(b1, b2);</span>
+
+        // paint
+<span class="fc" id="L66">        b1.setPaint(new GradientPaint(1.0f, 2.0f, Color.RED, 3.0f, 4.0f,</span>
+                Color.YELLOW));
+<span class="fc" id="L68">        assertNotEquals(b1, b2);</span>
+<span class="fc" id="L69">        b2.setPaint(new GradientPaint(1.0f, 2.0f, Color.RED, 3.0f, 4.0f,</span>
+                Color.YELLOW));
+<span class="fc" id="L71">        assertEquals(b1, b2);</span>
+
+        // gradient paint transformer
+<span class="fc" id="L74">        b1.setGradientPaintTransformer(new StandardGradientPaintTransformer(</span>
+                GradientPaintTransformType.CENTER_VERTICAL));
+<span class="fc" id="L76">        assertNotEquals(b1, b2);</span>
+<span class="fc" id="L77">        b2.setGradientPaintTransformer(new StandardGradientPaintTransformer(</span>
+                GradientPaintTransformType.CENTER_VERTICAL));
+<span class="fc" id="L79">        assertEquals(b1, b2);</span>
+
+        // check an inherited attribute
+<span class="fc" id="L82">        b1.setVisible(false);</span>
+<span class="fc" id="L83">        assertNotEquals(b1, b2);</span>
+<span class="fc" id="L84">        b2.setVisible(false);</span>
+<span class="fc" id="L85">        assertEquals(b1, b2);</span>
+
+<span class="fc" id="L87">    }</span>
+
+    /**
+     * Two objects that are equal are required to return the same hashCode.
+     */
+    @Test
+    public void testHashCode() {
+<span class="fc" id="L94">        DialBackground b1 = new DialBackground(Color.RED);</span>
+<span class="fc" id="L95">        DialBackground b2 = new DialBackground(Color.RED);</span>
+<span class="fc" id="L96">        assertEquals(b1, b2);</span>
+<span class="fc" id="L97">        int h1 = b1.hashCode();</span>
+<span class="fc" id="L98">        int h2 = b2.hashCode();</span>
+<span class="fc" id="L99">        assertEquals(h1, h2);</span>
+<span class="fc" id="L100">    }</span>
+
+    /**
+     * Confirm that cloning works.
+     * @throws java.lang.CloneNotSupportedException
+     */
+    @Test
+    public void testCloning() throws CloneNotSupportedException {
+        // test default instance
+<span class="fc" id="L109">        DialBackground b1 = new DialBackground();</span>
+<span class="fc" id="L110">        DialBackground b2 = CloneUtils.clone(b1);</span>
+<span class="fc" id="L111">        assertNotSame(b1, b2);</span>
+<span class="fc" id="L112">        assertSame(b1.getClass(), b2.getClass());</span>
+<span class="fc" id="L113">        assertEquals(b1, b2);</span>
+
+        // test a customised instance
+<span class="fc" id="L116">        b1 = new DialBackground();</span>
+<span class="fc" id="L117">        b1.setPaint(new GradientPaint(1.0f, 2.0f, Color.RED, 3.0f, 4.0f,</span>
+                Color.GREEN));
+<span class="fc" id="L119">        b1.setGradientPaintTransformer(new StandardGradientPaintTransformer(</span>
+                GradientPaintTransformType.CENTER_VERTICAL));
+<span class="fc" id="L121">        b2 = (DialBackground) b1.clone();</span>
+<span class="fc" id="L122">        assertNotSame(b1, b2);</span>
+<span class="fc" id="L123">        assertSame(b1.getClass(), b2.getClass());</span>
+<span class="fc" id="L124">        assertEquals(b1, b2);</span>
+
+        // check that the listener lists are independent
+<span class="fc" id="L127">        MyDialLayerChangeListener l1 = new MyDialLayerChangeListener();</span>
+<span class="fc" id="L128">        b1.addChangeListener(l1);</span>
+<span class="fc" id="L129">        assertTrue(b1.hasListener(l1));</span>
+<span class="fc" id="L130">        assertFalse(b2.hasListener(l1));</span>
+<span class="fc" id="L131">    }</span>
+
+    /**
+     * Serialize an instance, restore it, and check for equality.
+     */
+    @Test
+    public void testSerialization() {
+        // test a default instance
+<span class="fc" id="L139">        DialBackground b1 = new DialBackground();</span>
+<span class="fc" id="L140">        DialBackground b2 = TestUtils.serialised(b1);</span>
+<span class="fc" id="L141">        assertEquals(b1, b2);</span>
+
+        // test a customised instance
+<span class="fc" id="L144">        b1 = new DialBackground();</span>
+<span class="fc" id="L145">        b1.setPaint(new GradientPaint(1.0f, 2.0f, Color.RED, 3.0f, 4.0f, Color.GREEN));</span>
+<span class="fc" id="L146">        b1.setGradientPaintTransformer(new StandardGradientPaintTransformer(</span>
+                GradientPaintTransformType.CENTER_VERTICAL));
+
+<span class="fc" id="L149">        b2 = TestUtils.serialised(b1);</span>
+<span class="fc" id="L150">        assertEquals(b1, b2);</span>
+<span class="fc" id="L151">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span>jfreechart (Mar 14, 2025 5:50:17 p.m.)</div></body></html>

@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>StandardXYItemRendererTest.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">jfreechart (Mar 14, 2025 5:50:17 p.m.)</a> &gt; <a href="../../index.html" class="el_group">jfreechart</a> &gt; <a href="../index.html" class="el_bundle">src/test/java</a> &gt; <a href="index.source.html" class="el_package">org.jfree.chart.renderer.xy</a> &gt; <span class="el_source">StandardXYItemRendererTest.java</span></div><h1>StandardXYItemRendererTest.java</h1><pre class="source lang-java linenums">/* ===========================================================
+ * JFreeChart : a free chart library for the Java(tm) platform
+ * ===========================================================
+ *
+ * (C) Copyright 2000-2022, by David Gilbert and Contributors.
+ *
+ * Project Info:  http://www.jfree.org/jfreechart/index.html
+ *
+ * This library is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 2.1 of the License, or
+ * (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public
+ * License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301,
+ * USA.
+ *
+ * [Oracle and Java are registered trademarks of Oracle and/or its affiliates. 
+ * Other names may be trademarks of their respective owners.]
+ *
+ * -------------------------------
+ * StandardXYItemRendererTest.java
+ * -------------------------------
+ * (C) Copyright 2003-2022, by David Gilbert and Contributors.
+ *
+ * Original Author:  David Gilbert;
+ * Contributor(s):   -;
+ *
+ */
+
+package org.jfree.chart.renderer.xy;
+
+import java.awt.Graphics2D;
+import java.awt.geom.Line2D;
+import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
+
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartRenderingInfo;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.legend.LegendItem;
+import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.entity.EntityCollection;
+import org.jfree.chart.entity.XYItemEntity;
+import org.jfree.chart.TestUtils;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.internal.CloneUtils;
+import org.jfree.chart.api.PublicCloneable;
+import org.jfree.chart.api.UnitType;
+import org.jfree.data.xy.XYSeries;
+import org.jfree.data.xy.XYSeriesCollection;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+/**
+ * Tests for the {@link StandardXYItemRenderer} class.
+ */
+<span class="fc" id="L66">public class StandardXYItemRendererTest {</span>
+
+    /**
+     * Test that the equals() method distinguishes all fields.
+     */
+    @Test
+    public void testEquals() {
+<span class="fc" id="L73">        StandardXYItemRenderer r1 = new StandardXYItemRenderer();</span>
+<span class="fc" id="L74">        StandardXYItemRenderer r2 = new StandardXYItemRenderer();</span>
+<span class="fc" id="L75">        assertEquals(r1, r2);</span>
+
+<span class="fc" id="L77">        r1.setBaseShapesVisible(true);</span>
+<span class="fc" id="L78">        assertNotEquals(r1, r2);</span>
+<span class="fc" id="L79">        r2.setBaseShapesVisible(true);</span>
+<span class="fc" id="L80">        assertEquals(r1, r2);</span>
+
+<span class="fc" id="L82">        r1.setPlotLines(false);</span>
+<span class="fc" id="L83">        assertNotEquals(r1, r2);</span>
+<span class="fc" id="L84">        r2.setPlotLines(false);</span>
+<span class="fc" id="L85">        assertEquals(r1, r2);</span>
+
+<span class="fc" id="L87">        r1.setPlotImages(true);</span>
+<span class="fc" id="L88">        assertNotEquals(r1, r2);</span>
+<span class="fc" id="L89">        r2.setPlotImages(true);</span>
+<span class="fc" id="L90">        assertEquals(r1, r2);</span>
+
+<span class="fc" id="L92">        r1.setPlotDiscontinuous(true);</span>
+<span class="fc" id="L93">        assertNotEquals(r1, r2);</span>
+<span class="fc" id="L94">        r2.setPlotDiscontinuous(true);</span>
+<span class="fc" id="L95">        assertEquals(r1, r2);</span>
+
+<span class="fc" id="L97">        r1.setGapThresholdType(UnitType.ABSOLUTE);</span>
+<span class="fc" id="L98">        assertNotEquals(r1, r2);</span>
+<span class="fc" id="L99">        r2.setGapThresholdType(UnitType.ABSOLUTE);</span>
+<span class="fc" id="L100">        assertEquals(r1, r2);</span>
+
+<span class="fc" id="L102">        r1.setGapThreshold(1.23);</span>
+<span class="fc" id="L103">        assertNotEquals(r1, r2);</span>
+<span class="fc" id="L104">        r2.setGapThreshold(1.23);</span>
+<span class="fc" id="L105">        assertEquals(r1, r2);</span>
+
+<span class="fc" id="L107">        r1.setLegendLine(new Line2D.Double(1.0, 2.0, 3.0, 4.0));</span>
+<span class="fc" id="L108">        assertNotEquals(r1, r2);</span>
+<span class="fc" id="L109">        r2.setLegendLine(new Line2D.Double(1.0, 2.0, 3.0, 4.0));</span>
+<span class="fc" id="L110">        assertEquals(r1, r2);</span>
+
+<span class="fc" id="L112">        r1.setSeriesShapesFilled(1, Boolean.TRUE);</span>
+<span class="fc" id="L113">        assertNotEquals(r1, r2);</span>
+<span class="fc" id="L114">        r2.setSeriesShapesFilled(1, Boolean.TRUE);</span>
+<span class="fc" id="L115">        assertEquals(r1, r2);</span>
+
+<span class="fc" id="L117">        r1.setBaseShapesFilled(false);</span>
+<span class="fc" id="L118">        assertNotEquals(r1, r2);</span>
+<span class="fc" id="L119">        r2.setBaseShapesFilled(false);</span>
+<span class="fc" id="L120">        assertEquals(r1, r2);</span>
+
+<span class="fc" id="L122">        r1.setDrawSeriesLineAsPath(true);</span>
+<span class="fc" id="L123">        assertNotEquals(r1, r2);</span>
+<span class="fc" id="L124">        r2.setDrawSeriesLineAsPath(true);</span>
+<span class="fc" id="L125">        assertEquals(r1, r2);</span>
+<span class="fc" id="L126">    }</span>
+
+    /**
+     * Two objects that are equal are required to return the same hashCode.
+     */
+    @Test
+    public void testHashcode() {
+<span class="fc" id="L133">        StandardXYItemRenderer r1 = new StandardXYItemRenderer();</span>
+<span class="fc" id="L134">        StandardXYItemRenderer r2 = new StandardXYItemRenderer();</span>
+<span class="fc" id="L135">        assertEquals(r1, r2);</span>
+<span class="fc" id="L136">        int h1 = r1.hashCode();</span>
+<span class="fc" id="L137">        int h2 = r2.hashCode();</span>
+<span class="fc" id="L138">        assertEquals(h1, h2);</span>
+<span class="fc" id="L139">    }</span>
+
+    /**
+     * Confirm that cloning works.
+     * 
+     * @throws java.lang.CloneNotSupportedException
+     */
+    @Test
+    public void testCloning() throws CloneNotSupportedException {
+<span class="fc" id="L148">        StandardXYItemRenderer r1 = new StandardXYItemRenderer();</span>
+<span class="fc" id="L149">        Rectangle2D rect1 = new Rectangle2D.Double(1.0, 2.0, 3.0, 4.0);</span>
+<span class="fc" id="L150">        r1.setLegendLine(rect1);</span>
+<span class="fc" id="L151">        StandardXYItemRenderer r2 = CloneUtils.clone(r1);</span>
+<span class="fc" id="L152">        assertNotSame(r1, r2);</span>
+<span class="fc" id="L153">        assertSame(r1.getClass(), r2.getClass());</span>
+<span class="fc" id="L154">        assertEquals(r1, r2);</span>
+
+        // check independence
+<span class="fc" id="L157">        rect1.setRect(4.0, 3.0, 2.0, 1.0);</span>
+<span class="fc" id="L158">        assertNotEquals(r1, r2);</span>
+<span class="fc" id="L159">        r2.setLegendLine(new Rectangle2D.Double(4.0, 3.0, 2.0, 1.0));</span>
+<span class="fc" id="L160">        assertEquals(r1, r2);</span>
+
+<span class="fc" id="L162">        r1.setSeriesShapesFilled(1, Boolean.TRUE);</span>
+<span class="fc" id="L163">        assertNotEquals(r1, r2);</span>
+<span class="fc" id="L164">        r2.setSeriesShapesFilled(1, Boolean.TRUE);</span>
+<span class="fc" id="L165">        assertEquals(r1, r2);</span>
+<span class="fc" id="L166">    }</span>
+
+    /**
+     * Verify that this class implements {@link PublicCloneable}.
+     */
+    @Test
+    public void testPublicCloneable() {
+<span class="fc" id="L173">        StandardXYItemRenderer r1 = new StandardXYItemRenderer();</span>
+<span class="fc" id="L174">        assertTrue(r1 instanceof PublicCloneable);</span>
+<span class="fc" id="L175">    }</span>
+
+    /**
+     * Serialize an instance, restore it, and check for equality.
+     */
+    @Test
+    public void testSerialization() {
+<span class="fc" id="L182">        StandardXYItemRenderer r1 = new StandardXYItemRenderer();</span>
+<span class="fc" id="L183">        StandardXYItemRenderer r2 = TestUtils.serialised(r1);</span>
+<span class="fc" id="L184">        assertEquals(r1, r2);</span>
+<span class="fc" id="L185">    }</span>
+
+    /**
+     * A check for the datasetIndex and seriesIndex fields in the LegendItem
+     * returned by the getLegendItem() method.
+     */
+    @Test
+    public void testGetLegendItemSeriesIndex() {
+<span class="fc" id="L193">        XYSeriesCollection&lt;String&gt; d1 = new XYSeriesCollection&lt;&gt;();</span>
+<span class="fc" id="L194">        XYSeries&lt;String&gt; s1 = new XYSeries&lt;&gt;(&quot;S1&quot;);</span>
+<span class="fc" id="L195">        s1.add(1.0, 1.1);</span>
+<span class="fc" id="L196">        XYSeries&lt;String&gt; s2 = new XYSeries&lt;&gt;(&quot;S2&quot;);</span>
+<span class="fc" id="L197">        s2.add(1.0, 1.1);</span>
+<span class="fc" id="L198">        d1.addSeries(s1);</span>
+<span class="fc" id="L199">        d1.addSeries(s2);</span>
+
+<span class="fc" id="L201">        XYSeriesCollection&lt;String&gt; d2 = new XYSeriesCollection&lt;&gt;();</span>
+<span class="fc" id="L202">        XYSeries&lt;String&gt; s3 = new XYSeries&lt;&gt;(&quot;S3&quot;);</span>
+<span class="fc" id="L203">        s3.add(1.0, 1.1);</span>
+<span class="fc" id="L204">        XYSeries&lt;String&gt; s4 = new XYSeries&lt;&gt;(&quot;S4&quot;);</span>
+<span class="fc" id="L205">        s4.add(1.0, 1.1);</span>
+<span class="fc" id="L206">        XYSeries&lt;String&gt; s5 = new XYSeries&lt;&gt;(&quot;S5&quot;);</span>
+<span class="fc" id="L207">        s5.add(1.0, 1.1);</span>
+<span class="fc" id="L208">        d2.addSeries(s3);</span>
+<span class="fc" id="L209">        d2.addSeries(s4);</span>
+<span class="fc" id="L210">        d2.addSeries(s5);</span>
+
+<span class="fc" id="L212">        StandardXYItemRenderer r = new StandardXYItemRenderer();</span>
+<span class="fc" id="L213">        XYPlot&lt;String&gt; plot = new XYPlot&lt;&gt;(d1, new NumberAxis(&quot;x&quot;),</span>
+                new NumberAxis(&quot;y&quot;), r);
+<span class="fc" id="L215">        plot.setDataset(1, d2);</span>
+<span class="fc" id="L216">        JFreeChart chart = new JFreeChart(plot);</span>
+<span class="fc" id="L217">        LegendItem li = r.getLegendItem(1, 2);</span>
+<span class="fc" id="L218">        assertEquals(&quot;S5&quot;, li.getLabel());</span>
+<span class="fc" id="L219">        assertEquals(1, li.getDatasetIndex());</span>
+<span class="fc" id="L220">        assertEquals(2, li.getSeriesIndex());</span>
+<span class="fc" id="L221">    }</span>
+
+    /**
+     * A check to ensure that an item that falls outside the plot's data area
+     * does NOT generate an item entity.
+     */
+    @Test
+    public void testNoDisplayedItem() {
+<span class="fc" id="L229">        XYSeriesCollection&lt;String&gt; dataset = new XYSeriesCollection&lt;&gt;();</span>
+<span class="fc" id="L230">        XYSeries&lt;String&gt; s1 = new XYSeries&lt;&gt;(&quot;S1&quot;);</span>
+<span class="fc" id="L231">        s1.add(10.0, 10.0);</span>
+<span class="fc" id="L232">        dataset.addSeries(s1);</span>
+<span class="fc" id="L233">        JFreeChart chart = ChartFactory.createXYLineChart(&quot;Title&quot;, &quot;X&quot;, &quot;Y&quot;,</span>
+                dataset, PlotOrientation.VERTICAL, false, true, false);
+<span class="fc" id="L235">        XYPlot&lt;?&gt; plot = (XYPlot) chart.getPlot();</span>
+<span class="fc" id="L236">        plot.setRenderer(new StandardXYItemRenderer());</span>
+<span class="fc" id="L237">        NumberAxis xAxis = (NumberAxis) plot.getDomainAxis();</span>
+<span class="fc" id="L238">        xAxis.setRange(0.0, 5.0);</span>
+<span class="fc" id="L239">        NumberAxis yAxis = (NumberAxis) plot.getRangeAxis();</span>
+<span class="fc" id="L240">        yAxis.setRange(0.0, 5.0);</span>
+<span class="fc" id="L241">        BufferedImage image = new BufferedImage(200 , 100,</span>
+                BufferedImage.TYPE_INT_RGB);
+<span class="fc" id="L243">        Graphics2D g2 = image.createGraphics();</span>
+<span class="fc" id="L244">        ChartRenderingInfo info = new ChartRenderingInfo();</span>
+<span class="fc" id="L245">        chart.draw(g2, new Rectangle2D.Double(0, 0, 200, 100), null, info);</span>
+<span class="fc" id="L246">        g2.dispose();</span>
+<span class="fc" id="L247">        EntityCollection ec = info.getEntityCollection();</span>
+<span class="fc" id="L248">        assertFalse(TestUtils.containsInstanceOf(ec.getEntities(), XYItemEntity.class));</span>
+<span class="fc" id="L249">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span>jfreechart (Mar 14, 2025 5:50:17 p.m.)</div></body></html>

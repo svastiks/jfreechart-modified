@@ -1,0 +1,612 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>XYBezierRenderer.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">jfreechart (Mar 14, 2025 5:50:17 p.m.)</a> &gt; <a href="../../index.html" class="el_group">jfreechart</a> &gt; <a href="../index.html" class="el_bundle">src/main/java</a> &gt; <a href="index.source.html" class="el_package">org.jfree.chart.renderer.xy</a> &gt; <span class="el_source">XYBezierRenderer.java</span></div><h1>XYBezierRenderer.java</h1><pre class="source lang-java linenums">/* ===========================================================
+ * JFreeChart : a free chart library for the Java(tm) platform
+ * ===========================================================
+ *
+ * (C) Copyright 2000-2021, by Object Refinery Limited and Contributors.
+ *
+ * Project Info:  http://www.jfree.org/jfreechart/index.html
+ *
+ * This library is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 2.1 of the License, or
+ * (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public
+ * License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301,
+ * USA.
+ *
+ * [Oracle and Java are registered trademarks of Oracle and/or its affiliates. 
+ * Other names may be trademarks of their respective owners.]
+ *
+ * ---------------------
+ * XYBezierRenderer.java
+ * ---------------------
+ * (C) Copyright, by Javier Robes and Contributors.
+ *
+ * Original Author:  Javier Robes;
+ *
+ */
+
+package org.jfree.chart.renderer.xy;
+
+import java.awt.GradientPaint;
+import java.awt.Graphics2D;
+import java.awt.Paint;
+import java.awt.geom.GeneralPath;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
+import org.jfree.chart.axis.ValueAxis;
+import org.jfree.chart.event.RendererChangeEvent;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.plot.PlotRenderingInfo;
+import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.util.GradientPaintTransformer;
+import org.jfree.chart.api.RectangleEdge;
+import org.jfree.chart.util.StandardGradientPaintTransformer;
+import org.jfree.chart.internal.Args;
+import org.jfree.data.xy.XYDataset;
+
+
+/**
+ * A renderer that connects data points with Bezier cubic curves and/or
+ * draws shapes at each data point.  This renderer is designed for use with
+ * the {@link XYPlot} class.
+ * &lt;br&gt;&lt;br&gt;
+ * 
+ * @since
+ */
+public class XYBezierRenderer extends XYLineAndShapeRenderer {
+
+	/**
+     * An enumeration of the fill types for the renderer.
+     * 
+     * @since 1.0.17
+     */
+<span class="fc" id="L75">    public static enum FillType {</span>
+       
+        /** No fill. */
+<span class="fc" id="L78">        NONE,</span>
+        
+        /** Fill down to zero. */
+<span class="fc" id="L81">        TO_ZERO,</span>
+        
+        /** Fill to the lower bound. */
+<span class="fc" id="L84">        TO_LOWER_BOUND,</span>
+        
+        /** Fill to the upper bound. */
+<span class="fc" id="L87">        TO_UPPER_BOUND</span>
+    }
+    
+    /**
+     * Represents state information that applies to a single rendering of
+     * a chart.
+     */
+    public static class XYBezierState extends State {
+        
+        /** The area to fill under the curve. */
+        public GeneralPath fillArea;
+        
+        /** The points. */
+        public List&lt;Point2D&gt; points;
+        
+        /**
+         * Creates a new state instance.
+         * 
+         * @param info  the plot rendering info. 
+         */
+        public XYBezierState(PlotRenderingInfo info) {
+<span class="nc" id="L108">            super(info);</span>
+<span class="nc" id="L109">            this.fillArea = new GeneralPath();</span>
+<span class="nc" id="L110">            this.points = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L111">        }</span>
+    }
+    
+    /**
+     * Resolution of Bezier curves (number of line segments between points)
+     */
+    private int precision;
+    
+    /**
+     *  Tension defines how sharply does the curve bends
+     */
+    private double tension;
+
+    /**
+     * A flag that can be set to specify 
+     * to fill the area under the Bezier curve.
+     */
+    private FillType fillType;
+
+    private GradientPaintTransformer gradientPaintTransformer;
+    
+    /**
+     * Creates a new instance with the precision attribute defaulting to 5,
+     * the tension attribute defaulting to 2  
+     * and no fill of the area 'under' the Bezier curve.
+     */
+    public XYBezierRenderer() {
+<span class="fc" id="L138">        this(5, 25, FillType.NONE);</span>
+<span class="fc" id="L139">    }</span>
+
+    /**
+     * Creates a new renderer with the specified precision and tension
+     * and no fill of the area 'under' (between '0' and) the Bezier curve.
+     *
+     * @param precision  the number of points between data items.
+     * @param tension  value to define how sharply the curve bends
+     */
+    public XYBezierRenderer(int precision, double tension) {
+<span class="nc" id="L149">        this(precision, tension ,FillType.NONE);</span>
+<span class="nc" id="L150">    }</span>
+
+    /**
+     * Creates a new renderer with the specified precision
+     * and specified fill of the area 'under' (between '0' and) the Bezier curve.
+     *
+     * @param precision  the number of points between data items.
+     * @param tension  value to define how sharply the Bezier curve bends
+     * @param fillType  the type of fill beneath the curve ({@code null} 
+     *     not permitted).
+     * 
+     * @since 1.0.17
+     */
+    public XYBezierRenderer(int precision, double tension, FillType fillType) {
+<span class="fc" id="L164">        super();</span>
+<span class="pc bpc" id="L165" title="1 of 2 branches missed.">        if (precision &lt;= 0) {</span>
+<span class="nc" id="L166">            throw new IllegalArgumentException(&quot;Requires precision &gt; 0.&quot;);</span>
+        }
+<span class="pc bpc" id="L168" title="1 of 2 branches missed.">        if (tension &lt;= 0) {</span>
+<span class="nc" id="L169">            throw new IllegalArgumentException(&quot;Requires precision &gt; 0.&quot;);</span>
+        }
+<span class="fc" id="L171">        Args.nullNotPermitted(fillType, &quot;fillType&quot;);</span>
+<span class="fc" id="L172">        this.precision = precision;</span>
+<span class="fc" id="L173">        this.tension = tension;</span>
+<span class="fc" id="L174">        this.fillType = fillType;</span>
+<span class="fc" id="L175">        this.gradientPaintTransformer = new StandardGradientPaintTransformer();</span>
+<span class="fc" id="L176">    }</span>
+
+    /**
+     * Returns the number of line segments used to approximate the Bezier
+     * curve between data points.
+     *
+     * @return The number of line segments.
+     *
+     * @see #setPrecision(int)
+     */
+    public int getPrecision() {
+<span class="nc" id="L187">        return this.precision;</span>
+    }
+
+    /**
+     * Set the resolution of Bezier curves and sends a {@link RendererChangeEvent}
+     * to all registered listeners.
+     *
+     * @param p  number of line segments between points (must be &amp;gt; 0).
+     *
+     * @see #getPrecision()
+     */
+    public void setPrecision(int p) {
+<span class="pc bpc" id="L199" title="1 of 2 branches missed.">        if (p &lt;= 0) {</span>
+<span class="nc" id="L200">            throw new IllegalArgumentException(&quot;Requires p &gt; 0.&quot;);</span>
+        }
+<span class="fc" id="L202">        this.precision = p;</span>
+<span class="fc" id="L203">        fireChangeEvent();</span>
+<span class="fc" id="L204">    }</span>
+
+    /**
+     * Returns the value of the tension which defines how sharply 
+     * does the curve bends
+     *
+     * @return The value of tesion.
+     *
+     * @see #setTension(double)
+     */
+    public double getTension() {
+<span class="nc" id="L215">        return this.tension;</span>
+    }
+
+    /**
+     * Set the value of the tension which defines how sharply 
+     * does the curve bends and sends a {@link RendererChangeEvent}
+     * to all registered listeners.
+     *
+     * @param t  value of tension (must be &amp;gt; 0).
+     *
+     * @see #getTension()
+     */
+    public void setTension(double t) {
+<span class="nc bnc" id="L228" title="All 2 branches missed.">        if (t &lt;= 0) {</span>
+<span class="nc" id="L229">            throw new IllegalArgumentException(&quot;Requires tension &gt; 0.&quot;);</span>
+        }
+<span class="nc" id="L231">        this.tension = t;</span>
+<span class="nc" id="L232">        fireChangeEvent();</span>
+<span class="nc" id="L233">    }</span>
+    
+    /**
+     * Returns the type of fill that the renderer draws beneath the curve.
+     *
+     * @return The type of fill (never {@code null}).
+     *
+     * @see #setFillType(FillType) 
+     * 
+     * @since 1.0.17
+     */
+    public FillType getFillType() {
+<span class="nc" id="L245">        return this.fillType;</span>
+    }
+
+    /**
+     * Set the fill type and sends a {@link RendererChangeEvent}
+     * to all registered listeners.
+     *
+     * @param fillType   the fill type ({@code null} not permitted).
+     *
+     * @see #getFillType()
+     * 
+     * @since 1.0.17
+     */
+    public void setFillType(FillType fillType) {
+<span class="fc" id="L259">        this.fillType = fillType;</span>
+<span class="fc" id="L260">        fireChangeEvent();</span>
+<span class="fc" id="L261">    }</span>
+
+    /**
+     * Returns the gradient paint transformer, or {@code null}.
+     * 
+     * @return The gradient paint transformer (possibly {@code null}).
+     * 
+     * @since 1.0.17
+     */
+    public GradientPaintTransformer getGradientPaintTransformer() {
+<span class="nc" id="L271">        return this.gradientPaintTransformer;</span>
+    }
+    
+    /**
+     * Sets the gradient paint transformer and sends a 
+     * {@link RendererChangeEvent} to all registered listeners.
+     * 
+     * @param gpt  the transformer ({@code null} permitted).
+     * 
+     * @since 1.0.17
+     */
+    public void setGradientPaintTransformer(GradientPaintTransformer gpt) {
+<span class="fc" id="L283">        this.gradientPaintTransformer = gpt;</span>
+<span class="fc" id="L284">        fireChangeEvent();</span>
+<span class="fc" id="L285">    }</span>
+    
+    /**
+     * Initialises the renderer.
+     * &lt;P&gt;
+     * This method will be called before the first item is rendered, giving the
+     * renderer an opportunity to initialise any state information it wants to
+     * maintain.  The renderer can do nothing if it chooses.
+     *
+     * @param g2  the graphics device.
+     * @param dataArea  the area inside the axes.
+     * @param plot  the plot.
+     * @param data  the data.
+     * @param info  an optional info collection object to return data back to
+     *              the caller.
+     *
+     * @return The renderer state.
+     */
+    @Override
+    public XYItemRendererState initialise(Graphics2D g2, Rectangle2D dataArea,
+            XYPlot plot, XYDataset data, PlotRenderingInfo info) {
+
+<span class="nc" id="L307">        setDrawSeriesLineAsPath(true);</span>
+<span class="nc" id="L308">        XYBezierState state = new XYBezierState(info);</span>
+<span class="nc" id="L309">        state.setProcessVisibleItemsOnly(false);</span>
+<span class="nc" id="L310">        return state;</span>
+    }
+  
+    
+    /**
+     * Draws the item (first pass). This method draws the lines
+     * connecting the items. Instead of drawing separate lines,
+     * a GeneralPath is constructed and drawn at the end of
+     * the series painting.
+     *
+     * @param g2  the graphics device.
+     * @param state  the renderer state.
+     * @param plot  the plot (can be used to obtain standard color information
+     *              etc).
+     * @param dataset  the dataset.
+     * @param pass  the pass.
+     * @param series  the series index (zero-based).
+     * @param item  the item index (zero-based).
+     * @param xAxis  the domain axis.
+     * @param yAxis  the range axis.
+     * @param dataArea  the area within which the data is being drawn.
+     */
+    @Override
+    protected void drawPrimaryLineAsPath(XYItemRendererState state,
+            Graphics2D g2, XYPlot plot, XYDataset dataset, int pass,
+            int series, int item, ValueAxis xAxis, ValueAxis yAxis,
+            Rectangle2D dataArea) {
+
+<span class="nc" id="L338">        XYBezierState s = (XYBezierState) state;</span>
+<span class="nc" id="L339">        RectangleEdge xAxisLocation = plot.getDomainAxisEdge();</span>
+<span class="nc" id="L340">        RectangleEdge yAxisLocation = plot.getRangeAxisEdge();</span>
+
+        // get the data points
+<span class="nc" id="L343">        double x1 = dataset.getXValue(series, item);</span>
+<span class="nc" id="L344">        double y1 = dataset.getYValue(series, item);</span>
+<span class="nc" id="L345">        double transX1 = xAxis.valueToJava2D(x1, dataArea, xAxisLocation);</span>
+<span class="nc" id="L346">        double transY1 = yAxis.valueToJava2D(y1, dataArea, yAxisLocation);</span>
+
+        // Collect points
+<span class="nc bnc" id="L349" title="All 4 branches missed.">        if (!Double.isNaN(transX1) &amp;&amp; !Double.isNaN(transY1)) {</span>
+<span class="nc bnc" id="L350" title="All 2 branches missed.">            Point2D p = plot.getOrientation() == PlotOrientation.HORIZONTAL </span>
+<span class="nc" id="L351">                ? new Point2D.Float((float) transY1, (float) transX1) </span>
+<span class="nc" id="L352">                : new Point2D.Float((float) transX1, (float) transY1);</span>
+<span class="nc bnc" id="L353" title="All 2 branches missed.">            if (!s.points.contains(p))</span>
+<span class="nc" id="L354">                s.points.add(p);</span>
+        }
+        
+<span class="nc bnc" id="L357" title="All 2 branches missed.">        if (item == dataset.getItemCount(series) - 1) {     // construct path</span>
+<span class="nc bnc" id="L358" title="All 2 branches missed.">            if (s.points.size() &gt; 1) {</span>
+                Point2D origin;
+<span class="nc bnc" id="L360" title="All 2 branches missed.">                if (this.fillType == FillType.TO_ZERO) {</span>
+<span class="nc" id="L361">                    float xz = (float) xAxis.valueToJava2D(0, dataArea, </span>
+                            yAxisLocation);
+<span class="nc" id="L363">                    float yz = (float) yAxis.valueToJava2D(0, dataArea, </span>
+                            yAxisLocation);
+<span class="nc bnc" id="L365" title="All 2 branches missed.">                    origin = plot.getOrientation() == PlotOrientation.HORIZONTAL</span>
+<span class="nc" id="L366">                            ? new Point2D.Float(yz, xz) </span>
+<span class="nc" id="L367">                            : new Point2D.Float(xz, yz);</span>
+<span class="nc bnc" id="L368" title="All 2 branches missed.">                } else if (this.fillType == FillType.TO_LOWER_BOUND) {</span>
+<span class="nc" id="L369">                    float xlb = (float) xAxis.valueToJava2D(</span>
+<span class="nc" id="L370">                            xAxis.getLowerBound(), dataArea, xAxisLocation);</span>
+<span class="nc" id="L371">                    float ylb = (float) yAxis.valueToJava2D(</span>
+<span class="nc" id="L372">                            yAxis.getLowerBound(), dataArea, yAxisLocation);</span>
+<span class="nc bnc" id="L373" title="All 2 branches missed.">                    origin = plot.getOrientation() == PlotOrientation.HORIZONTAL</span>
+<span class="nc" id="L374">                            ? new Point2D.Float(ylb, xlb) </span>
+<span class="nc" id="L375">                            : new Point2D.Float(xlb, ylb);</span>
+<span class="nc" id="L376">                } else {// fillType == TO_UPPER_BOUND</span>
+<span class="nc" id="L377">                    float xub = (float) xAxis.valueToJava2D(</span>
+<span class="nc" id="L378">                            xAxis.getUpperBound(), dataArea, xAxisLocation);</span>
+<span class="nc" id="L379">                    float yub = (float) yAxis.valueToJava2D(</span>
+<span class="nc" id="L380">                            yAxis.getUpperBound(), dataArea, yAxisLocation);</span>
+<span class="nc bnc" id="L381" title="All 2 branches missed.">                    origin = plot.getOrientation() == PlotOrientation.HORIZONTAL</span>
+<span class="nc" id="L382">                            ? new Point2D.Float(yub, xub)</span>
+<span class="nc" id="L383">                            : new Point2D.Float(xub, yub);</span>
+                }
+                
+                // we need at least two points to draw something
+<span class="nc" id="L387">                Point2D cp0 = s.points.get(0);</span>
+<span class="nc" id="L388">                s.seriesPath.moveTo(cp0.getX(), cp0.getY());</span>
+<span class="nc bnc" id="L389" title="All 2 branches missed.">                if (this.fillType != FillType.NONE) {</span>
+<span class="nc bnc" id="L390" title="All 2 branches missed.">                    if (plot.getOrientation() == PlotOrientation.HORIZONTAL) {</span>
+<span class="nc" id="L391">                        s.fillArea.moveTo(origin.getX(), cp0.getY());</span>
+                    } else {
+<span class="nc" id="L393">                        s.fillArea.moveTo(cp0.getX(), origin.getY());</span>
+                    }
+<span class="nc" id="L395">                    s.fillArea.lineTo(cp0.getX(), cp0.getY());</span>
+                }
+<span class="nc bnc" id="L397" title="All 2 branches missed.">                if (s.points.size() == 2) {</span>
+                    // we need at least 3 points to Bezier. Draw simple line
+                    // for two points
+<span class="nc" id="L400">                    Point2D cp1 = s.points.get(1);</span>
+<span class="nc bnc" id="L401" title="All 2 branches missed.">                    if (this.fillType != FillType.NONE) {</span>
+<span class="nc" id="L402">                        s.fillArea.lineTo(cp1.getX(), cp1.getY());</span>
+<span class="nc" id="L403">                        s.fillArea.lineTo(cp1.getX(), origin.getY());</span>
+<span class="nc" id="L404">                        s.fillArea.closePath();</span>
+                    }
+<span class="nc" id="L406">                    s.seriesPath.lineTo(cp1.getX(), cp1.getY());</span>
+<span class="nc" id="L407">                }</span>
+<span class="nc bnc" id="L408" title="All 2 branches missed.">                else if (s.points.size() == 3) {</span>
+                    // with 3 points only initial and end Bezier curves are required.
+
+<span class="nc" id="L411">                	Point2D[] pInitial = getInitalPoints(s);</span>
+<span class="nc" id="L412">                	addBezierPointsToSeriesPath(pInitial, s);</span>
+<span class="nc" id="L413">                	Point2D[] pFinal = getFinalPoints(s);</span>
+<span class="nc" id="L414">                	addBezierPointsToSeriesPath(pFinal, s);</span>
+                	
+<span class="nc" id="L416">                }</span>
+                else {
+                    // construct Bezier curve
+<span class="nc" id="L419">                    int np = s.points.size(); // number of points</span>
+<span class="nc bnc" id="L420" title="All 2 branches missed.">    				for(int i = 0; i &lt; np - 1; i++) {</span>
+<span class="nc bnc" id="L421" title="All 2 branches missed.">    					if(i == 0) {</span>
+    						// 3 points, 2 lines (initial an final Bezier curves)
+<span class="nc" id="L423">    						Point2D[] initial3Points = new Point2D[3];</span>
+<span class="nc" id="L424">    						initial3Points[0] = s.points.get(0);</span>
+<span class="nc" id="L425">    						initial3Points[1] = s.points.get(1);</span>
+<span class="nc" id="L426">    						initial3Points[2] = s.points.get(2);</span>
+<span class="nc" id="L427">    						Point2D[] pInitial = calcSegmentPointsInitial(initial3Points);</span>
+<span class="nc" id="L428">    	                	addBezierPointsToSeriesPath(pInitial, s);</span>
+    					}
+<span class="nc bnc" id="L430" title="All 2 branches missed.">    					if(i == np - 2) {</span>
+<span class="nc" id="L431">    						Point2D[] final3Points = new Point2D[4];</span>
+<span class="nc" id="L432">    						final3Points[1] = s.points.get(np-3);</span>
+<span class="nc" id="L433">    						final3Points[2] = s.points.get(np-2);</span>
+<span class="nc" id="L434">    						final3Points[3] = s.points.get(np-1); </span>
+    						// No need for final3Points[0]. Not required
+<span class="nc" id="L436">    						Point2D[] pFinal = calcSegmentPointsFinal(final3Points);</span>
+<span class="nc" id="L437">    						addBezierPointsToSeriesPath(pFinal, s);</span>
+    					}
+<span class="nc bnc" id="L439" title="All 4 branches missed.">    					if ((i != 0) &amp;&amp; (i != (np - 2))){</span>
+<span class="nc" id="L440">        					Point2D[] original4Points = new Point2D[4];</span>
+<span class="nc" id="L441">        					original4Points[0] = s.points.get(i - 1);</span>
+<span class="nc" id="L442">        					original4Points[1] = s.points.get(i);</span>
+<span class="nc" id="L443">        					original4Points[2] = s.points.get(i + 1);</span>
+<span class="nc" id="L444">        					original4Points[3] = s.points.get(i + 2);</span>
+<span class="nc" id="L445">        					Point2D[] pMedium = calculateSegmentPoints(original4Points);</span>
+<span class="nc" id="L446">    	                	addBezierPointsToSeriesPath(pMedium, s);</span>
+    					}
+    				}                   
+                }
+                // Add last point @ y=0 for fillPath and close path
+<span class="nc bnc" id="L451" title="All 2 branches missed.">                if (this.fillType != FillType.NONE) {</span>
+<span class="nc bnc" id="L452" title="All 2 branches missed.">                    if (plot.getOrientation() == PlotOrientation.HORIZONTAL) {</span>
+<span class="nc" id="L453">                        s.fillArea.lineTo(origin.getX(), s.points.get(</span>
+<span class="nc" id="L454">                                s.points.size() - 1).getY());</span>
+                    } else {
+<span class="nc" id="L456">                        s.fillArea.lineTo(s.points.get(</span>
+<span class="nc" id="L457">                                s.points.size() - 1).getX(), origin.getY());</span>
+                    }
+<span class="nc" id="L459">                    s.fillArea.closePath();</span>
+                }
+                // fill under the curve...
+<span class="nc bnc" id="L462" title="All 2 branches missed.">                if (this.fillType != FillType.NONE) {</span>
+<span class="nc" id="L463">                    Paint fp = getSeriesFillPaint(series);</span>
+<span class="nc bnc" id="L464" title="All 4 branches missed.">                    if (this.gradientPaintTransformer != null </span>
+                            &amp;&amp; fp instanceof GradientPaint) {
+<span class="nc" id="L466">                        GradientPaint gp = this.gradientPaintTransformer</span>
+<span class="nc" id="L467">                                .transform((GradientPaint) fp, s.fillArea);</span>
+<span class="nc" id="L468">                        g2.setPaint(gp);</span>
+<span class="nc" id="L469">                    } else {</span>
+<span class="nc" id="L470">                        g2.setPaint(fp);                        </span>
+                    }
+<span class="nc" id="L472">                    g2.fill(s.fillArea);</span>
+<span class="nc" id="L473">                    s.fillArea.reset();</span>
+                }
+                // then draw the line...
+<span class="nc" id="L476">                drawFirstPassShape(g2, pass, series, item, s.seriesPath);</span>
+            }
+            // reset points vector
+<span class="nc" id="L479">            s.points = new ArrayList&lt;&gt;();</span>
+        }
+<span class="nc" id="L481">    }</span>
+    
+	private void addBezierPointsToSeriesPath(Point2D[] segmentPoints, XYBezierState s) {
+		double x;
+		double y;
+<span class="nc bnc" id="L486" title="All 2 branches missed.">		for (int t = 0 ; t &lt;= this.precision; t++) {</span>
+<span class="nc" id="L487">			double k = (double)t / this.precision;</span>
+<span class="nc" id="L488">			double r = 1- k;</span>
+					
+<span class="nc" id="L490">			x = Math.pow(r, 3) * segmentPoints[0].getX() + 3 * k * Math.pow(r, 2) * segmentPoints[1].getX()</span>
+<span class="nc" id="L491">					+ 3 * Math.pow(k, 2) * (1 - k) * segmentPoints[2].getX() + Math.pow(k, 3) * segmentPoints[3].getX();</span>
+<span class="nc" id="L492">			y = Math.pow(r, 3) * segmentPoints[0].getY() + 3 * k * Math.pow(r, 2) * segmentPoints[1].getY()</span>
+<span class="nc" id="L493">					+ 3 * Math.pow(k, 2) * (1 - k) * segmentPoints[2].getY() + Math.pow(k, 3) * segmentPoints[3].getY();</span>
+<span class="nc" id="L494">			s.seriesPath.lineTo(x, y);</span>
+<span class="nc bnc" id="L495" title="All 2 branches missed.">            if (this.fillType != FillType.NONE) {</span>
+<span class="nc" id="L496">                s.fillArea.lineTo(x, y);</span>
+            }
+		}
+<span class="nc" id="L499">	}</span>
+	
+	private Point2D[] getFinalPoints(XYBezierState s) {
+<span class="nc" id="L502">		Point2D[] final3Points = new Point2D[4];</span>
+<span class="nc" id="L503">		final3Points[1] = s.points.get(0);</span>
+<span class="nc" id="L504">		final3Points[2] = s.points.get(1);</span>
+<span class="nc" id="L505">		final3Points[3] = s.points.get(2); </span>
+		// No need for final3Points[0]. Not required
+<span class="nc" id="L507">		Point2D[] pFinal = calcSegmentPointsFinal(final3Points);//TENSION = 1.5</span>
+<span class="nc" id="L508">		return pFinal;</span>
+	}
+
+	private Point2D[] getInitalPoints(XYBezierState s) {
+<span class="nc" id="L512">		Point2D[] initial3Points = new Point2D[3];</span>
+<span class="nc" id="L513">		initial3Points[0] = s.points.get(0);</span>
+<span class="nc" id="L514">		initial3Points[1] = s.points.get(1);</span>
+<span class="nc" id="L515">		initial3Points[2] = s.points.get(2);</span>
+<span class="nc" id="L516">		Point2D[] pInitial = calcSegmentPointsInitial(initial3Points);// TENSION = 1.5</span>
+<span class="nc" id="L517">		return pInitial;</span>
+	}
+
+	private Point2D[] calculateSegmentPoints(Point2D[] original4Points) {
+<span class="nc" id="L521">		Point2D[] points = new Point2D[4];</span>
+<span class="nc" id="L522">		points[0] = original4Points[1];</span>
+<span class="nc" id="L523">		points[3] = original4Points[2];</span>
+<span class="nc bnc" id="L524" title="All 2 branches missed.">		for(int i = 1; i &lt; 3; i++) {</span>
+<span class="nc" id="L525">			Point2D aux1 = calcUnitaryVector(original4Points[i-1], original4Points[i]);</span>
+<span class="nc" id="L526">			Point2D aux2 = calcUnitaryVector(original4Points[i+1], original4Points[i]);</span>
+<span class="nc" id="L527">			Point2D aux3 = calcUnitaryVector(aux2, aux1);</span>
+			
+<span class="nc" id="L529">			double x = original4Points[i].getX() + Math.pow(-1.0, i+1) * tension * aux3.getX();</span>
+<span class="nc" id="L530">			double y = original4Points[i].getY() + Math.pow(-1.0, i+1) * tension * aux3.getY();</span>
+<span class="nc" id="L531">			points[i] = new Point2D.Double(x, y);</span>
+		}
+<span class="nc" id="L533">		return points;</span>
+	}
+	
+	private Point2D[] calcSegmentPointsInitial(Point2D[] original3P) {
+<span class="nc" id="L537">		Point2D[] points = new Point2D[4];</span>
+<span class="nc" id="L538">		points[0] = original3P[0];// Endpoint 1</span>
+<span class="nc" id="L539">		points[3] = original3P[1];// Endpoint 2</span>
+		// Control point 1
+<span class="nc" id="L541">		Point2D auxInitial = calcUnitaryVector(original3P[0], original3P[1]);</span>
+<span class="nc" id="L542">		points[1] = original3P[0];// new Point2D.Double(x0, y0);</span>
+		// Control point 2
+<span class="nc" id="L544">		Point2D aux2 = calcUnitaryVector(original3P[2], original3P[1]);</span>
+<span class="nc" id="L545">		Point2D aux3 = calcUnitaryVector(auxInitial, aux2);</span>
+<span class="nc" id="L546">		double x = original3P[1].getX() + tension * aux3.getX();</span>
+<span class="nc" id="L547">		double y = original3P[1].getY() + tension * aux3.getY();</span>
+<span class="nc" id="L548">		points[2] = new Point2D.Double(x, y);</span>
+<span class="nc" id="L549">		return points;</span>
+	}
+	
+	private Point2D[] calcSegmentPointsFinal(Point2D[] original3P) {
+		/*
+		 * Each segment is defined by its two endpoints and two control points. A
+		 * control point determines the tangent at the corresponding endpoint.
+		 */
+<span class="nc" id="L557">		Point2D[] points = new Point2D[4];</span>
+<span class="nc" id="L558">		points[0] = original3P[2];// Endpoint 1</span>
+<span class="nc" id="L559">		points[3] = original3P[3];// Endpoint 2</span>
+		// Control point 2: points[2]
+<span class="nc" id="L561">		Point2D auxInitial = calcUnitaryVector(original3P[3], original3P[2]);</span>
+<span class="nc" id="L562">		points[2] = original3P[3];// new Point2D.Double(x0, y0);</span>
+		// Control point 1
+<span class="nc" id="L564">		Point2D aux1 = calcUnitaryVector(original3P[3], original3P[2]);</span>
+<span class="nc" id="L565">		Point2D aux2 = calcUnitaryVector(original3P[1], original3P[2]);</span>
+<span class="nc" id="L566">		Point2D aux3 = calcUnitaryVector(aux1, aux2);</span>
+<span class="nc" id="L567">		double x = original3P[2].getX() + tension * aux3.getX();</span>
+<span class="nc" id="L568">		double y = original3P[2].getY() + tension * aux3.getY();</span>
+<span class="nc" id="L569">		points[1] = new Point2D.Double(x, y);</span>
+<span class="nc" id="L570">		return points;</span>
+	}
+  
+	private Point2D calcUnitaryVector(Point2D pOrigin, Point2D pEnd) {
+<span class="nc" id="L574">		double module = Math.sqrt(Math.pow(pEnd.getX() - pOrigin.getX(), 2) + </span>
+<span class="nc" id="L575">				Math.pow(pEnd.getY() - pOrigin.getY(), 2));</span>
+<span class="nc bnc" id="L576" title="All 2 branches missed.">		if (module == 0) {</span>
+<span class="nc" id="L577">			return null;</span>
+		}
+<span class="nc" id="L579">		return new Point2D.Double((pEnd.getX() - pOrigin.getX()) / module, </span>
+<span class="nc" id="L580">				(pEnd.getY() - pOrigin.getY()) /module);</span>
+	}   
+    
+ 
+    /**
+     * Tests this renderer for equality with an arbitrary object.
+     *
+     * @param obj  the object ({@code null} permitted).
+     *
+     * @return A boolean.
+     */
+    @Override
+    public boolean equals(Object obj) {
+<span class="pc bpc" id="L593" title="1 of 2 branches missed.">        if (obj == this) {</span>
+<span class="nc" id="L594">            return true;</span>
+        }
+<span class="pc bpc" id="L596" title="1 of 2 branches missed.">        if (!(obj instanceof XYBezierRenderer)) {</span>
+<span class="nc" id="L597">            return false;</span>
+        }
+<span class="fc" id="L599">        XYBezierRenderer that = (XYBezierRenderer) obj;</span>
+<span class="fc bfc" id="L600" title="All 2 branches covered.">        if (this.precision != that.precision) {</span>
+<span class="fc" id="L601">            return false;</span>
+        }
+<span class="fc bfc" id="L603" title="All 2 branches covered.">        if (this.fillType != that.fillType) {</span>
+<span class="fc" id="L604">            return false;</span>
+        }
+<span class="fc bfc" id="L606" title="All 2 branches covered.">        if (!Objects.equals(this.gradientPaintTransformer, that.gradientPaintTransformer)) {</span>
+<span class="fc" id="L607">            return false;</span>
+        }
+<span class="fc" id="L609">        return super.equals(obj);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span>jfreechart (Mar 14, 2025 5:50:17 p.m.)</div></body></html>

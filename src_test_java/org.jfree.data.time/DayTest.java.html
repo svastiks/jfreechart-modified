@@ -1,0 +1,562 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>DayTest.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">jfreechart (Mar 14, 2025 5:50:17 p.m.)</a> &gt; <a href="../../index.html" class="el_group">jfreechart</a> &gt; <a href="../index.html" class="el_bundle">src/test/java</a> &gt; <a href="index.source.html" class="el_package">org.jfree.data.time</a> &gt; <span class="el_source">DayTest.java</span></div><h1>DayTest.java</h1><pre class="source lang-java linenums">/* ===========================================================
+ * JFreeChart : a free chart library for the Java(tm) platform
+ * ===========================================================
+ *
+ * (C) Copyright 2000-2022, by David Gilbert and Contributors.
+ *
+ * Project Info:  http://www.jfree.org/jfreechart/index.html
+ *
+ * This library is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 2.1 of the License, or
+ * (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public
+ * License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301,
+ * USA.
+ *
+ * [Oracle and Java are registered trademarks of Oracle and/or its affiliates. 
+ * Other names may be trademarks of their respective owners.]
+ *
+ * ------------
+ * DayTest.java
+ * ------------
+ * (C) Copyright 2001-2022, by David Gilbert.
+ *
+ * Original Author:  David Gilbert;
+ * Contributor(s):   -;
+ *
+ */
+
+package org.jfree.data.time;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.ZoneOffset;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.Locale;
+import java.util.TimeZone;
+import java.util.function.Consumer;
+
+import org.jfree.chart.TestUtils;
+import org.jfree.chart.date.MonthConstants;
+
+import org.junit.jupiter.api.Test;
+import org.jfree.chart.date.SerialDate;
+
+/**
+ * Tests for the {@link Day} class.
+ */
+<span class="fc" id="L63">public class DayTest {</span>
+
+    /**
+     * Check that a Day instance is equal to itself.
+     *
+     * SourceForge Bug ID: 558850.
+     */
+    @Test
+    public void testEqualsSelf() {
+<span class="fc" id="L72">        Day day = new Day();</span>
+<span class="fc" id="L73">        assertEquals(day, day);</span>
+<span class="fc" id="L74">    }</span>
+
+    /**
+     * Tests the equals method.
+     */
+    @Test
+    public void testEquals() {
+<span class="fc" id="L81">        Day day1 = new Day(29, MonthConstants.MARCH, 2002);</span>
+<span class="fc" id="L82">        Day day2 = new Day(29, MonthConstants.MARCH, 2002);</span>
+<span class="fc" id="L83">        assertEquals(day1, day2);</span>
+<span class="fc" id="L84">    }</span>
+
+    /**
+     * In GMT, the end of 29 Feb 2004 is java.util.Date(1,078,099,199,999L).
+     * Use this to check the day constructor.
+     */
+    @Test
+    public void testDateConstructor1() {
+<span class="fc" id="L92">        TimeZone zone = TimeZone.getTimeZone(&quot;GMT&quot;);</span>
+<span class="fc" id="L93">        Calendar cal = Calendar.getInstance(zone);</span>
+<span class="fc" id="L94">        Locale locale = Locale.UK;</span>
+<span class="fc" id="L95">        Day d1 = new Day(new Date(1078099199999L), zone, locale);</span>
+<span class="fc" id="L96">        Day d2 = new Day(new Date(1078099200000L), zone, locale);</span>
+
+<span class="fc" id="L98">        assertEquals(MonthConstants.FEBRUARY, d1.getMonth());</span>
+<span class="fc" id="L99">        assertEquals(1078099199999L, d1.getLastMillisecond(cal));</span>
+
+<span class="fc" id="L101">        assertEquals(MonthConstants.MARCH, d2.getMonth());</span>
+<span class="fc" id="L102">        assertEquals(1078099200000L, d2.getFirstMillisecond(cal));</span>
+<span class="fc" id="L103">    }</span>
+
+    /**
+     * In Helsinki, the end of 29 Feb 2004 is
+     * java.util.Date(1,078,091,999,999L).  Use this to check the Day
+     * constructor.
+     */
+    @Test
+    public void testDateConstructor2() {
+<span class="fc" id="L112">        TimeZone zone = TimeZone.getTimeZone(&quot;Europe/Helsinki&quot;);</span>
+<span class="fc" id="L113">        Calendar cal = Calendar.getInstance(zone);</span>
+<span class="fc" id="L114">        Locale locale = Locale.getDefault();  // locale shouldn't matter here</span>
+<span class="fc" id="L115">        Day d1 = new Day(new Date(1078091999999L), zone, locale);</span>
+<span class="fc" id="L116">        Day d2 = new Day(new Date(1078092000000L), zone, locale);</span>
+
+<span class="fc" id="L118">        assertEquals(MonthConstants.FEBRUARY, d1.getMonth());</span>
+<span class="fc" id="L119">        assertEquals(1078091999999L, d1.getLastMillisecond(cal));</span>
+
+<span class="fc" id="L121">        assertEquals(MonthConstants.MARCH, d2.getMonth());</span>
+<span class="fc" id="L122">        assertEquals(1078092000000L, d2.getFirstMillisecond(cal));</span>
+<span class="fc" id="L123">    }</span>
+
+    /**
+     * If a thread-local calendar was set, the Date constructor should use it.
+     */
+    @Test
+    public void testDateConstructorWithThreadLocalCalendar() {
+<span class="fc" id="L130">        Consumer&lt;Integer&gt; calendarSetup = hours -&gt; RegularTimePeriod.setThreadLocalCalendarInstance(</span>
+<span class="fc" id="L131">                Calendar.getInstance(TimeZone.getTimeZone(ZoneOffset.ofHours(hours)))</span>
+        );
+<span class="fc" id="L133">        testDateConstructorWithCustomCalendar(3, calendarSetup);</span>
+<span class="fc" id="L134">        testDateConstructorWithCustomCalendar(4, calendarSetup);</span>
+<span class="fc" id="L135">    }</span>
+
+    /**
+     * If a calendar prototype was set, the Date constructor should use it.
+     */
+    @Test
+    public void testDateConstructorWithCalendarPrototype() {
+<span class="fc" id="L142">        Consumer&lt;Integer&gt; calendarSetup = hours -&gt; RegularTimePeriod.setCalendarInstancePrototype(</span>
+<span class="fc" id="L143">                Calendar.getInstance(TimeZone.getTimeZone(ZoneOffset.ofHours(hours)))</span>
+        );
+<span class="fc" id="L145">        testDateConstructorWithCustomCalendar(3, calendarSetup);</span>
+<span class="fc" id="L146">        testDateConstructorWithCustomCalendar(4, calendarSetup);</span>
+<span class="fc" id="L147">    }</span>
+
+    private void testDateConstructorWithCustomCalendar(int hoursOffset, Consumer&lt;Integer&gt; calendarSetup) {
+        try {
+<span class="fc" id="L151">            calendarSetup.accept(hoursOffset);</span>
+<span class="fc" id="L152">            long ms = 86_400_000L - 3_600_000L * hoursOffset;</span>
+<span class="fc" id="L153">            Day d = new Day(new Date(ms));</span>
+<span class="fc" id="L154">            assertEquals(1970, d.getYear());</span>
+<span class="fc" id="L155">            assertEquals(1, d.getMonth());</span>
+<span class="fc" id="L156">            assertEquals(2, d.getDayOfMonth());</span>
+<span class="fc" id="L157">            assertEquals(ms, d.getFirstMillisecond());</span>
+        } finally {
+            // reset everything, to avoid affecting other tests
+<span class="fc" id="L160">            RegularTimePeriod.setThreadLocalCalendarInstance(null);</span>
+<span class="fc" id="L161">            RegularTimePeriod.setCalendarInstancePrototype(null);</span>
+        }
+<span class="fc" id="L163">    }</span>
+
+    /**
+     * If a thread-local calendar was set, the minute-hour constructor should use it.
+     */
+    @Test
+    public void testDMYConstructorWithThreadLocalCalendar() {
+<span class="fc" id="L170">        Consumer&lt;Integer&gt; calendarSetup = hours -&gt; RegularTimePeriod.setThreadLocalCalendarInstance(</span>
+<span class="fc" id="L171">                Calendar.getInstance(TimeZone.getTimeZone(ZoneOffset.ofHours(hours)))</span>
+        );
+<span class="fc" id="L173">        testDMYConstructorWithCustomCalendar(3, calendarSetup);</span>
+<span class="fc" id="L174">        testDMYConstructorWithCustomCalendar(4, calendarSetup);</span>
+<span class="fc" id="L175">    }</span>
+
+    /**
+     * If a calendar prototype was set, the DMY constructor should use it.
+     */
+    @Test
+    public void testDMYConstructorWithCalendarPrototype() {
+<span class="fc" id="L182">        Consumer&lt;Integer&gt; calendarSetup = hours -&gt; RegularTimePeriod.setCalendarInstancePrototype(</span>
+<span class="fc" id="L183">                Calendar.getInstance(TimeZone.getTimeZone(ZoneOffset.ofHours(hours)))</span>
+        );
+<span class="fc" id="L185">        testDMYConstructorWithCustomCalendar(3, calendarSetup);</span>
+<span class="fc" id="L186">        testDMYConstructorWithCustomCalendar(4, calendarSetup);</span>
+<span class="fc" id="L187">    }</span>
+
+    private void testDMYConstructorWithCustomCalendar(int hoursOffset, Consumer&lt;Integer&gt; calendarSetup) {
+        try {
+<span class="fc" id="L191">            calendarSetup.accept(hoursOffset);</span>
+<span class="fc" id="L192">            Day d = new Day(1, 1, 1970);</span>
+<span class="fc" id="L193">            assertEquals(1970, d.getYear());</span>
+<span class="fc" id="L194">            assertEquals(1, d.getMonth());</span>
+<span class="fc" id="L195">            assertEquals(1, d.getDayOfMonth());</span>
+<span class="fc" id="L196">            assertEquals(-3_600_000L * hoursOffset, d.getFirstMillisecond());</span>
+        } finally {
+            // reset everything, to avoid affecting other tests
+<span class="fc" id="L199">            RegularTimePeriod.setThreadLocalCalendarInstance(null);</span>
+<span class="fc" id="L200">            RegularTimePeriod.setCalendarInstancePrototype(null);</span>
+        }
+<span class="fc" id="L202">    }</span>
+
+    /**
+     * If a thread-local calendar was set, the SerialDate constructor should use it.
+     */
+    @Test
+    public void testSerialDateConstructorWithThreadLocalCalendar() {
+<span class="fc" id="L209">        Consumer&lt;Integer&gt; calendarSetup = hours -&gt; RegularTimePeriod.setThreadLocalCalendarInstance(</span>
+<span class="fc" id="L210">                Calendar.getInstance(TimeZone.getTimeZone(ZoneOffset.ofHours(hours)))</span>
+        );
+<span class="fc" id="L212">        testSerialDateConstructorWithCustomCalendar(3, calendarSetup);</span>
+<span class="fc" id="L213">        testSerialDateConstructorWithCustomCalendar(4, calendarSetup);</span>
+<span class="fc" id="L214">    }</span>
+
+    /**
+     * If a calendar prototype was set, the SerialDate constructor should use it.
+     */
+    @Test
+    public void testSerialDateConstructorWithCalendarPrototype() {
+<span class="fc" id="L221">        Consumer&lt;Integer&gt; calendarSetup = hours -&gt; RegularTimePeriod.setCalendarInstancePrototype(</span>
+<span class="fc" id="L222">                Calendar.getInstance(TimeZone.getTimeZone(ZoneOffset.ofHours(hours)))</span>
+        );
+<span class="fc" id="L224">        testSerialDateConstructorWithCustomCalendar(3, calendarSetup);</span>
+<span class="fc" id="L225">        testSerialDateConstructorWithCustomCalendar(4, calendarSetup);</span>
+<span class="fc" id="L226">    }</span>
+
+    private void testSerialDateConstructorWithCustomCalendar(int hoursOffset, Consumer&lt;Integer&gt; calendarSetup) {
+        try {
+<span class="fc" id="L230">            calendarSetup.accept(hoursOffset);</span>
+<span class="fc" id="L231">            Day d = new Day(SerialDate.createInstance(1, 1, 1970));</span>
+<span class="fc" id="L232">            assertEquals(1970, d.getYear());</span>
+<span class="fc" id="L233">            assertEquals(1, d.getMonth());</span>
+<span class="fc" id="L234">            assertEquals(1, d.getDayOfMonth());</span>
+<span class="fc" id="L235">            assertEquals(-3_600_000L * hoursOffset, d.getFirstMillisecond());</span>
+        } finally {
+            // reset everything, to avoid affecting other tests
+<span class="fc" id="L238">            RegularTimePeriod.setThreadLocalCalendarInstance(null);</span>
+<span class="fc" id="L239">            RegularTimePeriod.setCalendarInstancePrototype(null);</span>
+        }
+<span class="fc" id="L241">    }</span>
+
+    /**
+     * Set up a day equal to 1 January 1900.  Request the previous day, it
+     * should be null.
+     */
+    @Test
+    public void test1Jan1900Previous() {
+<span class="fc" id="L249">        Day jan1st1900 = new Day(1, MonthConstants.JANUARY, 1900);</span>
+<span class="fc" id="L250">        Day previous = (Day) jan1st1900.previous();</span>
+<span class="fc" id="L251">        assertNull(previous);</span>
+<span class="fc" id="L252">    }</span>
+
+    /**
+     * Set up a day equal to 1 January 1900.  Request the next day, it should
+     * be 2 January 1900.
+     */
+    @Test
+    public void test1Jan1900Next() {
+<span class="fc" id="L260">        Day jan1st1900 = new Day(1, MonthConstants.JANUARY, 1900);</span>
+<span class="fc" id="L261">        Day next = (Day) jan1st1900.next();</span>
+<span class="fc" id="L262">        assertEquals(2, next.getDayOfMonth());</span>
+<span class="fc" id="L263">    }</span>
+
+    /**
+     * Set up a day equal to 31 December 9999.  Request the previous day, it
+     * should be 30 December 9999.
+     */
+    @Test
+    public void test31Dec9999Previous() {
+<span class="fc" id="L271">        Day dec31st9999 = new Day(31, MonthConstants.DECEMBER, 9999);</span>
+<span class="fc" id="L272">        Day previous = (Day) dec31st9999.previous();</span>
+<span class="fc" id="L273">        assertEquals(30, previous.getDayOfMonth());</span>
+<span class="fc" id="L274">    }</span>
+
+    /**
+     * Set up a day equal to 31 December 9999.  Request the next day, it should
+     * be null.
+     */
+    @Test
+    public void test31Dec9999Next() {
+<span class="fc" id="L282">        Day dec31st9999 = new Day(31, MonthConstants.DECEMBER, 9999);</span>
+<span class="fc" id="L283">        Day next = (Day) dec31st9999.next();</span>
+<span class="fc" id="L284">        assertNull(next);</span>
+<span class="fc" id="L285">    }</span>
+
+    /**
+     * Problem for date parsing.
+     * &lt;p&gt;
+     * This test works only correct if the short pattern of the date
+     * format is &quot;dd/MM/yyyy&quot;. If not, this test will result in a
+     * false negative.
+     *
+     * @throws ParseException on parsing errors.
+     */
+    @Test
+    public void testParseDay() throws ParseException {
+<span class="fc" id="L298">        GregorianCalendar gc = new GregorianCalendar(2001, 12, 31);</span>
+<span class="fc" id="L299">        SimpleDateFormat format = new SimpleDateFormat(&quot;dd/MM/yyyy&quot;);</span>
+<span class="fc" id="L300">        Date reference = format.parse(&quot;31/12/2001&quot;);</span>
+<span class="pc bpc" id="L301" title="1 of 2 branches missed.">        if (reference.equals(gc.getTime())) {</span>
+            // test 1...
+<span class="nc" id="L303">            Day d = Day.parseDay(&quot;31/12/2001&quot;);</span>
+<span class="nc" id="L304">            assertEquals(37256, d.getSerialDate().toSerial());</span>
+        }
+
+        // test 2...
+<span class="fc" id="L308">        Day d = Day.parseDay(&quot;2001-12-31&quot;);</span>
+<span class="fc" id="L309">        assertEquals(37256, d.getSerialDate().toSerial());</span>
+<span class="fc" id="L310">    }</span>
+
+    /**
+     * Serialize an instance, restore it, and check for equality.
+     */
+    @Test
+    public void testSerialization() {
+<span class="fc" id="L317">        Day d1 = new Day(15, 4, 2000);</span>
+<span class="fc" id="L318">        Day d2 = TestUtils.serialised(d1);</span>
+<span class="fc" id="L319">        assertEquals(d1, d2);</span>
+<span class="fc" id="L320">    }</span>
+
+    /**
+     * Two objects that are equal are required to return the same hashCode.
+     */
+    @Test
+    public void testHashcode() {
+<span class="fc" id="L327">        Day d1 = new Day(1, 2, 2003);</span>
+<span class="fc" id="L328">        Day d2 = new Day(1, 2, 2003);</span>
+<span class="fc" id="L329">        assertEquals(d1, d2);</span>
+<span class="fc" id="L330">        int h1 = d1.hashCode();</span>
+<span class="fc" id="L331">        int h2 = d2.hashCode();</span>
+<span class="fc" id="L332">        assertEquals(h1, h2);</span>
+<span class="fc" id="L333">    }</span>
+
+    /**
+     * The {@link Day} class is immutable, so should not be {@link Cloneable}.
+     */
+    @Test
+    public void testNotCloneable() {
+<span class="fc" id="L340">        Day d = new Day(1, 2, 2003);</span>
+<span class="fc" id="L341">        assertFalse(d instanceof Cloneable);</span>
+<span class="fc" id="L342">    }</span>
+
+    /**
+     * Some checks for the getSerialIndex() method.
+     */
+    @Test
+    public void testGetSerialIndex() {
+<span class="fc" id="L349">        Day d = new Day(1, 1, 1900);</span>
+<span class="fc" id="L350">        assertEquals(2, d.getSerialIndex());</span>
+<span class="fc" id="L351">        d = new Day(15, 4, 2000);</span>
+<span class="fc" id="L352">        assertEquals(36631, d.getSerialIndex());</span>
+<span class="fc" id="L353">    }</span>
+
+    /**
+     * Some checks for the getFirstMillisecond() method.
+     */
+    @Test
+    public void testGetFirstMillisecond() {
+<span class="fc" id="L360">        Locale saved = Locale.getDefault();</span>
+<span class="fc" id="L361">        Locale.setDefault(Locale.UK);</span>
+<span class="fc" id="L362">        TimeZone savedZone = TimeZone.getDefault();</span>
+<span class="fc" id="L363">        TimeZone.setDefault(TimeZone.getTimeZone(&quot;Europe/London&quot;));</span>
+<span class="fc" id="L364">        Day d = new Day(1, 3, 1970);</span>
+<span class="fc" id="L365">        assertEquals(5094000000L, d.getFirstMillisecond());</span>
+<span class="fc" id="L366">        Locale.setDefault(saved);</span>
+<span class="fc" id="L367">        TimeZone.setDefault(savedZone);</span>
+<span class="fc" id="L368">    }</span>
+
+    /**
+     * Some checks for the getFirstMillisecond(TimeZone) method.
+     */
+    @Test
+    public void testGetFirstMillisecondWithTimeZone() {
+<span class="fc" id="L375">        Day d = new Day(26, 4, 1950);</span>
+<span class="fc" id="L376">        TimeZone zone = TimeZone.getTimeZone(&quot;America/Los_Angeles&quot;);</span>
+<span class="fc" id="L377">        Calendar cal = Calendar.getInstance(zone);</span>
+<span class="fc" id="L378">        assertEquals(-621187200000L, d.getFirstMillisecond(cal));</span>
+
+        // try null calendar
+<span class="fc" id="L381">        boolean pass = false;</span>
+        try {
+<span class="nc" id="L383">            d.getFirstMillisecond((Calendar) null);</span>
+        }
+<span class="fc" id="L385">        catch (NullPointerException e) {</span>
+<span class="fc" id="L386">            pass = true;</span>
+<span class="nc" id="L387">        }</span>
+<span class="fc" id="L388">        assertTrue(pass);</span>
+<span class="fc" id="L389">    }</span>
+
+    /**
+     * Some checks for the getFirstMillisecond(TimeZone) method.
+     */
+    @Test
+    public void testGetFirstMillisecondWithCalendar() {
+<span class="fc" id="L396">        Day d = new Day(1, 12, 2001);</span>
+<span class="fc" id="L397">        GregorianCalendar calendar = new GregorianCalendar(Locale.GERMANY);</span>
+<span class="fc" id="L398">        calendar.setTimeZone(TimeZone.getTimeZone(&quot;Europe/Frankfurt&quot;));</span>
+<span class="fc" id="L399">        assertEquals(1007164800000L, d.getFirstMillisecond(calendar));</span>
+
+        // try null calendar
+<span class="fc" id="L402">        boolean pass = false;</span>
+        try {
+<span class="nc" id="L404">            d.getFirstMillisecond((Calendar) null);</span>
+        }
+<span class="fc" id="L406">        catch (NullPointerException e) {</span>
+<span class="fc" id="L407">            pass = true;</span>
+<span class="nc" id="L408">        }</span>
+<span class="fc" id="L409">        assertTrue(pass);</span>
+<span class="fc" id="L410">    }</span>
+
+    /**
+     * Some checks for the getLastMillisecond() method.
+     */
+    @Test
+    public void testGetLastMillisecond() {
+<span class="fc" id="L417">        Locale saved = Locale.getDefault();</span>
+<span class="fc" id="L418">        Locale.setDefault(Locale.UK);</span>
+<span class="fc" id="L419">        TimeZone savedZone = TimeZone.getDefault();</span>
+<span class="fc" id="L420">        TimeZone.setDefault(TimeZone.getTimeZone(&quot;Europe/London&quot;));</span>
+<span class="fc" id="L421">        Day d = new Day(1, 1, 1970);</span>
+<span class="fc" id="L422">        assertEquals(82799999L, d.getLastMillisecond());</span>
+<span class="fc" id="L423">        Locale.setDefault(saved);</span>
+<span class="fc" id="L424">        TimeZone.setDefault(savedZone);</span>
+<span class="fc" id="L425">    }</span>
+
+    /**
+     * Some checks for the getLastMillisecond(TimeZone) method.
+     */
+    @Test
+    public void testGetLastMillisecondWithTimeZone() {
+<span class="fc" id="L432">        Day d = new Day(1, 2, 1950);</span>
+<span class="fc" id="L433">        TimeZone zone = TimeZone.getTimeZone(&quot;America/Los_Angeles&quot;);</span>
+<span class="fc" id="L434">        Calendar cal = Calendar.getInstance(zone);</span>
+<span class="fc" id="L435">        assertEquals(-628358400001L, d.getLastMillisecond(cal));</span>
+
+        // try null calendar
+<span class="fc" id="L438">        boolean pass = false;</span>
+        try {
+<span class="nc" id="L440">            d.getLastMillisecond((Calendar) null);</span>
+        }
+<span class="fc" id="L442">        catch (NullPointerException e) {</span>
+<span class="fc" id="L443">            pass = true;</span>
+<span class="nc" id="L444">        }</span>
+<span class="fc" id="L445">        assertTrue(pass);</span>
+<span class="fc" id="L446">    }</span>
+
+    /**
+     * Some checks for the getLastMillisecond(TimeZone) method.
+     */
+    @Test
+    public void testGetLastMillisecondWithCalendar() {
+
+<span class="fc" id="L454">        Day d = new Day(4, 5, 2001);</span>
+<span class="fc" id="L455">        Calendar calendar = Calendar.getInstance(</span>
+<span class="fc" id="L456">                TimeZone.getTimeZone(&quot;Europe/London&quot;), Locale.UK);</span>
+<span class="fc" id="L457">        assertEquals(989017199999L, d.getLastMillisecond(calendar));</span>
+
+        // try null calendar
+<span class="fc" id="L460">        boolean pass = false;</span>
+        try {
+<span class="nc" id="L462">            d.getLastMillisecond((Calendar) null);</span>
+        }
+<span class="fc" id="L464">        catch (NullPointerException e) {</span>
+<span class="fc" id="L465">            pass = true;</span>
+<span class="nc" id="L466">        }</span>
+<span class="fc" id="L467">        assertTrue(pass);</span>
+<span class="fc" id="L468">    }</span>
+
+    @Test
+    public void testNextPrevious() {
+<span class="fc" id="L472">        Day d = new Day(25, 12, 2000);</span>
+<span class="fc" id="L473">        d = (Day) d.next();</span>
+<span class="fc" id="L474">        assertEquals(2000, d.getYear());</span>
+<span class="fc" id="L475">        assertEquals(12, d.getMonth());</span>
+<span class="fc" id="L476">        assertEquals(26, d.getDayOfMonth());</span>
+<span class="fc" id="L477">        d = (Day) d.previous();</span>
+<span class="fc" id="L478">        assertEquals(2000, d.getYear());</span>
+<span class="fc" id="L479">        assertEquals(12, d.getMonth());</span>
+<span class="fc" id="L480">        assertEquals(25, d.getDayOfMonth());</span>
+<span class="fc" id="L481">        d = new Day(31, 12, 9999);</span>
+<span class="fc" id="L482">        assertNull(d.next());</span>
+<span class="fc" id="L483">    }</span>
+
+    /**
+     * If a thread-local calendar was set, next() and previous() should use its time zone.
+     */
+    @Test
+    public void testNextPreviousWithThreadLocalCalendar() {
+<span class="fc" id="L490">        Consumer&lt;Integer&gt; calendarSetup = hours -&gt; RegularTimePeriod.setThreadLocalCalendarInstance(</span>
+<span class="fc" id="L491">                Calendar.getInstance(TimeZone.getTimeZone(ZoneOffset.ofHours(hours)))</span>
+        );
+<span class="fc" id="L493">        testNextPreviousWithCustomCalendar(3, calendarSetup);</span>
+<span class="fc" id="L494">        testNextPreviousWithCustomCalendar(4, calendarSetup);</span>
+<span class="fc" id="L495">    }</span>
+
+    /**
+     * If a calendar prototype was set, next() should use its time zone.
+     */
+    @Test
+    public void testNextPreviousWithCalendarPrototype() {
+<span class="fc" id="L502">        Consumer&lt;Integer&gt; calendarSetup = hours -&gt; RegularTimePeriod.setCalendarInstancePrototype(</span>
+<span class="fc" id="L503">                Calendar.getInstance(TimeZone.getTimeZone(ZoneOffset.ofHours(hours)))</span>
+        );
+<span class="fc" id="L505">        testNextPreviousWithCustomCalendar(3, calendarSetup);</span>
+<span class="fc" id="L506">        testNextPreviousWithCustomCalendar(4, calendarSetup);</span>
+<span class="fc" id="L507">    }</span>
+
+    private void testNextPreviousWithCustomCalendar(int hoursOffset, Consumer&lt;Integer&gt; calendarSetup) {
+        try {
+<span class="fc" id="L511">            calendarSetup.accept(hoursOffset);</span>
+<span class="fc" id="L512">            long ms = 86_400_000L - hoursOffset * 3_600_000L;</span>
+<span class="fc" id="L513">            Day d = new Day(new Date(ms));</span>
+<span class="fc" id="L514">            d = (Day) d.next();</span>
+<span class="fc" id="L515">            assertEquals(1970, d.getYear());</span>
+<span class="fc" id="L516">            assertEquals(1, d.getMonth());</span>
+<span class="fc" id="L517">            assertEquals(3, d.getDayOfMonth());</span>
+<span class="fc" id="L518">            assertEquals(ms + 86_400_000L, d.getFirstMillisecond());</span>
+<span class="fc" id="L519">            d = (Day) d.previous();</span>
+<span class="fc" id="L520">            assertEquals(1970, d.getYear());</span>
+<span class="fc" id="L521">            assertEquals(1, d.getMonth());</span>
+<span class="fc" id="L522">            assertEquals(2, d.getDayOfMonth());</span>
+<span class="fc" id="L523">            assertEquals(ms, d.getFirstMillisecond());</span>
+        } finally {
+            // reset everything, to avoid affecting other tests
+<span class="fc" id="L526">            RegularTimePeriod.setThreadLocalCalendarInstance(null);</span>
+<span class="fc" id="L527">            RegularTimePeriod.setCalendarInstancePrototype(null);</span>
+        }
+<span class="fc" id="L529">    }</span>
+
+    /**
+     * Some checks for the getStart() method.
+     */
+    @Test
+    public void testGetStart() {
+<span class="fc" id="L536">        Locale saved = Locale.getDefault();</span>
+<span class="fc" id="L537">        Locale.setDefault(Locale.ITALY);</span>
+<span class="fc" id="L538">        Calendar cal = Calendar.getInstance(Locale.ITALY);</span>
+<span class="fc" id="L539">        cal.set(2006, Calendar.NOVEMBER, 3, 0, 0, 0);</span>
+<span class="fc" id="L540">        cal.set(Calendar.MILLISECOND, 0);</span>
+<span class="fc" id="L541">        Day d = new Day(3, 11, 2006);</span>
+<span class="fc" id="L542">        assertEquals(cal.getTime(), d.getStart());</span>
+<span class="fc" id="L543">        Locale.setDefault(saved);</span>
+<span class="fc" id="L544">    }</span>
+
+    /**
+     * Some checks for the getEnd() method.
+     */
+    @Test
+    public void testGetEnd() {
+<span class="fc" id="L551">        Locale saved = Locale.getDefault();</span>
+<span class="fc" id="L552">        Locale.setDefault(Locale.ITALY);</span>
+<span class="fc" id="L553">        Calendar cal = Calendar.getInstance(Locale.ITALY);</span>
+<span class="fc" id="L554">        cal.set(1900, Calendar.JANUARY, 1, 23, 59, 59);</span>
+<span class="fc" id="L555">        cal.set(Calendar.MILLISECOND, 999);</span>
+<span class="fc" id="L556">        Day d = new Day(1, 1, 1900);</span>
+<span class="fc" id="L557">        assertEquals(cal.getTime(), d.getEnd());</span>
+<span class="fc" id="L558">        Locale.setDefault(saved);</span>
+<span class="fc" id="L559">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span>jfreechart (Mar 14, 2025 5:50:17 p.m.)</div></body></html>

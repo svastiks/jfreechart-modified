@@ -1,0 +1,335 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>SpiderWebPlotTest.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">jfreechart (Mar 14, 2025 5:50:17 p.m.)</a> &gt; <a href="../../index.html" class="el_group">jfreechart</a> &gt; <a href="../index.html" class="el_bundle">src/test/java</a> &gt; <a href="index.source.html" class="el_package">org.jfree.chart.plot</a> &gt; <span class="el_source">SpiderWebPlotTest.java</span></div><h1>SpiderWebPlotTest.java</h1><pre class="source lang-java linenums">/* ===========================================================
+ * JFreeChart : a free chart library for the Java(tm) platform
+ * ===========================================================
+ *
+ * (C) Copyright 2000-2022, by David Gilbert and Contributors.
+ *
+ * Project Info:  http://www.jfree.org/jfreechart/index.html
+ *
+ * This library is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 2.1 of the License, or
+ * (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public
+ * License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301,
+ * USA.
+ *
+ * [Oracle and Java are registered trademarks of Oracle and/or its affiliates. 
+ * Other names may be trademarks of their respective owners.]
+ *
+ * ----------------------
+ * SpiderWebPlotTest.java
+ * ----------------------
+ * (C) Copyright 2005-2022, by David Gilbert and Contributors.
+ *
+ * Original Author:  David Gilbert;
+ * Contributor(s):   -;
+ *
+ */
+
+package org.jfree.chart.plot;
+
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.GradientPaint;
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
+import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
+import java.text.DecimalFormat;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.legend.LegendItem;
+import org.jfree.chart.legend.LegendItemCollection;
+import org.jfree.chart.TestUtils;
+import org.jfree.chart.labels.StandardCategoryItemLabelGenerator;
+import org.jfree.chart.labels.StandardCategoryToolTipGenerator;
+import org.jfree.chart.urls.StandardCategoryURLGenerator;
+import org.jfree.chart.internal.CloneUtils;
+import org.jfree.chart.api.Rotation;
+import org.jfree.chart.api.TableOrder;
+import org.jfree.data.category.DefaultCategoryDataset;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+/**
+ * Tests for the {@link SpiderWebPlot} class.
+ */
+<span class="fc" id="L66">public class SpiderWebPlotTest {</span>
+
+    /**
+     * Some checks for the equals() method.
+     */
+    @Test
+    public void testEquals() {
+<span class="fc" id="L73">        SpiderWebPlot p1 = new SpiderWebPlot(new DefaultCategoryDataset&lt;String, String&gt;());</span>
+<span class="fc" id="L74">        SpiderWebPlot p2 = new SpiderWebPlot(new DefaultCategoryDataset&lt;String, String&gt;());</span>
+<span class="fc" id="L75">        assertEquals(p1, p2);</span>
+<span class="fc" id="L76">        assertEquals(p2, p1);</span>
+
+        // dataExtractOrder
+<span class="fc" id="L79">        p1.setDataExtractOrder(TableOrder.BY_COLUMN);</span>
+<span class="fc" id="L80">        assertNotEquals(p1, p2);</span>
+<span class="fc" id="L81">        p2.setDataExtractOrder(TableOrder.BY_COLUMN);</span>
+<span class="fc" id="L82">        assertEquals(p1, p2);</span>
+
+        // headPercent
+<span class="fc" id="L85">        p1.setHeadPercent(0.321);</span>
+<span class="fc" id="L86">        assertNotEquals(p1, p2);</span>
+<span class="fc" id="L87">        p2.setHeadPercent(0.321);</span>
+<span class="fc" id="L88">        assertEquals(p1, p2);</span>
+
+        // interiorGap
+<span class="fc" id="L91">        p1.setInteriorGap(0.123);</span>
+<span class="fc" id="L92">        assertNotEquals(p1, p2);</span>
+<span class="fc" id="L93">        p2.setInteriorGap(0.123);</span>
+<span class="fc" id="L94">        assertEquals(p1, p2);</span>
+
+        // startAngle
+<span class="fc" id="L97">        p1.setStartAngle(0.456);</span>
+<span class="fc" id="L98">        assertNotEquals(p1, p2);</span>
+<span class="fc" id="L99">        p2.setStartAngle(0.456);</span>
+<span class="fc" id="L100">        assertEquals(p1, p2);</span>
+
+        // direction
+<span class="fc" id="L103">        p1.setDirection(Rotation.ANTICLOCKWISE);</span>
+<span class="fc" id="L104">        assertNotEquals(p1, p2);</span>
+<span class="fc" id="L105">        p2.setDirection(Rotation.ANTICLOCKWISE);</span>
+<span class="fc" id="L106">        assertEquals(p1, p2);</span>
+
+        // maxValue
+<span class="fc" id="L109">        p1.setMaxValue(123.4);</span>
+<span class="fc" id="L110">        assertNotEquals(p1, p2);</span>
+<span class="fc" id="L111">        p2.setMaxValue(123.4);</span>
+<span class="fc" id="L112">        assertEquals(p1, p2);</span>
+
+        // legendItemShape
+<span class="fc" id="L115">        p1.setLegendItemShape(new Rectangle(1, 2, 3, 4));</span>
+<span class="fc" id="L116">        assertNotEquals(p1, p2);</span>
+<span class="fc" id="L117">        p2.setLegendItemShape(new Rectangle(1, 2, 3, 4));</span>
+<span class="fc" id="L118">        assertEquals(p1, p2);</span>
+
+        // seriesPaintList
+<span class="fc" id="L121">        p1.setSeriesPaint(1, new GradientPaint(1.0f, 2.0f, Color.YELLOW,</span>
+                3.0f, 4.0f, Color.WHITE));
+<span class="fc" id="L123">        assertNotEquals(p1, p2);</span>
+<span class="fc" id="L124">        p2.setSeriesPaint(1, new GradientPaint(1.0f, 2.0f, Color.YELLOW,</span>
+                3.0f, 4.0f, Color.WHITE));
+<span class="fc" id="L126">        assertEquals(p1, p2);</span>
+
+        // defaultSeriesPaint
+<span class="fc" id="L129">        p1.setDefaultSeriesPaint(new GradientPaint(1.0f, 2.0f, Color.RED,</span>
+                3.0f, 4.0f, Color.BLACK));
+<span class="fc" id="L131">        assertNotEquals(p1, p2);</span>
+<span class="fc" id="L132">        p2.setDefaultSeriesPaint(new GradientPaint(1.0f, 2.0f, Color.RED,</span>
+                3.0f, 4.0f, Color.BLACK));
+<span class="fc" id="L134">        assertEquals(p1, p2);</span>
+
+        // seriesOutlinePaintList
+<span class="fc" id="L137">        p1.setSeriesOutlinePaint(1, new GradientPaint(1.0f, 2.0f, Color.BLUE,</span>
+                3.0f, 4.0f, Color.GREEN));
+<span class="fc" id="L139">        assertNotEquals(p1, p2);</span>
+<span class="fc" id="L140">        p2.setSeriesOutlinePaint(1, new GradientPaint(1.0f, 2.0f, Color.BLUE,</span>
+                3.0f, 4.0f, Color.GREEN));
+<span class="fc" id="L142">        assertEquals(p1, p2);</span>
+
+        // defaultSeriesOutlinePaint
+<span class="fc" id="L145">        p1.setDefaultSeriesOutlinePaint(new GradientPaint(1.0f, 2.0f, Color.CYAN,</span>
+                3.0f, 4.0f, Color.GREEN));
+<span class="fc" id="L147">        assertNotEquals(p1, p2);</span>
+<span class="fc" id="L148">        p2.setDefaultSeriesOutlinePaint(new GradientPaint(1.0f, 2.0f, Color.CYAN,</span>
+                3.0f, 4.0f, Color.GREEN));
+<span class="fc" id="L150">        assertEquals(p1, p2);</span>
+
+<span class="fc" id="L152">        BasicStroke s = new BasicStroke(1.23f);</span>
+
+        // seriesOutlineStrokeList
+<span class="fc" id="L155">        p1.setSeriesOutlineStroke(1, s);</span>
+<span class="fc" id="L156">        assertNotEquals(p1, p2);</span>
+<span class="fc" id="L157">        p2.setSeriesOutlineStroke(1, s);</span>
+<span class="fc" id="L158">        assertEquals(p1, p2);</span>
+
+        // defaultSeriesOutlineStroke
+<span class="fc" id="L161">        p1.setDefaultSeriesOutlineStroke(s);</span>
+<span class="fc" id="L162">        assertNotEquals(p1, p2);</span>
+<span class="fc" id="L163">        p2.setDefaultSeriesOutlineStroke(s);</span>
+<span class="fc" id="L164">        assertEquals(p1, p2);</span>
+
+        // webFilled
+<span class="fc" id="L167">        p1.setWebFilled(false);</span>
+<span class="fc" id="L168">        assertNotEquals(p1, p2);</span>
+<span class="fc" id="L169">        p2.setWebFilled(false);</span>
+<span class="fc" id="L170">        assertEquals(p1, p2);</span>
+
+        // axisLabelGap
+<span class="fc" id="L173">        p1.setAxisLabelGap(0.11);</span>
+<span class="fc" id="L174">        assertNotEquals(p1, p2);</span>
+<span class="fc" id="L175">        p2.setAxisLabelGap(0.11);</span>
+<span class="fc" id="L176">        assertEquals(p1, p2);</span>
+
+        // labelFont
+<span class="fc" id="L179">        p1.setLabelFont(new Font(&quot;Serif&quot;, Font.PLAIN, 9));</span>
+<span class="fc" id="L180">        assertNotEquals(p1, p2);</span>
+<span class="fc" id="L181">        p2.setLabelFont(new Font(&quot;Serif&quot;, Font.PLAIN, 9));</span>
+<span class="fc" id="L182">        assertEquals(p1, p2);</span>
+
+        // labelPaint
+<span class="fc" id="L185">        p1.setLabelPaint(new GradientPaint(1.0f, 2.0f, Color.RED,</span>
+                3.0f, 4.0f, Color.BLUE));
+<span class="fc" id="L187">        assertNotEquals(p1, p2);</span>
+<span class="fc" id="L188">        p2.setLabelPaint(new GradientPaint(1.0f, 2.0f, Color.RED,</span>
+                3.0f, 4.0f, Color.BLUE));
+<span class="fc" id="L190">        assertEquals(p1, p2);</span>
+
+        // labelGenerator
+<span class="fc" id="L193">        p1.setLabelGenerator(new StandardCategoryItemLabelGenerator(&quot;XYZ: {0}&quot;,</span>
+                new DecimalFormat(&quot;0.000&quot;)));
+<span class="fc" id="L195">        assertNotEquals(p1, p2);</span>
+<span class="fc" id="L196">        p2.setLabelGenerator(new StandardCategoryItemLabelGenerator(&quot;XYZ: {0}&quot;,</span>
+                new DecimalFormat(&quot;0.000&quot;)));
+<span class="fc" id="L198">        assertEquals(p1, p2);</span>
+
+        // toolTipGenerator
+<span class="fc" id="L201">        p1.setToolTipGenerator(new StandardCategoryToolTipGenerator());</span>
+<span class="fc" id="L202">        assertNotEquals(p1, p2);</span>
+<span class="fc" id="L203">        p2.setToolTipGenerator(new StandardCategoryToolTipGenerator());</span>
+<span class="fc" id="L204">        assertEquals(p1, p2);</span>
+
+        // urlGenerator
+<span class="fc" id="L207">        p1.setURLGenerator(new StandardCategoryURLGenerator());</span>
+<span class="fc" id="L208">        assertNotEquals(p1, p2);</span>
+<span class="fc" id="L209">        p2.setURLGenerator(new StandardCategoryURLGenerator());</span>
+<span class="fc" id="L210">        assertEquals(p1, p2);</span>
+
+        // axisLinePaint
+<span class="fc" id="L213">        p1.setAxisLinePaint(Color.RED);</span>
+<span class="fc" id="L214">        assertNotEquals(p1, p2);</span>
+<span class="fc" id="L215">        p2.setAxisLinePaint(Color.RED);</span>
+<span class="fc" id="L216">        assertEquals(p1, p2);</span>
+
+        // axisLineStroke
+<span class="fc" id="L219">        p1.setAxisLineStroke(new BasicStroke(1.1f));</span>
+<span class="fc" id="L220">        assertNotEquals(p1, p2);</span>
+<span class="fc" id="L221">        p2.setAxisLineStroke(new BasicStroke(1.1f));</span>
+<span class="fc" id="L222">        assertEquals(p1, p2);</span>
+<span class="fc" id="L223">    }</span>
+
+    /**
+     * Confirm that cloning works.
+     * 
+     * @throws java.lang.CloneNotSupportedException
+     */
+    @Test
+    public void testCloning() throws CloneNotSupportedException {
+<span class="fc" id="L232">        SpiderWebPlot p1 = new SpiderWebPlot(new DefaultCategoryDataset&lt;String, String&gt;());</span>
+<span class="fc" id="L233">        Rectangle2D legendShape = new Rectangle2D.Double(1.0, 2.0, 3.0, 4.0);</span>
+<span class="fc" id="L234">        p1.setLegendItemShape(legendShape);</span>
+<span class="fc" id="L235">        SpiderWebPlot p2 = CloneUtils.clone(p1);</span>
+<span class="fc" id="L236">        assertNotSame(p1, p2);</span>
+<span class="fc" id="L237">        assertSame(p1.getClass(), p2.getClass());</span>
+<span class="fc" id="L238">        assertEquals(p1, p2);</span>
+
+        // change the legendItemShape
+<span class="fc" id="L241">        legendShape.setRect(4.0, 3.0, 2.0, 1.0);</span>
+<span class="fc" id="L242">        assertNotEquals(p1, p2);</span>
+<span class="fc" id="L243">        p2.setLegendItemShape(legendShape);</span>
+<span class="fc" id="L244">        assertEquals(p1, p2);</span>
+
+        // change a series paint
+<span class="fc" id="L247">        p1.setSeriesPaint(1, Color.BLACK);</span>
+<span class="fc" id="L248">        assertNotEquals(p1, p2);</span>
+<span class="fc" id="L249">        p2.setSeriesPaint(1, Color.BLACK);</span>
+<span class="fc" id="L250">        assertEquals(p1, p2);</span>
+
+        // change a series outline paint
+<span class="fc" id="L253">        p1.setSeriesOutlinePaint(0, Color.RED);</span>
+<span class="fc" id="L254">        assertNotEquals(p1, p2);</span>
+<span class="fc" id="L255">        p2.setSeriesOutlinePaint(0, Color.RED);</span>
+<span class="fc" id="L256">        assertEquals(p1, p2);</span>
+
+        // change a series outline stroke
+<span class="fc" id="L259">        p1.setSeriesOutlineStroke(0, new BasicStroke(1.1f));</span>
+<span class="fc" id="L260">        assertNotEquals(p1, p2);</span>
+<span class="fc" id="L261">        p2.setSeriesOutlineStroke(0, new BasicStroke(1.1f));</span>
+<span class="fc" id="L262">        assertEquals(p1, p2);</span>
+
+<span class="fc" id="L264">    }</span>
+
+    /**
+     * Serialize an instance, restore it, and check for equality.
+     */
+    @Test
+    public void testSerialization() {
+<span class="fc" id="L271">        SpiderWebPlot p1 = new SpiderWebPlot(new DefaultCategoryDataset&lt;String, String&gt;());</span>
+<span class="fc" id="L272">        p1.setSeriesPaint(1, new GradientPaint(1.0f, 2.0f, Color.BLUE, 3.0f, 4.0f, Color.RED));</span>
+<span class="fc" id="L273">        p1.setSeriesOutlinePaint(1, new GradientPaint(4.0f, 3.0f, Color.BLUE, 2.0f, 1.0f, Color.RED));</span>
+<span class="fc" id="L274">        p1.setSeriesOutlineStroke(1, new BasicStroke(9.0f));</span>
+<span class="fc" id="L275">        SpiderWebPlot p2 = TestUtils.serialised(p1);</span>
+<span class="fc" id="L276">        assertEquals(p1, p2);</span>
+<span class="fc" id="L277">    }</span>
+
+    /**
+     * Draws the chart with a null info object to make sure that no exceptions
+     * are thrown.
+     */
+    @Test
+    public void testDrawWithNullInfo() {
+<span class="fc" id="L285">        DefaultCategoryDataset&lt;String, String&gt; dataset = new DefaultCategoryDataset&lt;&gt;();</span>
+<span class="fc" id="L286">        dataset.addValue(35.0, &quot;S1&quot;, &quot;C1&quot;);</span>
+<span class="fc" id="L287">        dataset.addValue(45.0, &quot;S1&quot;, &quot;C2&quot;);</span>
+<span class="fc" id="L288">        dataset.addValue(55.0, &quot;S1&quot;, &quot;C3&quot;);</span>
+<span class="fc" id="L289">        dataset.addValue(15.0, &quot;S1&quot;, &quot;C4&quot;);</span>
+<span class="fc" id="L290">        dataset.addValue(25.0, &quot;S1&quot;, &quot;C5&quot;);</span>
+<span class="fc" id="L291">        SpiderWebPlot plot = new SpiderWebPlot(dataset);</span>
+<span class="fc" id="L292">        JFreeChart chart = new JFreeChart(plot);</span>
+        try {
+<span class="fc" id="L294">            BufferedImage image = new BufferedImage(200 , 100,</span>
+                    BufferedImage.TYPE_INT_RGB);
+<span class="fc" id="L296">            Graphics2D g2 = image.createGraphics();</span>
+<span class="fc" id="L297">            chart.draw(g2, new Rectangle2D.Double(0, 0, 200, 100), null, null);</span>
+<span class="fc" id="L298">            g2.dispose();</span>
+        }
+<span class="nc" id="L300">        catch (Exception e) {</span>
+<span class="nc" id="L301">            fail(&quot;There should be no exception.&quot;);</span>
+<span class="fc" id="L302">        }</span>
+<span class="fc" id="L303">    }</span>
+
+    /**
+     * Fetches the legend items and checks the values.
+     */
+    @Test
+    public void testGetLegendItems() {
+<span class="fc" id="L310">        DefaultCategoryDataset&lt;String, String&gt; dataset = new DefaultCategoryDataset&lt;&gt;();</span>
+<span class="fc" id="L311">        dataset.addValue(35.0, &quot;S1&quot;, &quot;C1&quot;);</span>
+<span class="fc" id="L312">        dataset.addValue(45.0, &quot;S1&quot;, &quot;C2&quot;);</span>
+<span class="fc" id="L313">        dataset.addValue(55.0, &quot;S2&quot;, &quot;C1&quot;);</span>
+<span class="fc" id="L314">        dataset.addValue(15.0, &quot;S2&quot;, &quot;C2&quot;);</span>
+<span class="fc" id="L315">        SpiderWebPlot plot = new SpiderWebPlot(dataset);</span>
+<span class="fc" id="L316">        JFreeChart chart = new JFreeChart(plot);</span>
+<span class="fc" id="L317">        LegendItemCollection legendItems = plot.getLegendItems();</span>
+<span class="fc" id="L318">        assertEquals(2, legendItems.getItemCount());</span>
+<span class="fc" id="L319">        LegendItem item1 = legendItems.get(0);</span>
+<span class="fc" id="L320">        assertEquals(&quot;S1&quot;, item1.getLabel());</span>
+<span class="fc" id="L321">        assertEquals(&quot;S1&quot;, item1.getSeriesKey());</span>
+<span class="fc" id="L322">        assertEquals(0, item1.getSeriesIndex());</span>
+<span class="fc" id="L323">        assertEquals(dataset, item1.getDataset());</span>
+<span class="fc" id="L324">        assertEquals(0, item1.getDatasetIndex());</span>
+
+<span class="fc" id="L326">        LegendItem item2 = legendItems.get(1);</span>
+<span class="fc" id="L327">        assertEquals(&quot;S2&quot;, item2.getLabel());</span>
+<span class="fc" id="L328">        assertEquals(&quot;S2&quot;, item2.getSeriesKey());</span>
+<span class="fc" id="L329">        assertEquals(1, item2.getSeriesIndex());</span>
+<span class="fc" id="L330">        assertEquals(dataset, item2.getDataset());</span>
+<span class="fc" id="L331">        assertEquals(0, item2.getDatasetIndex());</span>
+<span class="fc" id="L332">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span>jfreechart (Mar 14, 2025 5:50:17 p.m.)</div></body></html>

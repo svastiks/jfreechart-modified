@@ -1,0 +1,374 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>PolarPlotTest.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">jfreechart (Mar 14, 2025 5:50:17 p.m.)</a> &gt; <a href="../../index.html" class="el_group">jfreechart</a> &gt; <a href="../index.html" class="el_bundle">src/test/java</a> &gt; <a href="index.source.html" class="el_package">org.jfree.chart.plot</a> &gt; <span class="el_source">PolarPlotTest.java</span></div><h1>PolarPlotTest.java</h1><pre class="source lang-java linenums">/* ===========================================================
+ * JFreeChart : a free chart library for the Java(tm) platform
+ * ===========================================================
+ *
+ * (C) Copyright 2000-2022, by David Gilbert and Contributors.
+ *
+ * Project Info:  http://www.jfree.org/jfreechart/index.html
+ *
+ * This library is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 2.1 of the License, or
+ * (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public
+ * License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301,
+ * USA.
+ *
+ * [Oracle and Java are registered trademarks of Oracle and/or its affiliates. 
+ * Other names may be trademarks of their respective owners.]
+ *
+ * ------------------
+ * PolarPlotTest.java
+ * ------------------
+ * (C) Copyright 2005-2022, by David Gilbert and Contributors.
+ *
+ * Original Author:  David Gilbert;
+ * Contributor(s):   -;
+ * 
+ */
+
+package org.jfree.chart.plot;
+
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.GradientPaint;
+import java.awt.Point;
+import java.awt.Stroke;
+import java.awt.geom.Rectangle2D;
+
+import org.jfree.chart.legend.LegendItem;
+import org.jfree.chart.legend.LegendItemCollection;
+import org.jfree.chart.TestUtils;
+import org.jfree.chart.axis.LogAxis;
+import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.axis.NumberTickUnit;
+import org.jfree.chart.axis.ValueAxis;
+import org.jfree.chart.renderer.DefaultPolarItemRenderer;
+import org.jfree.chart.internal.CloneUtils;
+import org.jfree.data.xy.DefaultXYDataset;
+import org.jfree.data.xy.XYSeries;
+import org.jfree.data.xy.XYSeriesCollection;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+/**
+ * Some tests for the {@link PolarPlot} class.
+ */
+<span class="fc" id="L66">public class PolarPlotTest {</span>
+
+    /**
+     * Some checks for the getLegendItems() method.
+     */
+    @Test
+    public void testGetLegendItems() {
+<span class="fc" id="L73">        XYSeriesCollection&lt;String&gt; d = new XYSeriesCollection&lt;&gt;();</span>
+<span class="fc" id="L74">        d.addSeries(new XYSeries&lt;&gt;(&quot;A&quot;));</span>
+<span class="fc" id="L75">        d.addSeries(new XYSeries&lt;&gt;(&quot;B&quot;));</span>
+<span class="fc" id="L76">        DefaultPolarItemRenderer r = new DefaultPolarItemRenderer();</span>
+<span class="fc" id="L77">        PolarPlot plot = new PolarPlot();</span>
+<span class="fc" id="L78">        plot.setDataset(d);</span>
+<span class="fc" id="L79">        plot.setRenderer(r);</span>
+<span class="fc" id="L80">        LegendItemCollection items = plot.getLegendItems();</span>
+<span class="fc" id="L81">        assertEquals(2, items.getItemCount());</span>
+<span class="fc" id="L82">        LegendItem item1 = items.get(0);</span>
+<span class="fc" id="L83">        assertEquals(&quot;A&quot;, item1.getLabel());</span>
+<span class="fc" id="L84">        LegendItem item2 = items.get(1);</span>
+<span class="fc" id="L85">        assertEquals(&quot;B&quot;, item2.getLabel());</span>
+<span class="fc" id="L86">    }</span>
+
+    /**
+     * Some checks for the getLegendItems() method with multiple datasets.
+     */
+    @Test
+    public void testGetLegendItems2() {
+<span class="fc" id="L93">        XYSeriesCollection&lt;String&gt; d1 = new XYSeriesCollection&lt;&gt;();</span>
+<span class="fc" id="L94">        d1.addSeries(new XYSeries&lt;&gt;(&quot;A&quot;));</span>
+<span class="fc" id="L95">        d1.addSeries(new XYSeries&lt;&gt;(&quot;B&quot;));</span>
+<span class="fc" id="L96">        XYSeriesCollection&lt;String&gt; d2 = new XYSeriesCollection&lt;&gt;();</span>
+<span class="fc" id="L97">        d2.addSeries(new XYSeries&lt;&gt;(&quot;C&quot;));</span>
+<span class="fc" id="L98">        d2.addSeries(new XYSeries&lt;&gt;(&quot;D&quot;));</span>
+<span class="fc" id="L99">        DefaultPolarItemRenderer r = new DefaultPolarItemRenderer();</span>
+<span class="fc" id="L100">        PolarPlot plot = new PolarPlot();</span>
+<span class="fc" id="L101">        plot.setDataset(d1);</span>
+<span class="fc" id="L102">        plot.setDataset(1, d2);</span>
+<span class="fc" id="L103">        plot.setRenderer(r);</span>
+<span class="fc" id="L104">        plot.setRenderer(1, new DefaultPolarItemRenderer());</span>
+<span class="fc" id="L105">        LegendItemCollection items = plot.getLegendItems();</span>
+<span class="fc" id="L106">        assertEquals(4, items.getItemCount());</span>
+<span class="fc" id="L107">        LegendItem item1 = items.get(0);</span>
+<span class="fc" id="L108">        assertEquals(&quot;A&quot;, item1.getLabel());</span>
+<span class="fc" id="L109">        LegendItem item2 = items.get(1);</span>
+<span class="fc" id="L110">        assertEquals(&quot;B&quot;, item2.getLabel());</span>
+<span class="fc" id="L111">        LegendItem item3 = items.get(2);</span>
+<span class="fc" id="L112">        assertEquals(&quot;C&quot;, item3.getLabel());</span>
+<span class="fc" id="L113">        LegendItem item4 = items.get(3);</span>
+<span class="fc" id="L114">        assertEquals(&quot;D&quot;, item4.getLabel());</span>
+<span class="fc" id="L115">    }</span>
+
+    /**
+     * Some checks for the equals() method.
+     */
+    @Test
+    public void testEquals() {
+<span class="fc" id="L122">        PolarPlot plot1 = new PolarPlot();</span>
+<span class="fc" id="L123">        PolarPlot plot2 = new PolarPlot();</span>
+<span class="fc" id="L124">        assertEquals(plot1, plot2);</span>
+<span class="fc" id="L125">        assertEquals(plot2, plot1);</span>
+
+<span class="fc" id="L127">        plot1.setAngleGridlinePaint(new GradientPaint(1.0f, 2.0f, Color.RED,</span>
+                3.0f, 4.0f, Color.BLUE));
+<span class="fc" id="L129">        assertNotEquals(plot1, plot2);</span>
+<span class="fc" id="L130">        plot2.setAngleGridlinePaint(new GradientPaint(1.0f, 2.0f, Color.RED,</span>
+                3.0f, 4.0f, Color.BLUE));
+<span class="fc" id="L132">        assertEquals(plot1, plot2);</span>
+
+<span class="fc" id="L134">        Stroke s = new BasicStroke(1.23f);</span>
+<span class="fc" id="L135">        plot1.setAngleGridlineStroke(s);</span>
+<span class="fc" id="L136">        assertNotEquals(plot1, plot2);</span>
+<span class="fc" id="L137">        plot2.setAngleGridlineStroke(s);</span>
+<span class="fc" id="L138">        assertEquals(plot1, plot2);</span>
+
+<span class="fc" id="L140">        plot1.setAngleTickUnit(new NumberTickUnit(11.0));</span>
+<span class="fc" id="L141">        assertNotEquals(plot1, plot2);</span>
+<span class="fc" id="L142">        plot2.setAngleTickUnit(new NumberTickUnit(11.0));</span>
+<span class="fc" id="L143">        assertEquals(plot1, plot2);</span>
+
+<span class="fc" id="L145">        plot1.setAngleGridlinesVisible(false);</span>
+<span class="fc" id="L146">        assertNotEquals(plot1, plot2);</span>
+<span class="fc" id="L147">        plot2.setAngleGridlinesVisible(false);</span>
+<span class="fc" id="L148">        assertEquals(plot1, plot2);</span>
+
+<span class="fc" id="L150">        plot1.setAngleLabelFont(new Font(&quot;Serif&quot;, Font.PLAIN, 9));</span>
+<span class="fc" id="L151">        assertNotEquals(plot1, plot2);</span>
+<span class="fc" id="L152">        plot2.setAngleLabelFont(new Font(&quot;Serif&quot;, Font.PLAIN, 9));</span>
+<span class="fc" id="L153">        assertEquals(plot1, plot2);</span>
+
+<span class="fc" id="L155">        plot1.setAngleLabelPaint(new GradientPaint(9.0f, 8.0f, Color.BLUE,</span>
+                7.0f, 6.0f, Color.RED));
+<span class="fc" id="L157">        assertNotEquals(plot1, plot2);</span>
+<span class="fc" id="L158">        plot2.setAngleLabelPaint(new GradientPaint(9.0f, 8.0f, Color.BLUE,</span>
+                7.0f, 6.0f, Color.RED));
+<span class="fc" id="L160">        assertEquals(plot1, plot2);</span>
+
+<span class="fc" id="L162">        plot1.setAngleLabelsVisible(false);</span>
+<span class="fc" id="L163">        assertNotEquals(plot1, plot2);</span>
+<span class="fc" id="L164">        plot2.setAngleLabelsVisible(false);</span>
+<span class="fc" id="L165">        assertEquals(plot1, plot2);</span>
+
+<span class="fc" id="L167">        plot1.setAxis(new NumberAxis(&quot;Test&quot;));</span>
+<span class="fc" id="L168">        assertNotEquals(plot1, plot2);</span>
+<span class="fc" id="L169">        plot2.setAxis(new NumberAxis(&quot;Test&quot;));</span>
+<span class="fc" id="L170">        assertEquals(plot1, plot2);</span>
+
+<span class="fc" id="L172">        plot1.setRadiusGridlinePaint(new GradientPaint(1.0f, 2.0f, Color.WHITE,</span>
+                3.0f, 4.0f, Color.BLACK));
+<span class="fc" id="L174">        assertNotEquals(plot1, plot2);</span>
+<span class="fc" id="L175">        plot2.setRadiusGridlinePaint(new GradientPaint(1.0f, 2.0f, Color.WHITE,</span>
+                3.0f, 4.0f, Color.BLACK));
+<span class="fc" id="L177">        assertEquals(plot1, plot2);</span>
+
+<span class="fc" id="L179">        plot1.setRadiusGridlineStroke(s);</span>
+<span class="fc" id="L180">        assertNotEquals(plot1, plot2);</span>
+<span class="fc" id="L181">        plot2.setRadiusGridlineStroke(s);</span>
+<span class="fc" id="L182">        assertEquals(plot1, plot2);</span>
+
+<span class="fc" id="L184">        plot1.setRadiusGridlinesVisible(false);</span>
+<span class="fc" id="L185">        assertNotEquals(plot1, plot2);</span>
+<span class="fc" id="L186">        plot2.setRadiusGridlinesVisible(false);</span>
+<span class="fc" id="L187">        assertEquals(plot1, plot2);</span>
+
+<span class="fc" id="L189">        plot1.setRadiusMinorGridlinesVisible(false);</span>
+<span class="fc" id="L190">        assertNotEquals(plot1, plot2);</span>
+<span class="fc" id="L191">        plot2.setRadiusMinorGridlinesVisible(false);</span>
+<span class="fc" id="L192">        assertEquals(plot1, plot2);</span>
+
+<span class="fc" id="L194">        plot1.addCornerTextItem(&quot;XYZ&quot;);</span>
+<span class="fc" id="L195">        assertNotEquals(plot1, plot2);</span>
+<span class="fc" id="L196">        plot2.addCornerTextItem(&quot;XYZ&quot;);</span>
+<span class="fc" id="L197">        assertEquals(plot1, plot2);</span>
+
+<span class="fc" id="L199">        plot1.setMargin(6);</span>
+<span class="fc" id="L200">        assertNotEquals(plot1, plot2);</span>
+<span class="fc" id="L201">        plot2.setMargin(6);</span>
+<span class="fc" id="L202">        assertEquals(plot1, plot2);</span>
+
+<span class="fc" id="L204">        LegendItemCollection lic1 = new LegendItemCollection();</span>
+<span class="fc" id="L205">        lic1.add(new LegendItem(&quot;XYZ&quot;, Color.RED));</span>
+<span class="fc" id="L206">        plot1.setFixedLegendItems(lic1);</span>
+<span class="fc" id="L207">        assertNotEquals(plot1, plot2);</span>
+<span class="fc" id="L208">        LegendItemCollection lic2 = new LegendItemCollection();</span>
+<span class="fc" id="L209">        lic2.add(new LegendItem(&quot;XYZ&quot;, Color.RED));</span>
+<span class="fc" id="L210">        plot2.setFixedLegendItems(lic2);</span>
+<span class="fc" id="L211">        assertEquals(plot1, plot2);</span>
+<span class="fc" id="L212">    }</span>
+
+    /**
+     * Some basic checks for the clone() method.
+     */
+    @Test
+    public void testCloning() throws CloneNotSupportedException {
+<span class="fc" id="L219">        PolarPlot p1 = new PolarPlot();</span>
+<span class="fc" id="L220">        PolarPlot p2 = CloneUtils.clone(p1);</span>
+<span class="fc" id="L221">        assertNotSame(p1, p2);</span>
+<span class="fc" id="L222">        assertSame(p1.getClass(), p2.getClass());</span>
+<span class="fc" id="L223">        assertEquals(p1, p2);</span>
+
+        // check independence
+<span class="fc" id="L226">        p1.addCornerTextItem(&quot;XYZ&quot;);</span>
+<span class="fc" id="L227">        assertNotEquals(p1, p2);</span>
+<span class="fc" id="L228">        p2.addCornerTextItem(&quot;XYZ&quot;);</span>
+<span class="fc" id="L229">        assertEquals(p1, p2);</span>
+
+<span class="fc" id="L231">        p1 = new PolarPlot(new DefaultXYDataset&lt;String&gt;(), new NumberAxis(&quot;A1&quot;),</span>
+                new DefaultPolarItemRenderer());
+<span class="fc" id="L233">        p2 = (PolarPlot) p1.clone();</span>
+<span class="fc" id="L234">        assertNotSame(p1, p2);</span>
+<span class="fc" id="L235">        assertSame(p1.getClass(), p2.getClass());</span>
+<span class="fc" id="L236">        assertEquals(p1, p2);</span>
+
+        // check independence
+<span class="fc" id="L239">        p1.getAxis().setLabel(&quot;ABC&quot;);</span>
+<span class="fc" id="L240">        assertNotEquals(p1, p2);</span>
+<span class="fc" id="L241">        p2.getAxis().setLabel(&quot;ABC&quot;);</span>
+<span class="fc" id="L242">        assertEquals(p1, p2);</span>
+<span class="fc" id="L243">    }</span>
+
+    /**
+     * Serialize an instance, restore it, and check for equality.
+     */
+    @Test
+    public void testSerialization() {
+<span class="fc" id="L250">        PolarPlot p1 = new PolarPlot();</span>
+<span class="fc" id="L251">        p1.setAngleGridlinePaint(new GradientPaint(1.0f, 2.0f, Color.RED, 3.0f,</span>
+                4.0f, Color.BLUE));
+<span class="fc" id="L253">        p1.setAngleLabelPaint(new GradientPaint(1.0f, 2.0f, Color.RED, 3.0f,</span>
+                4.0f, Color.BLUE));
+<span class="fc" id="L255">        p1.setRadiusGridlinePaint(new GradientPaint(1.0f, 2.0f, Color.RED, 3.0f,</span>
+                4.0f, Color.BLUE));
+<span class="fc" id="L257">        PolarPlot p2 = TestUtils.serialised(p1);</span>
+<span class="fc" id="L258">        assertEquals(p1, p2);</span>
+<span class="fc" id="L259">    }</span>
+
+    @Test
+    public void testTranslateToJava2D_NumberAxis() {
+        
+<span class="fc" id="L264">        Rectangle2D dataArea = new Rectangle2D.Double(0.0, 0.0, 100.0, 100.0);</span>
+<span class="fc" id="L265">        ValueAxis axis = new NumberAxis();</span>
+<span class="fc" id="L266">        axis.setRange(0.0, 20.0);</span>
+
+<span class="fc" id="L268">        PolarPlot plot = new PolarPlot(null, axis, null);</span>
+<span class="fc" id="L269">        plot.setMargin(0);</span>
+<span class="fc" id="L270">        plot.setAngleOffset(0.0);</span>
+
+<span class="fc" id="L272">        Point point = plot.translateToJava2D(0.0, 10.0, axis, dataArea );</span>
+<span class="fc" id="L273">        assertEquals(75.0, point.getX(), 0.5);</span>
+<span class="fc" id="L274">        assertEquals(50.0, point.getY(), 0.5);</span>
+
+<span class="fc" id="L276">        point = plot.translateToJava2D(90.0, 5.0, axis, dataArea );</span>
+<span class="fc" id="L277">        assertEquals(50.0, point.getX(), 0.5);</span>
+<span class="fc" id="L278">        assertEquals(62.5, point.getY(), 0.5);</span>
+
+<span class="fc" id="L280">        point = plot.translateToJava2D(45.0, 20.0, axis, dataArea );</span>
+<span class="fc" id="L281">        assertEquals(85.0, point.getX(), 0.5);</span>
+<span class="fc" id="L282">        assertEquals(85.0, point.getY(), 0.5);</span>
+
+<span class="fc" id="L284">        point = plot.translateToJava2D(135.0, 20.0, axis, dataArea );</span>
+<span class="fc" id="L285">        assertEquals(15.0, point.getX(), 0.5);</span>
+<span class="fc" id="L286">        assertEquals(85.0, point.getY(), 0.5);</span>
+
+<span class="fc" id="L288">        point = plot.translateToJava2D(225.0, 15.0, axis, dataArea );</span>
+<span class="fc" id="L289">        assertEquals(23.0, point.getX(), 0.5);</span>
+<span class="fc" id="L290">        assertEquals(23.0, point.getY(), 0.5);</span>
+
+<span class="fc" id="L292">        point = plot.translateToJava2D(315.0, 15.0, axis, dataArea );</span>
+<span class="fc" id="L293">        assertEquals(77.0, point.getX(), 0.5);</span>
+<span class="fc" id="L294">        assertEquals(23.0, point.getY(), 0.5);</span>
+        
+<span class="fc" id="L296">        point = plot.translateToJava2D(21.0, 11.5, axis, dataArea );</span>
+<span class="fc" id="L297">        assertEquals(77.0, point.getX(), 0.5);</span>
+<span class="fc" id="L298">        assertEquals(60.0, point.getY(), 0.5);</span>
+        
+<span class="fc" id="L300">        point = plot.translateToJava2D(162.0, 7.0, axis, dataArea );</span>
+<span class="fc" id="L301">        assertEquals(33.0, point.getX(), 0.5);</span>
+<span class="fc" id="L302">        assertEquals(55.0, point.getY(), 0.5);</span>
+        
+<span class="fc" id="L304">    }</span>
+
+    @Test
+    public void testTranslateToJava2D_NumberAxisAndMargin() {
+        
+<span class="fc" id="L309">        Rectangle2D dataArea = new Rectangle2D.Double(10.0, 10.0, 80.0, 80.0);</span>
+<span class="fc" id="L310">        ValueAxis axis = new NumberAxis();</span>
+<span class="fc" id="L311">        axis.setRange(-2.0, 2.0);</span>
+
+<span class="fc" id="L313">        PolarPlot plot = new PolarPlot(null, axis, null);</span>
+<span class="fc" id="L314">        plot.setAngleOffset(0.0);</span>
+
+<span class="fc" id="L316">        Point point = plot.translateToJava2D(0.0, 10.0, axis, dataArea );</span>
+<span class="fc" id="L317">        assertEquals(110.0, point.getX(), 0.5);</span>
+<span class="fc" id="L318">        assertEquals(50.0, point.getY(), 0.5);</span>
+
+<span class="fc" id="L320">        point = plot.translateToJava2D(90.0, 5.0, axis, dataArea );</span>
+<span class="fc" id="L321">        assertEquals(50.0, point.getX(), 0.5);</span>
+<span class="fc" id="L322">        assertEquals(85.0, point.getY(), 0.5);</span>
+
+<span class="fc" id="L324">        point = plot.translateToJava2D(45.0, 20.0, axis, dataArea );</span>
+<span class="fc" id="L325">        assertEquals(128.0, point.getX(), 0.5);</span>
+<span class="fc" id="L326">        assertEquals(128.0, point.getY(), 0.5);</span>
+
+<span class="fc" id="L328">        point = plot.translateToJava2D(135.0, 20.0, axis, dataArea );</span>
+<span class="fc" id="L329">        assertEquals(-28.0, point.getX(), 0.5);</span>
+<span class="fc" id="L330">        assertEquals(128.0, point.getY(), 0.5);</span>
+
+<span class="fc" id="L332">        point = plot.translateToJava2D(225.0, 15.0, axis, dataArea );</span>
+<span class="fc" id="L333">        assertEquals(-10.0, point.getX(), 0.5);</span>
+<span class="fc" id="L334">        assertEquals(-10.0, point.getY(), 0.5);</span>
+
+<span class="fc" id="L336">        point = plot.translateToJava2D(315.0, 15.0, axis, dataArea );</span>
+<span class="fc" id="L337">        assertEquals(110.0, point.getX(), 0.5);</span>
+<span class="fc" id="L338">        assertEquals(-10.0, point.getY(), 0.5);</span>
+        
+<span class="fc" id="L340">        point = plot.translateToJava2D(21.0, 11.5, axis, dataArea );</span>
+<span class="fc" id="L341">        assertEquals(113.0, point.getX(), 0.5);</span>
+<span class="fc" id="L342">        assertEquals(74.0, point.getY(), 0.5);</span>
+        
+<span class="fc" id="L344">        point = plot.translateToJava2D(162.0, 7.0, axis, dataArea );</span>
+<span class="fc" id="L345">        assertEquals(7.0, point.getX(), 0.5);</span>
+<span class="fc" id="L346">        assertEquals(64.0, point.getY(), 0.5);</span>
+        
+<span class="fc" id="L348">    }</span>
+
+    @Test
+    public void testTranslateToJava2D_LogAxis() {
+        
+<span class="fc" id="L353">        Rectangle2D dataArea = new Rectangle2D.Double(0.0, 0.0, 100.0, 100.0);</span>
+<span class="fc" id="L354">        ValueAxis axis = new LogAxis();</span>
+<span class="fc" id="L355">        axis.setRange(1.0, 100.0);</span>
+
+<span class="fc" id="L357">        PolarPlot plot = new PolarPlot(null, axis, null);</span>
+<span class="fc" id="L358">        plot.setMargin(0);</span>
+<span class="fc" id="L359">        plot.setAngleOffset(0.0);</span>
+
+<span class="fc" id="L361">        Point point = plot.translateToJava2D(0.0, 10.0, axis, dataArea );</span>
+<span class="fc" id="L362">        assertEquals(75.0, point.getX(), 0.5);</span>
+<span class="fc" id="L363">        assertEquals(50.0, point.getY(), 0.5);</span>
+
+<span class="fc" id="L365">        point = plot.translateToJava2D(90.0, 5.0, axis, dataArea );</span>
+<span class="fc" id="L366">        assertEquals(50.0, point.getX(), 0.5);</span>
+<span class="fc" id="L367">        assertEquals(67.5, point.getY(), 0.5);</span>
+
+<span class="fc" id="L369">        point = plot.translateToJava2D(45.0, 20.0, axis, dataArea );</span>
+<span class="fc" id="L370">        assertEquals(73.0, point.getX(), 0.5);</span>
+<span class="fc" id="L371">        assertEquals(73.0, point.getY(), 0.5);</span>
+<span class="fc" id="L372">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span>jfreechart (Mar 14, 2025 5:50:17 p.m.)</div></body></html>

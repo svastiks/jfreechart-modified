@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>TimePeriodValuesCollectionTest.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">jfreechart (Mar 14, 2025 5:50:17 p.m.)</a> &gt; <a href="../../index.html" class="el_group">jfreechart</a> &gt; <a href="../index.html" class="el_bundle">src/test/java</a> &gt; <a href="index.source.html" class="el_package">org.jfree.data.time</a> &gt; <span class="el_source">TimePeriodValuesCollectionTest.java</span></div><h1>TimePeriodValuesCollectionTest.java</h1><pre class="source lang-java linenums">/* ===========================================================
+ * JFreeChart : a free chart library for the Java(tm) platform
+ * ===========================================================
+ *
+ * (C) Copyright 2000-2022, by David Gilbert and Contributors.
+ *
+ * Project Info:  http://www.jfree.org/jfreechart/index.html
+ *
+ * This library is free software; you can redistribute it and/or modify it 
+ * under the terms of the GNU Lesser General Public License as published by 
+ * the Free Software Foundation; either version 2.1 of the License, or 
+ * (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but 
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY 
+ * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public 
+ * License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, 
+ * USA.  
+ *
+ * [Oracle and Java are registered trademarks of Oracle and/or its affiliates. 
+ * Other names may be trademarks of their respective owners.]
+ *
+ * ------------------------------------
+ * TimePeriodValuesCollectionTests.java
+ * ------------------------------------
+ * (C) Copyright 2005-2022, by David Gilbert.
+ *
+ * Original Author:  David Gilbert;
+ * Contributor(s):   -;
+ *
+ */
+
+package org.jfree.data.time;
+
+import org.jfree.chart.TestUtils;
+
+import org.jfree.data.Range;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+/**
+ * Some tests for the {@link TimePeriodValuesCollection} class.
+ */
+<span class="fc" id="L49">public class TimePeriodValuesCollectionTest {</span>
+
+    /**
+     * A test for bug report 1161340.  I wasn't able to reproduce the problem
+     * with this test.
+     */
+    @Test
+    public void test1161340() {
+<span class="fc" id="L57">        TimePeriodValuesCollection dataset = new TimePeriodValuesCollection();</span>
+<span class="fc" id="L58">        TimePeriodValues&lt;String&gt; v1 = new TimePeriodValues&lt;&gt;(&quot;V1&quot;);</span>
+<span class="fc" id="L59">        v1.add(new Day(11, 3, 2005), 1.2);</span>
+<span class="fc" id="L60">        v1.add(new Day(12, 3, 2005), 3.4);</span>
+<span class="fc" id="L61">        dataset.addSeries(v1);</span>
+<span class="fc" id="L62">        assertEquals(1, dataset.getSeriesCount());</span>
+<span class="fc" id="L63">        dataset.removeSeries(v1);</span>
+<span class="fc" id="L64">        assertEquals(0, dataset.getSeriesCount());</span>
+        
+<span class="fc" id="L66">        TimePeriodValues&lt;String&gt; v2 = new TimePeriodValues&lt;&gt;(&quot;V2&quot;);</span>
+<span class="fc" id="L67">        v1.add(new Day(5, 3, 2005), 1.2);</span>
+<span class="fc" id="L68">        v1.add(new Day(6, 3, 2005), 3.4);</span>
+<span class="fc" id="L69">        dataset.addSeries(v2);</span>
+<span class="fc" id="L70">        assertEquals(1, dataset.getSeriesCount());</span>
+<span class="fc" id="L71">    }</span>
+    
+    /**
+     * Tests the equals() method.
+     */
+    @Test
+    public void testEquals() {
+        
+<span class="fc" id="L79">        TimePeriodValuesCollection c1 = new TimePeriodValuesCollection();</span>
+<span class="fc" id="L80">        TimePeriodValuesCollection c2 = new TimePeriodValuesCollection();</span>
+<span class="fc" id="L81">        assertEquals(c1, c2);</span>
+        
+<span class="fc" id="L83">        c1.setXPosition(TimePeriodAnchor.END);</span>
+<span class="fc" id="L84">        assertNotEquals(c1, c2);</span>
+<span class="fc" id="L85">        c2.setXPosition(TimePeriodAnchor.END);</span>
+<span class="fc" id="L86">        assertEquals(c1, c2);</span>
+        
+<span class="fc" id="L88">        TimePeriodValues&lt;String&gt; v1 = new TimePeriodValues&lt;&gt;(&quot;Test&quot;);</span>
+<span class="fc" id="L89">        TimePeriodValues&lt;String&gt; v2 = new TimePeriodValues&lt;&gt;(&quot;Test&quot;);</span>
+        
+<span class="fc" id="L91">        c1.addSeries(v1);</span>
+<span class="fc" id="L92">        assertNotEquals(c1, c2);</span>
+<span class="fc" id="L93">        c2.addSeries(v2);</span>
+<span class="fc" id="L94">        assertEquals(c1, c2);</span>
+<span class="fc" id="L95">    }</span>
+
+    /**
+     * Serialize an instance, restore it, and check for equality.
+     */
+    @Test
+    public void testSerialization() {
+<span class="fc" id="L102">        TimePeriodValuesCollection c1 = new TimePeriodValuesCollection();</span>
+<span class="fc" id="L103">        TimePeriodValuesCollection c2 = TestUtils.serialised(c1);</span>
+<span class="fc" id="L104">        assertEquals(c1, c2);</span>
+<span class="fc" id="L105">    }</span>
+
+    /**
+     * Some basic checks for the getSeries() method.
+     */
+    @Test
+    public void testGetSeries() {
+<span class="fc" id="L112">        TimePeriodValuesCollection c1 = new TimePeriodValuesCollection();</span>
+<span class="fc" id="L113">        TimePeriodValues&lt;String&gt; s1 = new TimePeriodValues&lt;&gt;(&quot;Series 1&quot;);</span>
+<span class="fc" id="L114">        c1.addSeries(s1);</span>
+<span class="fc" id="L115">        assertEquals(&quot;Series 1&quot;, c1.getSeries(0).getKey());</span>
+        
+<span class="fc" id="L117">        boolean pass = false;</span>
+        try {
+<span class="nc" id="L119">            c1.getSeries(-1);</span>
+        }
+<span class="fc" id="L121">        catch (IllegalArgumentException e) {</span>
+<span class="fc" id="L122">            pass = true;</span>
+<span class="nc" id="L123">        }</span>
+<span class="fc" id="L124">        assertTrue(pass);</span>
+        
+<span class="fc" id="L126">        pass = false;</span>
+        try {
+<span class="nc" id="L128">            c1.getSeries(1);</span>
+        }
+<span class="fc" id="L130">        catch (IllegalArgumentException e) {</span>
+<span class="fc" id="L131">            pass = true;</span>
+<span class="nc" id="L132">        }</span>
+<span class="fc" id="L133">        assertTrue(pass);</span>
+<span class="fc" id="L134">    }</span>
+    
+    private static final double EPSILON = 0.0000000001;
+    
+    /**
+     * Some checks for the getDomainBounds() method.
+     */
+    @Test
+    public void testGetDomainBoundsWithoutInterval() {
+        // check empty dataset
+<span class="fc" id="L144">        TimePeriodValuesCollection dataset = new TimePeriodValuesCollection();</span>
+<span class="fc" id="L145">        Range r = dataset.getDomainBounds(false);</span>
+<span class="fc" id="L146">        assertNull(r);</span>
+        
+        // check dataset with one time period
+<span class="fc" id="L149">        TimePeriodValues&lt;String&gt; s1 = new TimePeriodValues&lt;&gt;(&quot;S1&quot;);</span>
+<span class="fc" id="L150">        s1.add(new SimpleTimePeriod(1000L, 2000L), 1.0);</span>
+<span class="fc" id="L151">        dataset.addSeries(s1);</span>
+<span class="fc" id="L152">        r = dataset.getDomainBounds(false);</span>
+<span class="fc" id="L153">        assertEquals(1500.0, r.getLowerBound(), EPSILON);</span>
+<span class="fc" id="L154">        assertEquals(1500.0, r.getUpperBound(), EPSILON);</span>
+        
+        // check dataset with two time periods
+<span class="fc" id="L157">        s1.add(new SimpleTimePeriod(1500L, 3000L), 2.0);</span>
+<span class="fc" id="L158">        r = dataset.getDomainBounds(false);</span>
+<span class="fc" id="L159">        assertEquals(1500.0, r.getLowerBound(), EPSILON);</span>
+<span class="fc" id="L160">        assertEquals(2250.0, r.getUpperBound(), EPSILON);  </span>
+<span class="fc" id="L161">    }</span>
+
+    /**
+     * Some more checks for the getDomainBounds() method.
+     * 
+     * @see #testGetDomainBoundsWithoutInterval()
+     */
+    @Test 
+    public void testGetDomainBoundsWithInterval() {
+        // check empty dataset
+<span class="fc" id="L171">        TimePeriodValuesCollection dataset = new TimePeriodValuesCollection();</span>
+<span class="fc" id="L172">        Range r = dataset.getDomainBounds(true);</span>
+<span class="fc" id="L173">        assertNull(r);</span>
+        
+        // check dataset with one time period
+<span class="fc" id="L176">        TimePeriodValues&lt;String&gt; s1 = new TimePeriodValues&lt;&gt;(&quot;S1&quot;);</span>
+<span class="fc" id="L177">        s1.add(new SimpleTimePeriod(1000L, 2000L), 1.0);</span>
+<span class="fc" id="L178">        dataset.addSeries(s1);</span>
+<span class="fc" id="L179">        r = dataset.getDomainBounds(true);</span>
+<span class="fc" id="L180">        assertEquals(1000.0, r.getLowerBound(), EPSILON);</span>
+<span class="fc" id="L181">        assertEquals(2000.0, r.getUpperBound(), EPSILON);</span>
+        
+        // check dataset with two time periods
+<span class="fc" id="L184">        s1.add(new SimpleTimePeriod(1500L, 3000L), 2.0);</span>
+<span class="fc" id="L185">        r = dataset.getDomainBounds(true);</span>
+<span class="fc" id="L186">        assertEquals(1000.0, r.getLowerBound(), EPSILON);</span>
+<span class="fc" id="L187">        assertEquals(3000.0, r.getUpperBound(), EPSILON);</span>
+        
+        // add a third time period
+<span class="fc" id="L190">        s1.add(new SimpleTimePeriod(6000L, 7000L), 1.5);</span>
+<span class="fc" id="L191">        r = dataset.getDomainBounds(true);</span>
+<span class="fc" id="L192">        assertEquals(1000.0, r.getLowerBound(), EPSILON);</span>
+<span class="fc" id="L193">        assertEquals(7000.0, r.getUpperBound(), EPSILON);</span>
+
+        // add a fourth time period
+<span class="fc" id="L196">        s1.add(new SimpleTimePeriod(4000L, 5000L), 1.4);</span>
+<span class="fc" id="L197">        r = dataset.getDomainBounds(true);</span>
+<span class="fc" id="L198">        assertEquals(1000.0, r.getLowerBound(), EPSILON);</span>
+<span class="fc" id="L199">        assertEquals(7000.0, r.getUpperBound(), EPSILON);    </span>
+<span class="fc" id="L200">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span>jfreechart (Mar 14, 2025 5:50:17 p.m.)</div></body></html>

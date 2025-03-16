@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>FixedMillisecondTest.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">jfreechart (Mar 14, 2025 5:50:17 p.m.)</a> &gt; <a href="../../index.html" class="el_group">jfreechart</a> &gt; <a href="../index.html" class="el_bundle">src/test/java</a> &gt; <a href="index.source.html" class="el_package">org.jfree.data.time</a> &gt; <span class="el_source">FixedMillisecondTest.java</span></div><h1>FixedMillisecondTest.java</h1><pre class="source lang-java linenums">/* ===========================================================
+ * JFreeChart : a free chart library for the Java(tm) platform
+ * ===========================================================
+ *
+ * (C) Copyright 2000-2022, by David Gilbert and Contributors.
+ *
+ * Project Info:  http://www.jfree.org/jfreechart/index.html
+ *
+ * This library is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 2.1 of the License, or
+ * (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public
+ * License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301,
+ * USA.
+ *
+ * [Oracle and Java are registered trademarks of Oracle and/or its affiliates. 
+ * Other names may be trademarks of their respective owners.]
+ *
+ * -------------------------
+ * FixedMillisecondTest.java
+ * -------------------------
+ * (C) Copyright 2002-2022, by David Gilbert.
+ *
+ * Original Author:  David Gilbert;
+ * Contributor(s):   -;
+ *
+ */
+
+package org.jfree.data.time;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.util.Date;
+
+import org.jfree.chart.TestUtils;
+import org.junit.jupiter.api.Test;
+
+/**
+ * Tests for the {@link FixedMillisecond} class.
+ */
+<span class="fc" id="L51">public class FixedMillisecondTest {</span>
+
+    /**
+     * Serialize an instance, restore it, and check for equality.
+     */
+    @Test
+    public void testSerialization() {
+<span class="fc" id="L58">        FixedMillisecond m1 = new FixedMillisecond();</span>
+<span class="fc" id="L59">        FixedMillisecond m2 = TestUtils.serialised(m1);</span>
+<span class="fc" id="L60">        assertEquals(m1, m2);</span>
+<span class="fc" id="L61">    }</span>
+
+    /**
+     * Two objects that are equal are required to return the same hashCode.
+     */
+    @Test
+    public void testHashcode() {
+<span class="fc" id="L68">        FixedMillisecond m1 = new FixedMillisecond(500000L);</span>
+<span class="fc" id="L69">        FixedMillisecond m2 = new FixedMillisecond(500000L);</span>
+<span class="fc" id="L70">        assertEquals(m1, m2);</span>
+<span class="fc" id="L71">        int h1 = m1.hashCode();</span>
+<span class="fc" id="L72">        int h2 = m2.hashCode();</span>
+<span class="fc" id="L73">        assertEquals(h1, h2);</span>
+<span class="fc" id="L74">    }</span>
+
+    /**
+     * The {@link FixedMillisecond} class is immutable, so should not be
+     * {@link Cloneable}.
+     */
+    @Test
+    public void testNotCloneable() {
+<span class="fc" id="L82">        FixedMillisecond m = new FixedMillisecond(500000L);</span>
+<span class="fc" id="L83">        assertFalse(m instanceof Cloneable);</span>
+<span class="fc" id="L84">    }</span>
+
+    /**
+     * A check for immutability.
+     */
+    @Test
+    public void testImmutability() {
+<span class="fc" id="L91">        Date d = new Date(20L);</span>
+<span class="fc" id="L92">        FixedMillisecond fm = new FixedMillisecond(d);</span>
+<span class="fc" id="L93">        d.setTime(22L);</span>
+<span class="fc" id="L94">        assertEquals(20L, fm.getFirstMillisecond());</span>
+<span class="fc" id="L95">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span>jfreechart (Mar 14, 2025 5:50:17 p.m.)</div></body></html>

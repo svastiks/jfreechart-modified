@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>OHLCSeriesCollectionTest.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">jfreechart (Mar 14, 2025 5:50:17 p.m.)</a> &gt; <a href="../../index.html" class="el_group">jfreechart</a> &gt; <a href="../index.html" class="el_bundle">src/test/java</a> &gt; <a href="index.source.html" class="el_package">org.jfree.data.time.ohlc</a> &gt; <span class="el_source">OHLCSeriesCollectionTest.java</span></div><h1>OHLCSeriesCollectionTest.java</h1><pre class="source lang-java linenums">/* ===========================================================
+ * JFreeChart : a free chart library for the Java(tm) platform
+ * ===========================================================
+ *
+ * (C) Copyright 2000-2022, by David Gilbert and Contributors.
+ *
+ * Project Info:  http://www.jfree.org/jfreechart/index.html
+ *
+ * This library is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 2.1 of the License, or
+ * (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public
+ * License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301,
+ * USA.
+ *
+ * [Oracle and Java are registered trademarks of Oracle and/or its affiliates. 
+ * Other names may be trademarks of their respective owners.]
+ *
+ * -----------------------------
+ * OHLCSeriesCollectionTest.java
+ * -----------------------------
+ * (C) Copyright 2006-2022, by David Gilbert and Contributors.
+ *
+ * Original Author:  David Gilbert;
+ * Contributor(s):   -;
+ *
+ */
+
+package org.jfree.data.time.ohlc;
+
+import org.jfree.chart.TestUtils;
+import org.jfree.chart.internal.CloneUtils;
+
+import org.jfree.data.general.DatasetChangeEvent;
+import org.jfree.data.general.DatasetChangeListener;
+import org.jfree.data.time.TimePeriodAnchor;
+import org.jfree.data.time.Year;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+/**
+ * Tests for the {@link OHLCSeriesCollectionTests} class.
+ */
+<span class="fc" id="L53">public class OHLCSeriesCollectionTest implements DatasetChangeListener {</span>
+
+    /**
+     * Confirm that the equals method can distinguish all the required fields.
+     */
+    @Test
+    public void testEquals() {
+<span class="fc" id="L60">        OHLCSeriesCollection c1 = new OHLCSeriesCollection();</span>
+<span class="fc" id="L61">        OHLCSeriesCollection c2 = new OHLCSeriesCollection();</span>
+<span class="fc" id="L62">        assertEquals(c1, c2);</span>
+
+        // add a series
+<span class="fc" id="L65">        OHLCSeries&lt;String&gt; s1 = new OHLCSeries&lt;&gt;(&quot;Series&quot;);</span>
+<span class="fc" id="L66">        s1.add(new Year(2006), 1.0, 1.1, 1.2, 1.3);</span>
+<span class="fc" id="L67">        c1.addSeries(s1);</span>
+<span class="fc" id="L68">        assertNotEquals(c1, c2);</span>
+<span class="fc" id="L69">        OHLCSeries&lt;String&gt; s2 = new OHLCSeries&lt;&gt;(&quot;Series&quot;);</span>
+<span class="fc" id="L70">        s2.add(new Year(2006), 1.0, 1.1, 1.2, 1.3);</span>
+<span class="fc" id="L71">        c2.addSeries(s2);</span>
+<span class="fc" id="L72">        assertEquals(c1, c2);</span>
+
+        // add an empty series
+<span class="fc" id="L75">        c1.addSeries(new OHLCSeries&lt;&gt;(&quot;Empty Series&quot;));</span>
+<span class="fc" id="L76">        assertNotEquals(c1, c2);</span>
+<span class="fc" id="L77">        c2.addSeries(new OHLCSeries&lt;&gt;(&quot;Empty Series&quot;));</span>
+<span class="fc" id="L78">        assertEquals(c1, c2);</span>
+
+<span class="fc" id="L80">        c1.setXPosition(TimePeriodAnchor.END);</span>
+<span class="fc" id="L81">        assertNotEquals(c1, c2);</span>
+<span class="fc" id="L82">        c2.setXPosition(TimePeriodAnchor.END);</span>
+<span class="fc" id="L83">        assertEquals(c1, c2);</span>
+
+<span class="fc" id="L85">    }</span>
+
+    /**
+     * Confirm that cloning works.
+     */
+    @Test
+    public void testCloning() throws CloneNotSupportedException {
+<span class="fc" id="L92">        OHLCSeriesCollection c1 = new OHLCSeriesCollection();</span>
+<span class="fc" id="L93">        OHLCSeries&lt;String&gt; s1 = new OHLCSeries&lt;&gt;(&quot;Series&quot;);</span>
+<span class="fc" id="L94">        s1.add(new Year(2006), 1.0, 1.1, 1.2, 1.3);</span>
+<span class="fc" id="L95">        c1.addSeries(s1);</span>
+<span class="fc" id="L96">        OHLCSeriesCollection c2 = CloneUtils.clone(c1);</span>
+<span class="fc" id="L97">        assertNotSame(c1, c2);</span>
+<span class="fc" id="L98">        assertSame(c1.getClass(), c2.getClass());</span>
+<span class="fc" id="L99">        assertEquals(c1, c2);</span>
+
+        // check independence
+<span class="fc" id="L102">        c1.setXPosition(TimePeriodAnchor.END);</span>
+<span class="fc" id="L103">        assertNotEquals(c1, c2);</span>
+<span class="fc" id="L104">    }</span>
+
+    /**
+     * Serialize an instance, restore it, and check for equality.
+     */
+    @Test
+    public void testSerialization() {
+<span class="fc" id="L111">        OHLCSeriesCollection c1 = new OHLCSeriesCollection();</span>
+<span class="fc" id="L112">        OHLCSeries&lt;String&gt; s1 = new OHLCSeries&lt;&gt;(&quot;Series&quot;);</span>
+<span class="fc" id="L113">        s1.add(new Year(2006), 1.0, 1.1, 1.2, 1.3);</span>
+<span class="fc" id="L114">        c1.addSeries(s1);</span>
+<span class="fc" id="L115">        OHLCSeriesCollection c2 = TestUtils.serialised(c1);</span>
+<span class="fc" id="L116">        assertEquals(c1, c2);</span>
+<span class="fc" id="L117">    }</span>
+
+    /**
+     * A test for bug report 1170825 (originally affected XYSeriesCollection,
+     * this test is just copied over).
+     */
+    @Test
+    public void test1170825() {
+<span class="fc" id="L125">        OHLCSeries&lt;String&gt; s1 = new OHLCSeries&lt;&gt;(&quot;Series1&quot;);</span>
+<span class="fc" id="L126">        OHLCSeriesCollection dataset = new OHLCSeriesCollection();</span>
+<span class="fc" id="L127">        dataset.addSeries(s1);</span>
+        try {
+<span class="nc" id="L129">            /* XYSeries s = */ dataset.getSeries(1);</span>
+        }
+<span class="fc" id="L131">        catch (IllegalArgumentException e) {</span>
+            // correct outcome
+        }
+<span class="nc" id="L134">        catch (IndexOutOfBoundsException e) {</span>
+<span class="nc" id="L135">            fail();  // wrong outcome</span>
+<span class="pc" id="L136">        }</span>
+<span class="fc" id="L137">    }</span>
+
+    /**
+     * Two objects that are equal are required to return the same hashCode.
+     */
+    @Test
+    public void testHashcode() {
+<span class="fc" id="L144">        OHLCSeriesCollection c1 = new OHLCSeriesCollection();</span>
+<span class="fc" id="L145">        OHLCSeries&lt;String&gt; s1 = new OHLCSeries&lt;&gt;(&quot;S&quot;);</span>
+<span class="fc" id="L146">        s1.add(new Year(2009), 1.0, 4.0, 0.5, 2.0);</span>
+<span class="fc" id="L147">        c1.addSeries(s1);</span>
+<span class="fc" id="L148">        OHLCSeriesCollection c2 = new OHLCSeriesCollection();</span>
+<span class="fc" id="L149">        OHLCSeries&lt;String&gt; s2 = new OHLCSeries&lt;&gt;(&quot;S&quot;);</span>
+<span class="fc" id="L150">        s2.add(new Year(2009), 1.0, 4.0, 0.5, 2.0);</span>
+<span class="fc" id="L151">        c2.addSeries(s2);</span>
+<span class="fc" id="L152">        assertEquals(c1, c2);</span>
+<span class="fc" id="L153">        int h1 = c1.hashCode();</span>
+<span class="fc" id="L154">        int h2 = c2.hashCode();</span>
+<span class="fc" id="L155">        assertEquals(h1, h2);</span>
+<span class="fc" id="L156">    }</span>
+
+    /**
+     * Some checks for the {@link OHLCSeriesCollection#removeSeries(int)}
+     * method.
+     */
+    @Test
+    public void testRemoveSeries_int() {
+<span class="fc" id="L164">        OHLCSeriesCollection c1 = new OHLCSeriesCollection();</span>
+<span class="fc" id="L165">        OHLCSeries&lt;String&gt; s1 = new OHLCSeries&lt;&gt;(&quot;Series 1&quot;);</span>
+<span class="fc" id="L166">        OHLCSeries&lt;String&gt; s2 = new OHLCSeries&lt;&gt;(&quot;Series 2&quot;);</span>
+<span class="fc" id="L167">        OHLCSeries&lt;String&gt; s3 = new OHLCSeries&lt;&gt;(&quot;Series 3&quot;);</span>
+<span class="fc" id="L168">        OHLCSeries&lt;String&gt; s4 = new OHLCSeries&lt;&gt;(&quot;Series 4&quot;);</span>
+<span class="fc" id="L169">        c1.addSeries(s1);</span>
+<span class="fc" id="L170">        c1.addSeries(s2);</span>
+<span class="fc" id="L171">        c1.addSeries(s3);</span>
+<span class="fc" id="L172">        c1.addSeries(s4);</span>
+<span class="fc" id="L173">        c1.removeSeries(2);</span>
+<span class="fc" id="L174">        assertEquals(c1.getSeries(2), s4);</span>
+<span class="fc" id="L175">        c1.removeSeries(0);</span>
+<span class="fc" id="L176">        assertEquals(c1.getSeries(0), s2);</span>
+<span class="fc" id="L177">        assertEquals(2, c1.getSeriesCount());</span>
+<span class="fc" id="L178">    }</span>
+
+    /**
+     * Some checks for the
+     * {@link OHLCSeriesCollection#removeSeries(OHLCSeries)} method.
+     */
+    @Test
+    public void testRemoveSeries() {
+<span class="fc" id="L186">        OHLCSeriesCollection c1 = new OHLCSeriesCollection();</span>
+<span class="fc" id="L187">        OHLCSeries&lt;String&gt; s1 = new OHLCSeries&lt;&gt;(&quot;Series 1&quot;);</span>
+<span class="fc" id="L188">        OHLCSeries&lt;String&gt; s2 = new OHLCSeries&lt;&gt;(&quot;Series 2&quot;);</span>
+<span class="fc" id="L189">        OHLCSeries&lt;String&gt; s3 = new OHLCSeries&lt;&gt;(&quot;Series 3&quot;);</span>
+<span class="fc" id="L190">        OHLCSeries&lt;String&gt; s4 = new OHLCSeries&lt;&gt;(&quot;Series 4&quot;);</span>
+<span class="fc" id="L191">        c1.addSeries(s1);</span>
+<span class="fc" id="L192">        c1.addSeries(s2);</span>
+<span class="fc" id="L193">        c1.addSeries(s3);</span>
+<span class="fc" id="L194">        c1.addSeries(s4);</span>
+<span class="fc" id="L195">        c1.removeSeries(s3);</span>
+<span class="fc" id="L196">        assertEquals(c1.getSeries(2), s4);</span>
+<span class="fc" id="L197">        c1.removeSeries(s1);</span>
+<span class="fc" id="L198">        assertEquals(c1.getSeries(0), s2);</span>
+<span class="fc" id="L199">        assertEquals(2, c1.getSeriesCount());</span>
+<span class="fc" id="L200">    }</span>
+
+    /**
+     * A simple check for the removeAllSeries() method.
+     */
+    @Test
+    public void testRemoveAllSeries() {
+<span class="fc" id="L207">        OHLCSeriesCollection c1 = new OHLCSeriesCollection();</span>
+<span class="fc" id="L208">        c1.addChangeListener(this);</span>
+
+        // there should be no change event when clearing an empty series
+<span class="fc" id="L211">        this.lastEvent = null;</span>
+<span class="fc" id="L212">        c1.removeAllSeries();</span>
+<span class="fc" id="L213">        assertNull(this.lastEvent);</span>
+
+<span class="fc" id="L215">        OHLCSeries&lt;String&gt; s1 = new OHLCSeries&lt;&gt;(&quot;Series 1&quot;);</span>
+<span class="fc" id="L216">        OHLCSeries&lt;String&gt; s2 = new OHLCSeries&lt;&gt;(&quot;Series 2&quot;);</span>
+<span class="fc" id="L217">        c1.addSeries(s1);</span>
+<span class="fc" id="L218">        c1.addSeries(s2);</span>
+<span class="fc" id="L219">        c1.removeAllSeries();</span>
+<span class="fc" id="L220">        assertEquals(0, c1.getSeriesCount());</span>
+<span class="fc" id="L221">        assertNotNull(this.lastEvent);</span>
+<span class="fc" id="L222">        this.lastEvent = null;  // clean up</span>
+<span class="fc" id="L223">    }</span>
+
+    /** The last received event. */
+    private DatasetChangeEvent lastEvent;
+
+    /**
+     * Receives dataset change events.
+     *
+     * @param event  the event.
+     */
+    @Override
+    public void datasetChanged(DatasetChangeEvent event) {
+<span class="fc" id="L235">        this.lastEvent = event;</span>
+<span class="fc" id="L236">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span>jfreechart (Mar 14, 2025 5:50:17 p.m.)</div></body></html>

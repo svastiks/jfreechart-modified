@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>YIntervalSeriesCollectionTest.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">jfreechart (Mar 14, 2025 5:50:17 p.m.)</a> &gt; <a href="../../index.html" class="el_group">jfreechart</a> &gt; <a href="../index.html" class="el_bundle">src/test/java</a> &gt; <a href="index.source.html" class="el_package">org.jfree.data.xy</a> &gt; <span class="el_source">YIntervalSeriesCollectionTest.java</span></div><h1>YIntervalSeriesCollectionTest.java</h1><pre class="source lang-java linenums">/* ===========================================================
+ * JFreeChart : a free chart library for the Java(tm) platform
+ * ===========================================================
+ *
+ * (C) Copyright 2000-2022, by David Gilbert and Contributors.
+ *
+ * Project Info:  http://www.jfree.org/jfreechart/index.html
+ *
+ * This library is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 2.1 of the License, or
+ * (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public
+ * License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301,
+ * USA.
+ *
+ * [Oracle and Java are registered trademarks of Oracle and/or its affiliates. 
+ * Other names may be trademarks of their respective owners.]
+ *
+ * ----------------------------------
+ * YIntervalSeriesCollectionTest.java
+ * ----------------------------------
+ * (C) Copyright 2006-2022, by David Gilbert and Contributors.
+ *
+ * Original Author:  David Gilbert;
+ * Contributor(s):   -;
+ *
+ */
+
+package org.jfree.data.xy;
+
+import org.jfree.chart.TestUtils;
+import org.jfree.chart.internal.CloneUtils;
+import org.jfree.chart.api.PublicCloneable;
+
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+/**
+ * Tests for the {@link YIntervalSeriesCollection} class.
+ */
+<span class="fc" id="L50">public class YIntervalSeriesCollectionTest {</span>
+
+    /**
+     * Confirm that the equals method can distinguish all the required fields.
+     */
+    @Test
+    public void testEquals() {
+<span class="fc" id="L57">        YIntervalSeriesCollection&lt;String&gt; c1 = new YIntervalSeriesCollection&lt;&gt;();</span>
+<span class="fc" id="L58">        YIntervalSeriesCollection&lt;String&gt; c2 = new YIntervalSeriesCollection&lt;&gt;();</span>
+<span class="fc" id="L59">        assertEquals(c1, c2);</span>
+
+        // add a series
+<span class="fc" id="L62">        YIntervalSeries&lt;String&gt; s1 = new YIntervalSeries&lt;&gt;(&quot;Series&quot;);</span>
+<span class="fc" id="L63">        s1.add(1.0, 1.1, 1.2, 1.3);</span>
+<span class="fc" id="L64">        c1.addSeries(s1);</span>
+<span class="fc" id="L65">        assertNotEquals(c1, c2);</span>
+<span class="fc" id="L66">        YIntervalSeries&lt;String&gt; s2 = new YIntervalSeries&lt;&gt;(&quot;Series&quot;);</span>
+<span class="fc" id="L67">        s2.add(1.0, 1.1, 1.2, 1.3);</span>
+<span class="fc" id="L68">        c2.addSeries(s2);</span>
+<span class="fc" id="L69">        assertEquals(c1, c2);</span>
+
+        // add an empty series
+<span class="fc" id="L72">        c1.addSeries(new YIntervalSeries&lt;&gt;(&quot;Empty Series&quot;));</span>
+<span class="fc" id="L73">        assertNotEquals(c1, c2);</span>
+<span class="fc" id="L74">        c2.addSeries(new YIntervalSeries&lt;&gt;(&quot;Empty Series&quot;));</span>
+<span class="fc" id="L75">        assertEquals(c1, c2);</span>
+<span class="fc" id="L76">    }</span>
+
+    /**
+     * Confirm that cloning works.
+     */
+    @Test
+    public void testCloning() throws CloneNotSupportedException {
+<span class="fc" id="L83">        YIntervalSeriesCollection&lt;String&gt; c1 = new YIntervalSeriesCollection&lt;&gt;();</span>
+<span class="fc" id="L84">        YIntervalSeries&lt;String&gt; s1 = new YIntervalSeries&lt;&gt;(&quot;Series&quot;);</span>
+<span class="fc" id="L85">        s1.add(1.0, 1.1, 1.2, 1.3);</span>
+<span class="fc" id="L86">        c1.addSeries(s1);</span>
+<span class="fc" id="L87">        YIntervalSeriesCollection&lt;String&gt; c2 = CloneUtils.clone(c1);</span>
+<span class="fc" id="L88">        assertNotSame(c1, c2);</span>
+<span class="fc" id="L89">        assertSame(c1.getClass(), c2.getClass());</span>
+<span class="fc" id="L90">        assertEquals(c1, c2);</span>
+<span class="fc" id="L91">    }</span>
+
+    /**
+     * Verify that this class implements {@link PublicCloneable}.
+     */
+    @Test
+    public void testPublicCloneable() {
+<span class="fc" id="L98">        YIntervalSeriesCollection&lt;String&gt; c1 = new YIntervalSeriesCollection&lt;&gt;();</span>
+<span class="fc" id="L99">        assertTrue(c1 instanceof PublicCloneable);</span>
+<span class="fc" id="L100">    }</span>
+
+    /**
+     * Serialize an instance, restore it, and check for equality.
+     */
+    @Test
+    public void testSerialization() {
+<span class="fc" id="L107">        YIntervalSeriesCollection&lt;String&gt; c1 = new YIntervalSeriesCollection&lt;&gt;();</span>
+<span class="fc" id="L108">        YIntervalSeries&lt;String&gt; s1 = new YIntervalSeries&lt;&gt;(&quot;Series&quot;);</span>
+<span class="fc" id="L109">        s1.add(1.0, 1.1, 1.2, 1.3);</span>
+<span class="fc" id="L110">        c1.addSeries(s1);</span>
+<span class="fc" id="L111">        YIntervalSeriesCollection&lt;String&gt; c2 = TestUtils.serialised(c1);</span>
+<span class="fc" id="L112">        assertEquals(c1, c2);</span>
+<span class="fc" id="L113">    }</span>
+
+    /**
+     * Some basic checks for the removeSeries() method.
+     */
+    @Test
+    public void testRemoveSeries() {
+<span class="fc" id="L120">        YIntervalSeriesCollection&lt;String&gt; c = new YIntervalSeriesCollection&lt;&gt;();</span>
+<span class="fc" id="L121">        YIntervalSeries&lt;String&gt; s1 = new YIntervalSeries&lt;&gt;(&quot;s1&quot;);</span>
+<span class="fc" id="L122">        c.addSeries(s1);</span>
+<span class="fc" id="L123">        c.removeSeries(0);</span>
+<span class="fc" id="L124">        assertEquals(0, c.getSeriesCount());</span>
+<span class="fc" id="L125">        c.addSeries(s1);</span>
+
+<span class="fc" id="L127">        boolean pass = false;</span>
+        try {
+<span class="nc" id="L129">            c.removeSeries(-1);</span>
+        }
+<span class="fc" id="L131">        catch (IllegalArgumentException e) {</span>
+<span class="fc" id="L132">            pass = true;</span>
+<span class="nc" id="L133">        }</span>
+<span class="fc" id="L134">        assertTrue(pass);</span>
+
+<span class="fc" id="L136">        pass = false;</span>
+        try {
+<span class="nc" id="L138">            c.removeSeries(1);</span>
+        }
+<span class="fc" id="L140">        catch (IllegalArgumentException e) {</span>
+<span class="fc" id="L141">            pass = true;</span>
+<span class="nc" id="L142">        }</span>
+<span class="fc" id="L143">        assertTrue(pass);</span>
+<span class="fc" id="L144">    }</span>
+
+    /**
+     * A test for bug report 1170825 (originally affected XYSeriesCollection,
+     * this test is just copied over).
+     */
+    @Test
+    public void test1170825() {
+<span class="fc" id="L152">        YIntervalSeries&lt;String&gt; s1 = new YIntervalSeries&lt;&gt;(&quot;Series1&quot;);</span>
+<span class="fc" id="L153">        YIntervalSeriesCollection&lt;String&gt; dataset = new YIntervalSeriesCollection&lt;&gt;();</span>
+<span class="fc" id="L154">        dataset.addSeries(s1);</span>
+        try {
+<span class="nc" id="L156">            /* XYSeries s = */ dataset.getSeries(1);</span>
+        }
+<span class="fc" id="L158">        catch (IllegalArgumentException e) {</span>
+            // correct outcome
+        }
+<span class="nc" id="L161">        catch (IndexOutOfBoundsException e) {</span>
+<span class="nc" id="L162">            fail();  // wrong outcome</span>
+<span class="pc" id="L163">        }</span>
+<span class="fc" id="L164">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span>jfreechart (Mar 14, 2025 5:50:17 p.m.)</div></body></html>

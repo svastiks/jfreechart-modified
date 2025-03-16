@@ -1,0 +1,295 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>XIntervalSeriesTest.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">jfreechart (Mar 14, 2025 5:50:17 p.m.)</a> &gt; <a href="../../index.html" class="el_group">jfreechart</a> &gt; <a href="../index.html" class="el_bundle">src/test/java</a> &gt; <a href="index.source.html" class="el_package">org.jfree.data.xy</a> &gt; <span class="el_source">XIntervalSeriesTest.java</span></div><h1>XIntervalSeriesTest.java</h1><pre class="source lang-java linenums">/* ===========================================================
+ * JFreeChart : a free chart library for the Java(tm) platform
+ * ===========================================================
+ *
+ * (C) Copyright 2000-2022, by David Gilbert and Contributors.
+ *
+ * Project Info:  http://www.jfree.org/jfreechart/index.html
+ *
+ * This library is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 2.1 of the License, or
+ * (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public
+ * License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301,
+ * USA.
+ *
+ * [Oracle and Java are registered trademarks of Oracle and/or its affiliates. 
+ * Other names may be trademarks of their respective owners.]
+ *
+ * ------------------------
+ * XIntervalSeriesTest.java
+ * ------------------------
+ * (C) Copyright 2006-2022, by David Gilbert and Contributors.
+ *
+ * Original Author:  David Gilbert;
+ * Contributor(s):   -;
+ *
+ */
+
+package org.jfree.data.xy;
+
+import org.jfree.chart.TestUtils;
+import org.jfree.chart.internal.CloneUtils;
+
+import org.jfree.data.general.SeriesChangeEvent;
+import org.jfree.data.general.SeriesChangeListener;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+/**
+ * Tests for the {@link XIntervalSeries} class.
+ */
+<span class="fc" id="L51">public class XIntervalSeriesTest implements SeriesChangeListener {</span>
+
+    SeriesChangeEvent lastEvent;
+
+    /**
+     * Records the last event.
+     *
+     * @param event  the event.
+     */
+    @Override
+    public void seriesChanged(SeriesChangeEvent event) {
+<span class="fc" id="L62">        this.lastEvent = event;</span>
+<span class="fc" id="L63">    }</span>
+
+    /**
+     * Confirm that the equals method can distinguish all the required fields.
+     */
+    @Test
+    public void testEquals() {
+<span class="fc" id="L70">        XIntervalSeries&lt;String&gt; s1 = new XIntervalSeries&lt;&gt;(&quot;s1&quot;);</span>
+<span class="fc" id="L71">        XIntervalSeries&lt;String&gt; s2 = new XIntervalSeries&lt;&gt;(&quot;s1&quot;);</span>
+<span class="fc" id="L72">        assertEquals(s1, s2);</span>
+
+        // seriesKey
+<span class="fc" id="L75">        s1 = new XIntervalSeries&lt;&gt;(&quot;s2&quot;);</span>
+<span class="fc" id="L76">        assertNotEquals(s1, s2);</span>
+<span class="fc" id="L77">        s2 = new XIntervalSeries&lt;&gt;(&quot;s2&quot;);</span>
+<span class="fc" id="L78">        assertEquals(s1, s2);</span>
+
+        // autoSort
+<span class="fc" id="L81">        s1 = new XIntervalSeries&lt;&gt;(&quot;s2&quot;, false, true);</span>
+<span class="fc" id="L82">        assertNotEquals(s1, s2);</span>
+<span class="fc" id="L83">        s2 = new XIntervalSeries&lt;&gt;(&quot;s2&quot;, false, true);</span>
+<span class="fc" id="L84">        assertEquals(s1, s2);</span>
+
+        // allowDuplicateValues
+<span class="fc" id="L87">        s1 = new XIntervalSeries&lt;&gt;(&quot;s2&quot;, false, false);</span>
+<span class="fc" id="L88">        assertNotEquals(s1, s2);</span>
+<span class="fc" id="L89">        s2 = new XIntervalSeries&lt;&gt;(&quot;s2&quot;, false, false);</span>
+<span class="fc" id="L90">        assertEquals(s1, s2);</span>
+
+        // add a value
+<span class="fc" id="L93">        s1.add(1.0, 0.5, 1.5, 2.0);</span>
+<span class="fc" id="L94">        assertNotEquals(s1, s2);</span>
+<span class="fc" id="L95">        s2.add(1.0, 0.5, 1.5, 2.0);</span>
+<span class="fc" id="L96">        assertEquals(s2, s1);</span>
+
+        // add another value
+<span class="fc" id="L99">        s1.add(2.0, 0.5, 1.5, 2.0);</span>
+<span class="fc" id="L100">        assertNotEquals(s1, s2);</span>
+<span class="fc" id="L101">        s2.add(2.0, 0.5, 1.5, 2.0);</span>
+<span class="fc" id="L102">        assertEquals(s2, s1);</span>
+
+        // remove a value
+<span class="fc" id="L105">        s1.remove(1.0);</span>
+<span class="fc" id="L106">        assertNotEquals(s1, s2);</span>
+<span class="fc" id="L107">        s2.remove(1.0);</span>
+<span class="fc" id="L108">        assertEquals(s2, s1);</span>
+<span class="fc" id="L109">    }</span>
+
+    /**
+     * Confirm that cloning works.
+     * @throws java.lang.CloneNotSupportedException
+     */
+    @Test
+    public void testCloning() throws CloneNotSupportedException {
+<span class="fc" id="L117">        XIntervalSeries&lt;String&gt; s1 = new XIntervalSeries&lt;&gt;(&quot;s1&quot;);</span>
+<span class="fc" id="L118">        s1.add(1.0, 0.5, 1.5, 2.0);</span>
+<span class="fc" id="L119">        XIntervalSeries&lt;String&gt; s2 = CloneUtils.clone(s1);</span>
+<span class="fc" id="L120">        assertNotSame(s1, s2);</span>
+<span class="fc" id="L121">        assertSame(s1.getClass(), s2.getClass());</span>
+<span class="fc" id="L122">        assertEquals(s1, s2);</span>
+<span class="fc" id="L123">    }</span>
+
+    /**
+     * Serialize an instance, restore it, and check for equality.
+     */
+    @Test
+    public void testSerialization()  {
+<span class="fc" id="L130">        XIntervalSeries&lt;String&gt; s1 = new XIntervalSeries&lt;&gt;(&quot;s1&quot;);</span>
+<span class="fc" id="L131">        s1.add(1.0, 0.5, 1.5, 2.0);</span>
+<span class="fc" id="L132">        XIntervalSeries&lt;String&gt; s2 = TestUtils.serialised(s1);</span>
+<span class="fc" id="L133">        assertEquals(s1, s2);</span>
+<span class="fc" id="L134">    }</span>
+
+    /**
+     * Simple test for the indexOf() method.
+     */
+    @Test
+    public void testIndexOf() {
+<span class="fc" id="L141">        XIntervalSeries&lt;String&gt; s1 = new XIntervalSeries&lt;&gt;(&quot;Series 1&quot;);</span>
+<span class="fc" id="L142">        s1.add(1.0, 1.0, 1.0, 2.0);</span>
+<span class="fc" id="L143">        s1.add(2.0, 2.0, 2.0, 3.0);</span>
+<span class="fc" id="L144">        s1.add(3.0, 3.0, 3.0, 4.0);</span>
+<span class="fc" id="L145">        assertEquals(0, s1.indexOf(1.0));</span>
+<span class="fc" id="L146">    }</span>
+
+    /**
+     * A check for the indexOf() method for an unsorted series.
+     */
+    @Test
+    public void testIndexOf2() {
+<span class="fc" id="L153">        XIntervalSeries&lt;String&gt; s1 = new XIntervalSeries&lt;&gt;(&quot;Series 1&quot;, false, true);</span>
+<span class="fc" id="L154">        s1.add(1.0, 1.0, 1.0, 2.0);</span>
+<span class="fc" id="L155">        s1.add(3.0, 3.0, 3.0, 3.0);</span>
+<span class="fc" id="L156">        s1.add(2.0, 2.0, 2.0, 2.0);</span>
+<span class="fc" id="L157">        assertEquals(0, s1.indexOf(1.0));</span>
+<span class="fc" id="L158">        assertEquals(1, s1.indexOf(3.0));</span>
+<span class="fc" id="L159">        assertEquals(2, s1.indexOf(2.0));</span>
+<span class="fc" id="L160">    }</span>
+
+    /**
+     * Simple test for the remove() method.
+     */
+    @Test
+    public void testRemove() {
+<span class="fc" id="L167">        XIntervalSeries&lt;String&gt; s1 = new XIntervalSeries&lt;&gt;(&quot;Series 1&quot;);</span>
+<span class="fc" id="L168">        s1.add(1.0, 1.0, 1.0, 2.0);</span>
+<span class="fc" id="L169">        s1.add(2.0, 2.0, 2.0, 2.0);</span>
+<span class="fc" id="L170">        s1.add(3.0, 3.0, 3.0, 3.0);</span>
+<span class="fc" id="L171">        assertEquals(3, s1.getItemCount());</span>
+
+<span class="fc" id="L173">        s1.remove(2.0);</span>
+<span class="fc" id="L174">        assertEquals(3.0, s1.getX(1));</span>
+
+<span class="fc" id="L176">        s1.remove(1.0);</span>
+<span class="fc" id="L177">        assertEquals(3.0, s1.getX(0));</span>
+<span class="fc" id="L178">    }</span>
+
+    private static final double EPSILON = 0.0000000001;
+
+    /**
+     * When items are added with duplicate x-values, we expect them to remain
+     * in the order they were added.
+     */
+    @Test
+    public void testAdditionOfDuplicateXValues() {
+<span class="fc" id="L188">        XIntervalSeries&lt;String&gt; s1 = new XIntervalSeries&lt;&gt;(&quot;Series 1&quot;);</span>
+<span class="fc" id="L189">        s1.add(1.0, 1.0, 1.0, 1.0);</span>
+<span class="fc" id="L190">        s1.add(2.0, 2.0, 2.0, 2.0);</span>
+<span class="fc" id="L191">        s1.add(2.0, 3.0, 3.0, 3.0);</span>
+<span class="fc" id="L192">        s1.add(2.0, 4.0, 4.0, 4.0);</span>
+<span class="fc" id="L193">        s1.add(3.0, 5.0, 5.0, 5.0);</span>
+<span class="fc" id="L194">        assertEquals(1.0, s1.getYValue(0), EPSILON);</span>
+<span class="fc" id="L195">        assertEquals(2.0, s1.getYValue(1), EPSILON);</span>
+<span class="fc" id="L196">        assertEquals(3.0, s1.getYValue(2), EPSILON);</span>
+<span class="fc" id="L197">        assertEquals(4.0, s1.getYValue(3), EPSILON);</span>
+<span class="fc" id="L198">        assertEquals(5.0, s1.getYValue(4), EPSILON);</span>
+<span class="fc" id="L199">    }</span>
+
+    /**
+     * Some checks for the add() method for an UNSORTED series.
+     */
+    @Test
+    public void testAdd() {
+<span class="fc" id="L206">        XIntervalSeries&lt;String&gt; series = new XIntervalSeries&lt;&gt;(&quot;Series&quot;, false, true);</span>
+<span class="fc" id="L207">        series.add(5.0, 5.50, 5.50, 5.50);</span>
+<span class="fc" id="L208">        series.add(5.1, 5.51, 5.51, 5.51);</span>
+<span class="fc" id="L209">        series.add(6.0, 6.6, 6.6, 6.6);</span>
+<span class="fc" id="L210">        series.add(3.0, 3.3, 3.3, 3.3);</span>
+<span class="fc" id="L211">        series.add(4.0, 4.4, 4.4, 4.4);</span>
+<span class="fc" id="L212">        series.add(2.0, 2.2, 2.2, 2.2);</span>
+<span class="fc" id="L213">        series.add(1.0, 1.1, 1.1, 1.1);</span>
+<span class="fc" id="L214">        assertEquals(5.5, series.getYValue(0), EPSILON);</span>
+<span class="fc" id="L215">        assertEquals(5.51, series.getYValue(1), EPSILON);</span>
+<span class="fc" id="L216">        assertEquals(6.6, series.getYValue(2), EPSILON);</span>
+<span class="fc" id="L217">        assertEquals(3.3, series.getYValue(3), EPSILON);</span>
+<span class="fc" id="L218">        assertEquals(4.4, series.getYValue(4), EPSILON);</span>
+<span class="fc" id="L219">        assertEquals(2.2, series.getYValue(5), EPSILON);</span>
+<span class="fc" id="L220">        assertEquals(1.1, series.getYValue(6), EPSILON);</span>
+<span class="fc" id="L221">    }</span>
+
+    /**
+     * A simple check that the maximumItemCount attribute is working.
+     */
+    @Test
+    public void testSetMaximumItemCount() {
+<span class="fc" id="L228">        XIntervalSeries&lt;String&gt; s1 = new XIntervalSeries&lt;&gt;(&quot;S1&quot;);</span>
+<span class="fc" id="L229">        assertEquals(Integer.MAX_VALUE, s1.getMaximumItemCount());</span>
+<span class="fc" id="L230">        s1.setMaximumItemCount(2);</span>
+<span class="fc" id="L231">        assertEquals(2, s1.getMaximumItemCount());</span>
+<span class="fc" id="L232">        s1.add(1.0, 1.1, 1.1, 1.1);</span>
+<span class="fc" id="L233">        s1.add(2.0, 2.2, 2.2, 2.2);</span>
+<span class="fc" id="L234">        s1.add(3.0, 3.3, 3.3, 3.3);</span>
+<span class="fc" id="L235">        assertEquals(2.0, s1.getX(0).doubleValue(), EPSILON);</span>
+<span class="fc" id="L236">        assertEquals(3.0, s1.getX(1).doubleValue(), EPSILON);</span>
+<span class="fc" id="L237">    }</span>
+
+    /**
+     * Check that the maximum item count can be applied retrospectively.
+     */
+    @Test
+    public void testSetMaximumItemCount2() {
+<span class="fc" id="L244">        XIntervalSeries&lt;String&gt; s1 = new XIntervalSeries&lt;&gt;(&quot;S1&quot;);</span>
+<span class="fc" id="L245">        s1.add(1.0, 1.1, 1.1, 1.1);</span>
+<span class="fc" id="L246">        s1.add(2.0, 2.2, 2.2, 2.2);</span>
+<span class="fc" id="L247">        s1.add(3.0, 3.3, 3.3, 3.3);</span>
+<span class="fc" id="L248">        s1.setMaximumItemCount(2);</span>
+<span class="fc" id="L249">        assertEquals(2.0, s1.getX(0).doubleValue(), EPSILON);</span>
+<span class="fc" id="L250">        assertEquals(3.0, s1.getX(1).doubleValue(), EPSILON);</span>
+<span class="fc" id="L251">    }</span>
+
+    /**
+     * Some checks for the clear() method.
+     */
+    @Test
+    public void testClear() {
+<span class="fc" id="L258">        XIntervalSeries&lt;String&gt; s1 = new XIntervalSeries&lt;&gt;(&quot;S1&quot;);</span>
+<span class="fc" id="L259">        s1.addChangeListener(this);</span>
+<span class="fc" id="L260">        s1.clear();</span>
+<span class="fc" id="L261">        assertNull(this.lastEvent);</span>
+<span class="fc" id="L262">        assertTrue(s1.isEmpty());</span>
+<span class="fc" id="L263">        s1.add(1.0, 2.0, 3.0, 4.0);</span>
+<span class="fc" id="L264">        assertFalse(s1.isEmpty());</span>
+<span class="fc" id="L265">        s1.clear();</span>
+<span class="fc" id="L266">        assertNotNull(this.lastEvent);</span>
+<span class="fc" id="L267">        assertTrue(s1.isEmpty());</span>
+<span class="fc" id="L268">    }</span>
+
+    /**
+     * A simple check for getXLowValue().
+     */
+    @Test
+    public void testGetXLowValue() {
+<span class="fc" id="L275">        XIntervalSeries&lt;String&gt; s1 = new XIntervalSeries&lt;&gt;(&quot;S1&quot;);</span>
+<span class="fc" id="L276">        s1.add(1.0, 2.0, 3.0, 4.0);</span>
+<span class="fc" id="L277">        assertEquals(2.0, s1.getXLowValue(0), EPSILON);</span>
+<span class="fc" id="L278">        s1.add(2.0, 1.0, 4.0, 2.5);</span>
+<span class="fc" id="L279">        assertEquals(1.0, s1.getXLowValue(1), EPSILON);</span>
+<span class="fc" id="L280">    }</span>
+
+    /**
+     * A simple check for getXHighValue().
+     */
+    @Test
+    public void testGetXHighValue() {
+<span class="fc" id="L287">        XIntervalSeries&lt;String&gt; s1 = new XIntervalSeries&lt;&gt;(&quot;S1&quot;);</span>
+<span class="fc" id="L288">        s1.add(1.0, 2.0, 3.0, 4.0);</span>
+<span class="fc" id="L289">        assertEquals(3.0, s1.getXHighValue(0), EPSILON);</span>
+<span class="fc" id="L290">        s1.add(2.0, 1.0, 4.0, 2.5);</span>
+<span class="fc" id="L291">        assertEquals(4.0, s1.getXHighValue(1), EPSILON);</span>
+<span class="fc" id="L292">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span>jfreechart (Mar 14, 2025 5:50:17 p.m.)</div></body></html>

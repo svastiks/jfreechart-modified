@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>SlidingCategoryDatasetTest.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">jfreechart (Mar 14, 2025 5:50:17 p.m.)</a> &gt; <a href="../../index.html" class="el_group">jfreechart</a> &gt; <a href="../index.html" class="el_bundle">src/test/java</a> &gt; <a href="index.source.html" class="el_package">org.jfree.data.category</a> &gt; <span class="el_source">SlidingCategoryDatasetTest.java</span></div><h1>SlidingCategoryDatasetTest.java</h1><pre class="source lang-java linenums">/* ===========================================================
+ * JFreeChart : a free chart library for the Java(tm) platform
+ * ===========================================================
+ *
+ * (C) Copyright 2000-2022, by David Gilbert and Contributors.
+ *
+ * Project Info:  http://www.jfree.org/jfreechart/index.html
+ *
+ * This library is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 2.1 of the License, or
+ * (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public
+ * License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301,
+ * USA.
+ *
+ * [Oracle and Java are registered trademarks of Oracle and/or its affiliates. 
+ * Other names may be trademarks of their respective owners.]
+ *
+ * -------------------------------
+ * SlidingCategoryDatasetTest.java
+ * -------------------------------
+ * (C) Copyright 2008-2022, by David Gilbert and Contributors.
+ *
+ * Original Author:  David Gilbert;
+ * Contributor(s):   -;
+ *
+ */
+
+package org.jfree.data.category;
+
+import java.util.List;
+
+import org.jfree.chart.TestUtils;
+import org.jfree.chart.internal.CloneUtils;
+
+import org.jfree.data.UnknownKeyException;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+/**
+ * Tests for the {@link SlidingCategoryDataset} class.
+ */
+<span class="fc" id="L52">public class SlidingCategoryDatasetTest {</span>
+
+    /**
+     * Some checks for the equals() method.
+     */
+    @Test
+    public void testEquals() {
+<span class="fc" id="L59">        DefaultCategoryDataset&lt;String, String&gt; u1 = new DefaultCategoryDataset&lt;&gt;();</span>
+<span class="fc" id="L60">        u1.addValue(1.0, &quot;R1&quot;, &quot;C1&quot;);</span>
+<span class="fc" id="L61">        u1.addValue(2.0, &quot;R1&quot;, &quot;C2&quot;);</span>
+<span class="fc" id="L62">        SlidingCategoryDataset&lt;String, String&gt; d1 = new SlidingCategoryDataset&lt;&gt;(u1, 0, 5);</span>
+<span class="fc" id="L63">        DefaultCategoryDataset&lt;String, String&gt; u2 = new DefaultCategoryDataset&lt;&gt;();</span>
+<span class="fc" id="L64">        u2.addValue(1.0, &quot;R1&quot;, &quot;C1&quot;);</span>
+<span class="fc" id="L65">        u2.addValue(2.0, &quot;R1&quot;, &quot;C2&quot;);</span>
+<span class="fc" id="L66">        SlidingCategoryDataset&lt;String, String&gt; d2 = new SlidingCategoryDataset&lt;&gt;(u2, 0, 5);</span>
+<span class="fc" id="L67">        assertEquals(d1, d2);</span>
+
+<span class="fc" id="L69">        d1.setFirstCategoryIndex(1);</span>
+<span class="fc" id="L70">        assertNotEquals(d1, d2);</span>
+<span class="fc" id="L71">        d2.setFirstCategoryIndex(1);</span>
+<span class="fc" id="L72">        assertEquals(d1, d2);</span>
+
+<span class="fc" id="L74">        d1.setMaximumCategoryCount(99);</span>
+<span class="fc" id="L75">        assertNotEquals(d1, d2);</span>
+<span class="fc" id="L76">        d2.setMaximumCategoryCount(99);</span>
+<span class="fc" id="L77">        assertEquals(d1, d2);</span>
+
+<span class="fc" id="L79">        u1.addValue(3.0, &quot;R1&quot;, &quot;C3&quot;);</span>
+<span class="fc" id="L80">        assertNotEquals(d1, d2);</span>
+<span class="fc" id="L81">        u2.addValue(3.0, &quot;R1&quot;, &quot;C3&quot;);</span>
+<span class="fc" id="L82">        assertEquals(d1, d2);</span>
+<span class="fc" id="L83">    }</span>
+
+    /**
+     * Confirm that cloning works.
+     * @throws java.lang.CloneNotSupportedException
+     */
+    @Test
+    public void testCloning() throws CloneNotSupportedException {
+<span class="fc" id="L91">        DefaultCategoryDataset&lt;String, String&gt; u1 = new DefaultCategoryDataset&lt;&gt;();</span>
+<span class="fc" id="L92">        u1.addValue(1.0, &quot;R1&quot;, &quot;C1&quot;);</span>
+<span class="fc" id="L93">        u1.addValue(2.0, &quot;R1&quot;, &quot;C2&quot;);</span>
+<span class="fc" id="L94">        SlidingCategoryDataset&lt;String, String&gt; d1 = new SlidingCategoryDataset&lt;&gt;(u1, 0, 5);</span>
+        SlidingCategoryDataset&lt;String, String&gt; d2;
+<span class="fc" id="L96">        d2 = CloneUtils.clone(d1);</span>
+<span class="fc" id="L97">        assertNotSame(d1, d2);</span>
+<span class="fc" id="L98">        assertSame(d1.getClass(), d2.getClass());</span>
+<span class="fc" id="L99">        assertEquals(d1, d2);</span>
+
+        // basic check for independence
+<span class="fc" id="L102">        u1.addValue(3.0, &quot;R1&quot;, &quot;C3&quot;);</span>
+<span class="fc" id="L103">        assertNotEquals(d1, d2);</span>
+<span class="fc" id="L104">        DefaultCategoryDataset&lt;String, String&gt; u2 </span>
+<span class="fc" id="L105">                = (DefaultCategoryDataset&lt;String, String&gt;) d2.getUnderlyingDataset();</span>
+<span class="fc" id="L106">        u2.addValue(3.0, &quot;R1&quot;, &quot;C3&quot;);</span>
+<span class="fc" id="L107">        assertEquals(d1, d2);</span>
+<span class="fc" id="L108">    }</span>
+
+    /**
+     * Serialize an instance, restore it, and check for equality.
+     */
+    @Test
+    public void testSerialization() {
+<span class="fc" id="L115">        DefaultCategoryDataset&lt;String, String&gt; u1 = new DefaultCategoryDataset&lt;&gt;();</span>
+<span class="fc" id="L116">        u1.addValue(1.0, &quot;R1&quot;, &quot;C1&quot;);</span>
+<span class="fc" id="L117">        u1.addValue(2.0, &quot;R1&quot;, &quot;C2&quot;);</span>
+<span class="fc" id="L118">        SlidingCategoryDataset&lt;String, String&gt; d1 = new SlidingCategoryDataset&lt;&gt;(u1, 0, 5);</span>
+<span class="fc" id="L119">        SlidingCategoryDataset&lt;String, String&gt; d2 = TestUtils.serialised(d1);</span>
+<span class="fc" id="L120">        assertEquals(d1, d2);</span>
+
+        // basic check for independence
+<span class="fc" id="L123">        u1.addValue(3.0, &quot;R1&quot;, &quot;C3&quot;);</span>
+<span class="fc" id="L124">        assertNotEquals(d1, d2);</span>
+<span class="fc" id="L125">        DefaultCategoryDataset&lt;String, String&gt; u2</span>
+<span class="fc" id="L126">                = (DefaultCategoryDataset) d2.getUnderlyingDataset();</span>
+<span class="fc" id="L127">        u2.addValue(3.0, &quot;R1&quot;, &quot;C3&quot;);</span>
+<span class="fc" id="L128">        assertEquals(d1, d2);</span>
+<span class="fc" id="L129">    }</span>
+
+    /**
+     * Some checks for the getColumnCount() method.
+     */
+    @Test
+    public void testGetColumnCount() {
+<span class="fc" id="L136">        DefaultCategoryDataset&lt;String, String&gt; underlying = new DefaultCategoryDataset&lt;&gt;();</span>
+<span class="fc" id="L137">        SlidingCategoryDataset&lt;String, String&gt; dataset </span>
+                = new SlidingCategoryDataset&lt;&gt;(underlying, 10, 2);
+<span class="fc" id="L139">        assertEquals(0, dataset.getColumnCount());</span>
+<span class="fc" id="L140">        underlying.addValue(1.0, &quot;R1&quot;, &quot;C1&quot;);</span>
+<span class="fc" id="L141">        assertEquals(0, dataset.getColumnCount());</span>
+<span class="fc" id="L142">        underlying.addValue(1.0, &quot;R1&quot;, &quot;C2&quot;);</span>
+<span class="fc" id="L143">        assertEquals(0, dataset.getColumnCount());</span>
+<span class="fc" id="L144">        dataset.setFirstCategoryIndex(0);</span>
+<span class="fc" id="L145">        assertEquals(2, dataset.getColumnCount());</span>
+<span class="fc" id="L146">        underlying.addValue(1.0, &quot;R1&quot;, &quot;C3&quot;);</span>
+<span class="fc" id="L147">        assertEquals(2, dataset.getColumnCount());</span>
+<span class="fc" id="L148">        dataset.setFirstCategoryIndex(2);</span>
+<span class="fc" id="L149">        assertEquals(1, dataset.getColumnCount());</span>
+<span class="fc" id="L150">        underlying.clear();</span>
+<span class="fc" id="L151">        assertEquals(0, dataset.getColumnCount());</span>
+<span class="fc" id="L152">    }</span>
+
+    /**
+     * Some checks for the getRowCount() method.
+     */
+    @Test
+    public void testGetRowCount() {
+<span class="fc" id="L159">        DefaultCategoryDataset&lt;String, String&gt; underlying = new DefaultCategoryDataset&lt;&gt;();</span>
+<span class="fc" id="L160">        SlidingCategoryDataset&lt;String, String&gt; dataset </span>
+                = new SlidingCategoryDataset&lt;&gt;(underlying, 10, 5);
+<span class="fc" id="L162">        assertEquals(0, dataset.getRowCount());</span>
+<span class="fc" id="L163">        underlying.addValue(1.0, &quot;R1&quot;, &quot;C1&quot;);</span>
+<span class="fc" id="L164">        assertEquals(1, dataset.getRowCount());</span>
+
+<span class="fc" id="L166">        underlying.clear();</span>
+<span class="fc" id="L167">        assertEquals(0, dataset.getRowCount());</span>
+<span class="fc" id="L168">    }</span>
+
+    /**
+     * Some checks for the getColumnIndex() method.
+     */
+    @Test
+    public void testGetColumnIndex() {
+<span class="fc" id="L175">        DefaultCategoryDataset&lt;String, String&gt; underlying = new DefaultCategoryDataset&lt;&gt;();</span>
+<span class="fc" id="L176">        underlying.addValue(1.0, &quot;R1&quot;, &quot;C1&quot;);</span>
+<span class="fc" id="L177">        underlying.addValue(2.0, &quot;R1&quot;, &quot;C2&quot;);</span>
+<span class="fc" id="L178">        underlying.addValue(3.0, &quot;R1&quot;, &quot;C3&quot;);</span>
+<span class="fc" id="L179">        underlying.addValue(4.0, &quot;R1&quot;, &quot;C4&quot;);</span>
+<span class="fc" id="L180">        SlidingCategoryDataset&lt;String, String&gt; dataset </span>
+                = new SlidingCategoryDataset&lt;&gt;(underlying, 1, 2);
+<span class="fc" id="L182">        assertEquals(-1, dataset.getColumnIndex(&quot;C1&quot;));</span>
+<span class="fc" id="L183">        assertEquals(0, dataset.getColumnIndex(&quot;C2&quot;));</span>
+<span class="fc" id="L184">        assertEquals(1, dataset.getColumnIndex(&quot;C3&quot;));</span>
+<span class="fc" id="L185">        assertEquals(-1, dataset.getColumnIndex(&quot;C4&quot;));</span>
+<span class="fc" id="L186">    }</span>
+
+    /**
+     * Some checks for the getRowIndex() method.
+     */
+    @Test
+    public void testGetRowIndex() {
+<span class="fc" id="L193">        DefaultCategoryDataset&lt;String, String&gt; underlying = new DefaultCategoryDataset&lt;&gt;();</span>
+<span class="fc" id="L194">        underlying.addValue(1.0, &quot;R1&quot;, &quot;C1&quot;);</span>
+<span class="fc" id="L195">        underlying.addValue(2.0, &quot;R2&quot;, &quot;C1&quot;);</span>
+<span class="fc" id="L196">        underlying.addValue(3.0, &quot;R3&quot;, &quot;C1&quot;);</span>
+<span class="fc" id="L197">        underlying.addValue(4.0, &quot;R4&quot;, &quot;C1&quot;);</span>
+<span class="fc" id="L198">        SlidingCategoryDataset&lt;String, String&gt; dataset </span>
+                = new SlidingCategoryDataset&lt;&gt;(underlying, 1, 2);
+<span class="fc" id="L200">        assertEquals(0, dataset.getRowIndex(&quot;R1&quot;));</span>
+<span class="fc" id="L201">        assertEquals(1, dataset.getRowIndex(&quot;R2&quot;));</span>
+<span class="fc" id="L202">        assertEquals(2, dataset.getRowIndex(&quot;R3&quot;));</span>
+<span class="fc" id="L203">        assertEquals(3, dataset.getRowIndex(&quot;R4&quot;));</span>
+<span class="fc" id="L204">    }</span>
+
+    /**
+     * Some checks for the getValue() method.
+     */
+    @Test
+    public void testGetValue() {
+<span class="fc" id="L211">        DefaultCategoryDataset&lt;String, String&gt; underlying </span>
+                = new DefaultCategoryDataset&lt;&gt;();
+<span class="fc" id="L213">        underlying.addValue(1.0, &quot;R1&quot;, &quot;C1&quot;);</span>
+<span class="fc" id="L214">        underlying.addValue(2.0, &quot;R1&quot;, &quot;C2&quot;);</span>
+<span class="fc" id="L215">        underlying.addValue(3.0, &quot;R1&quot;, &quot;C3&quot;);</span>
+<span class="fc" id="L216">        underlying.addValue(4.0, &quot;R1&quot;, &quot;C4&quot;);</span>
+<span class="fc" id="L217">        SlidingCategoryDataset&lt;String, String&gt; dataset </span>
+                = new SlidingCategoryDataset&lt;&gt;(underlying, 1, 2);
+<span class="fc" id="L219">        assertEquals(2.0, dataset.getValue(&quot;R1&quot;, &quot;C2&quot;));</span>
+<span class="fc" id="L220">        assertEquals(3.0, dataset.getValue(&quot;R1&quot;, &quot;C3&quot;));</span>
+<span class="fc" id="L221">        boolean pass = false;</span>
+        try {
+<span class="nc" id="L223">            dataset.getValue(&quot;R1&quot;, &quot;C1&quot;);</span>
+        }
+<span class="fc" id="L225">        catch (UnknownKeyException e) {</span>
+<span class="fc" id="L226">            pass = true;</span>
+<span class="nc" id="L227">        }</span>
+<span class="fc" id="L228">        assertTrue(pass);</span>
+
+<span class="fc" id="L230">        pass = false;</span>
+        try {
+<span class="nc" id="L232">            dataset.getValue(&quot;R1&quot;, &quot;C4&quot;);</span>
+        }
+<span class="fc" id="L234">        catch (UnknownKeyException e) {</span>
+<span class="fc" id="L235">            pass = true;</span>
+<span class="nc" id="L236">        }</span>
+<span class="fc" id="L237">        assertTrue(pass);</span>
+<span class="fc" id="L238">    }</span>
+
+    /**
+     * Some checks for the getColumnKeys() method.
+     */
+    @Test
+    public void testGetColumnKeys() {
+<span class="fc" id="L245">        DefaultCategoryDataset&lt;String, String&gt; underlying </span>
+                = new DefaultCategoryDataset&lt;&gt;();
+<span class="fc" id="L247">        underlying.addValue(1.0, &quot;R1&quot;, &quot;C1&quot;);</span>
+<span class="fc" id="L248">        underlying.addValue(2.0, &quot;R1&quot;, &quot;C2&quot;);</span>
+<span class="fc" id="L249">        underlying.addValue(3.0, &quot;R1&quot;, &quot;C3&quot;);</span>
+<span class="fc" id="L250">        underlying.addValue(4.0, &quot;R1&quot;, &quot;C4&quot;);</span>
+<span class="fc" id="L251">        SlidingCategoryDataset&lt;String, String&gt; dataset </span>
+                = new SlidingCategoryDataset&lt;&gt;(underlying, 1, 2);
+<span class="fc" id="L253">        List&lt;String&gt; keys = dataset.getColumnKeys();</span>
+<span class="fc" id="L254">        assertTrue(keys.contains(&quot;C2&quot;));</span>
+<span class="fc" id="L255">        assertTrue(keys.contains(&quot;C3&quot;));</span>
+<span class="fc" id="L256">        assertEquals(2, keys.size());</span>
+
+<span class="fc" id="L258">        dataset.setFirstCategoryIndex(3);</span>
+<span class="fc" id="L259">        keys = dataset.getColumnKeys();</span>
+<span class="fc" id="L260">        assertTrue(keys.contains(&quot;C4&quot;));</span>
+<span class="fc" id="L261">        assertEquals(1, keys.size());</span>
+<span class="fc" id="L262">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span>jfreechart (Mar 14, 2025 5:50:17 p.m.)</div></body></html>

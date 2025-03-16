@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>DefaultKeyedValueTest.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">jfreechart (Mar 14, 2025 5:50:17 p.m.)</a> &gt; <a href="../../index.html" class="el_group">jfreechart</a> &gt; <a href="../index.html" class="el_bundle">src/test/java</a> &gt; <a href="index.source.html" class="el_package">org.jfree.data</a> &gt; <span class="el_source">DefaultKeyedValueTest.java</span></div><h1>DefaultKeyedValueTest.java</h1><pre class="source lang-java linenums">/* ===========================================================
+ * JFreeChart : a free chart library for the Java(tm) platform
+ * ===========================================================
+ *
+ * (C) Copyright 2000-2022, by David Gilbert and Contributors.
+ *
+ * Project Info:  http://www.jfree.org/jfreechart/index.html
+ *
+ * This library is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 2.1 of the License, or
+ * (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public
+ * License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301,
+ * USA.
+ *
+ * [Oracle and Java are registered trademarks of Oracle and/or its affiliates. 
+ * Other names may be trademarks of their respective owners.]
+ *
+ * --------------------------
+ * DefaultKeyedValueTest.java
+ * --------------------------
+ * (C) Copyright 2003-2022, by David Gilbert and Contributors.
+ *
+ * Original Author:  David Gilbert;
+ * Contributor(s):   -;
+ *
+ */
+
+package org.jfree.data;
+
+import org.jfree.chart.TestUtils;
+import org.jfree.chart.internal.CloneUtils;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+/**
+ * Tests for the {@link DefaultKeyedValue} class.
+ */
+<span class="fc" id="L48">public class DefaultKeyedValueTest {</span>
+
+    /**
+     * Simple checks for the constructor.
+     */
+    @Test
+    public void testConstructor() {
+<span class="fc" id="L55">        DefaultKeyedValue&lt;String&gt; v = new DefaultKeyedValue&lt;&gt;(&quot;A&quot;, 1);</span>
+<span class="fc" id="L56">        assertEquals(&quot;A&quot;, v.getKey());</span>
+<span class="fc" id="L57">        assertEquals(1, v.getValue());</span>
+
+        // try null key
+<span class="fc" id="L60">        boolean pass = false;</span>
+        try {
+<span class="nc" id="L62">            v = new DefaultKeyedValue&lt;&gt;(null, 1);</span>
+<span class="fc" id="L63">        } catch (IllegalArgumentException e) {</span>
+<span class="fc" id="L64">            pass = true;</span>
+<span class="nc" id="L65">        }</span>
+<span class="fc" id="L66">        assertTrue(pass);</span>
+
+        // try a null value
+<span class="fc" id="L69">        v = new DefaultKeyedValue&lt;&gt;(&quot;A&quot;, null);</span>
+<span class="fc" id="L70">        assertNull(v.getValue());</span>
+<span class="fc" id="L71">    }</span>
+
+    /**
+     * Confirm that the equals method can distinguish all the required fields.
+     */
+    @Test
+    public void testEquals() {
+<span class="fc" id="L78">        DefaultKeyedValue&lt;String&gt; v1 = new DefaultKeyedValue&lt;&gt;(&quot;Test&quot;, 45.5);</span>
+<span class="fc" id="L79">        DefaultKeyedValue&lt;String&gt; v2 = new DefaultKeyedValue&lt;&gt;(&quot;Test&quot;, 45.5);</span>
+<span class="fc" id="L80">        assertEquals(v1, v2);</span>
+<span class="fc" id="L81">        assertEquals(v2, v1);</span>
+
+<span class="fc" id="L83">        v1 = new DefaultKeyedValue&lt;&gt;(&quot;Test 1&quot;, 45.5);</span>
+<span class="fc" id="L84">        v2 = new DefaultKeyedValue&lt;&gt;(&quot;Test 2&quot;, 45.5);</span>
+<span class="fc" id="L85">        assertNotEquals(v1, v2);</span>
+
+<span class="fc" id="L87">        v1 = new DefaultKeyedValue&lt;&gt;(&quot;Test&quot;, 45.5);</span>
+<span class="fc" id="L88">        v2 = new DefaultKeyedValue&lt;&gt;(&quot;Test&quot;, 45.6);</span>
+<span class="fc" id="L89">        assertNotEquals(v1, v2);</span>
+<span class="fc" id="L90">    }</span>
+
+    /**
+     * Confirm that the equals method works correctly for null values.
+     */
+    @Test
+    public void testEqualsForNullValues() {
+<span class="fc" id="L97">        DefaultKeyedValue&lt;String&gt; v1 = new DefaultKeyedValue&lt;&gt;(&quot;K1&quot;, null);</span>
+<span class="fc" id="L98">        DefaultKeyedValue&lt;String&gt; v2 = new DefaultKeyedValue&lt;&gt;(&quot;K1&quot;, null);</span>
+<span class="fc" id="L99">        assertEquals(v1, v2);</span>
+<span class="fc" id="L100">        v1.setValue(1);</span>
+<span class="fc" id="L101">        assertNotEquals(v1, v2);</span>
+<span class="fc" id="L102">        assertNotEquals(v2, v1);</span>
+<span class="fc" id="L103">    }</span>
+
+    /**
+     * Some checks for the clone() method.
+     * @throws java.lang.CloneNotSupportedException
+     */
+    @Test
+    public void testCloning() throws CloneNotSupportedException {
+<span class="fc" id="L111">        DefaultKeyedValue&lt;String&gt; v1 = new DefaultKeyedValue&lt;&gt;(&quot;Test&quot;, 45.5);</span>
+<span class="fc" id="L112">        DefaultKeyedValue&lt;String&gt; v2 = CloneUtils.clone(v1);</span>
+<span class="fc" id="L113">        assertNotSame(v1, v2);</span>
+<span class="fc" id="L114">        assertSame(v1.getClass(), v2.getClass());</span>
+<span class="fc" id="L115">        assertEquals(v1, v2);</span>
+
+        // confirm that the clone is independent of the original
+<span class="fc" id="L118">        v2.setValue(12.3);</span>
+<span class="fc" id="L119">        assertNotEquals(v1, v2);</span>
+<span class="fc" id="L120">    }</span>
+
+    /**
+     * Serialize an instance, restore it, and check for equality.
+     */
+    @Test
+    public void testSerialization() {
+<span class="fc" id="L127">        DefaultKeyedValue&lt;String&gt; v1 = new DefaultKeyedValue&lt;&gt;(&quot;Test&quot;, 25.3);</span>
+<span class="fc" id="L128">        DefaultKeyedValue&lt;String&gt; v2 = TestUtils.serialised(v1);</span>
+<span class="fc" id="L129">        assertEquals(v1, v2);</span>
+<span class="fc" id="L130">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span>jfreechart (Mar 14, 2025 5:50:17 p.m.)</div></body></html>

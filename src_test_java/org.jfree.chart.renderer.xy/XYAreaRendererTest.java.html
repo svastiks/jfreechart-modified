@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>XYAreaRendererTest.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">jfreechart (Mar 14, 2025 5:50:17 p.m.)</a> &gt; <a href="../../index.html" class="el_group">jfreechart</a> &gt; <a href="../index.html" class="el_bundle">src/test/java</a> &gt; <a href="index.source.html" class="el_package">org.jfree.chart.renderer.xy</a> &gt; <span class="el_source">XYAreaRendererTest.java</span></div><h1>XYAreaRendererTest.java</h1><pre class="source lang-java linenums">/* ===========================================================
+ * JFreeChart : a free chart library for the Java(tm) platform
+ * ===========================================================
+ *
+ * (C) Copyright 2000-2022, by David Gilbert and Contributors.
+ *
+ * Project Info:  http://www.jfree.org/jfreechart/index.html
+ *
+ * This library is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 2.1 of the License, or
+ * (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public
+ * License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301,
+ * USA.
+ *
+ * [Oracle and Java are registered trademarks of Oracle and/or its affiliates. 
+ * Other names may be trademarks of their respective owners.]
+ *
+ * -----------------------
+ * XYAreaRendererTest.java
+ * -----------------------
+ * (C) Copyright 2003-2022, by David Gilbert and Contributors.
+ *
+ * Original Author:  David Gilbert;
+ * Contributor(s):   -;
+ *
+ */
+
+package org.jfree.chart.renderer.xy;
+
+import java.awt.geom.Rectangle2D;
+
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.legend.LegendItem;
+import org.jfree.chart.TestUtils;
+import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.util.GradientPaintTransformType;
+import org.jfree.chart.util.StandardGradientPaintTransformer;
+import org.jfree.chart.internal.CloneUtils;
+import org.jfree.chart.api.PublicCloneable;
+import org.jfree.data.xy.DefaultTableXYDataset;
+import org.jfree.data.xy.XYSeries;
+import org.jfree.data.xy.XYSeriesCollection;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+/**
+ * Tests for the {@link XYAreaRenderer} class.
+ */
+<span class="fc" id="L60">public class XYAreaRendererTest {</span>
+
+    /**
+     * Check that the equals() method distinguishes all fields.
+     */
+    @Test
+    public void testEquals() {
+<span class="fc" id="L67">        XYAreaRenderer r1 = new XYAreaRenderer();</span>
+<span class="fc" id="L68">        XYAreaRenderer r2 = new XYAreaRenderer();</span>
+<span class="fc" id="L69">        assertEquals(r1, r2);</span>
+
+<span class="fc" id="L71">        r1 = new XYAreaRenderer(XYAreaRenderer.AREA_AND_SHAPES);</span>
+<span class="fc" id="L72">        assertNotEquals(r1, r2);</span>
+<span class="fc" id="L73">        r2 = new XYAreaRenderer(XYAreaRenderer.AREA_AND_SHAPES);</span>
+<span class="fc" id="L74">        assertEquals(r1, r2);</span>
+
+<span class="fc" id="L76">        r1 = new XYAreaRenderer(XYAreaRenderer.AREA);</span>
+<span class="fc" id="L77">        assertNotEquals(r1, r2);</span>
+<span class="fc" id="L78">        r2 = new XYAreaRenderer(XYAreaRenderer.AREA);</span>
+<span class="fc" id="L79">        assertEquals(r1, r2);</span>
+
+<span class="fc" id="L81">        r1 = new XYAreaRenderer(XYAreaRenderer.LINES);</span>
+<span class="fc" id="L82">        assertNotEquals(r1, r2);</span>
+<span class="fc" id="L83">        r2 = new XYAreaRenderer(XYAreaRenderer.LINES);</span>
+<span class="fc" id="L84">        assertEquals(r1, r2);</span>
+
+<span class="fc" id="L86">        r1 = new XYAreaRenderer(XYAreaRenderer.SHAPES);</span>
+<span class="fc" id="L87">        assertNotEquals(r1, r2);</span>
+<span class="fc" id="L88">        r2 = new XYAreaRenderer(XYAreaRenderer.SHAPES);</span>
+<span class="fc" id="L89">        assertEquals(r1, r2);</span>
+
+<span class="fc" id="L91">        r1 = new XYAreaRenderer(XYAreaRenderer.SHAPES_AND_LINES);</span>
+<span class="fc" id="L92">        assertNotEquals(r1, r2);</span>
+<span class="fc" id="L93">        r2 = new XYAreaRenderer(XYAreaRenderer.SHAPES_AND_LINES);</span>
+<span class="fc" id="L94">        assertEquals(r1, r2);</span>
+
+<span class="fc" id="L96">        r1.setOutline(true);</span>
+<span class="fc" id="L97">        assertNotEquals(r1, r2);</span>
+<span class="fc" id="L98">        r2.setOutline(true);</span>
+<span class="fc" id="L99">        assertEquals(r1, r2);</span>
+
+<span class="fc" id="L101">        r1.setLegendArea(new Rectangle2D.Double(1.0, 2.0, 3.0, 4.0));</span>
+<span class="fc" id="L102">        assertNotEquals(r1, r2);</span>
+<span class="fc" id="L103">        r2.setLegendArea(new Rectangle2D.Double(1.0, 2.0, 3.0, 4.0));</span>
+<span class="fc" id="L104">        assertEquals(r1, r2);</span>
+
+<span class="fc" id="L106">        r1.setUseFillPaint(true);</span>
+<span class="fc" id="L107">        assertNotEquals(r1, r2);</span>
+<span class="fc" id="L108">        r2.setUseFillPaint(true);</span>
+<span class="fc" id="L109">        assertEquals(r1, r2);</span>
+
+<span class="fc" id="L111">        r1.setGradientTransformer(new StandardGradientPaintTransformer(</span>
+                GradientPaintTransformType.CENTER_VERTICAL));
+<span class="fc" id="L113">        assertNotEquals(r1, r2);</span>
+<span class="fc" id="L114">        r2.setGradientTransformer(new StandardGradientPaintTransformer(</span>
+                GradientPaintTransformType.CENTER_VERTICAL));
+<span class="fc" id="L116">        assertEquals(r1, r2);</span>
+<span class="fc" id="L117">    }</span>
+
+    /**
+     * Two objects that are equal are required to return the same hashCode.
+     */
+    @Test
+    public void testHashcode() {
+<span class="fc" id="L124">        XYAreaRenderer r1 = new XYAreaRenderer();</span>
+<span class="fc" id="L125">        XYAreaRenderer r2 = new XYAreaRenderer();</span>
+<span class="fc" id="L126">        assertEquals(r1, r2);</span>
+<span class="fc" id="L127">        int h1 = r1.hashCode();</span>
+<span class="fc" id="L128">        int h2 = r2.hashCode();</span>
+<span class="fc" id="L129">        assertEquals(h1, h2);</span>
+
+<span class="fc" id="L131">        r2.setUseFillPaint(true);</span>
+<span class="fc" id="L132">        assertNotEquals(r1.hashCode(), r2.hashCode());</span>
+<span class="fc" id="L133">    }</span>
+
+    /**
+     * Confirm that cloning works.
+     */
+    @Test
+    public void testCloning() throws CloneNotSupportedException {
+<span class="fc" id="L140">        XYAreaRenderer r1 = new XYAreaRenderer();</span>
+<span class="fc" id="L141">        Rectangle2D rect1 = new Rectangle2D.Double(1.0, 2.0, 3.0, 4.0);</span>
+<span class="fc" id="L142">        r1.setLegendArea(rect1);</span>
+<span class="fc" id="L143">        XYAreaRenderer r2 = CloneUtils.clone(r1);</span>
+<span class="fc" id="L144">        assertNotSame(r1, r2);</span>
+<span class="fc" id="L145">        assertSame(r1.getClass(), r2.getClass());</span>
+<span class="fc" id="L146">        assertEquals(r1, r2);</span>
+
+        // check independence
+<span class="fc" id="L149">        rect1.setRect(4.0, 3.0, 2.0, 1.0);</span>
+<span class="fc" id="L150">        assertNotEquals(r1, r2);</span>
+<span class="fc" id="L151">        r2.setLegendArea(new Rectangle2D.Double(4.0, 3.0, 2.0, 1.0));</span>
+<span class="fc" id="L152">        assertEquals(r1, r2);</span>
+<span class="fc" id="L153">    }</span>
+
+    /**
+     * Verify that this class implements {@link PublicCloneable}.
+     */
+    @Test
+    public void testPublicCloneable() {
+<span class="fc" id="L160">        XYAreaRenderer r1 = new XYAreaRenderer();</span>
+<span class="fc" id="L161">        assertTrue(r1 instanceof PublicCloneable);</span>
+<span class="fc" id="L162">    }</span>
+
+    /**
+     * Serialize an instance, restore it, and check for equality.
+     */
+    @Test
+    public void testSerialization() {
+<span class="fc" id="L169">        XYAreaRenderer r1 = new XYAreaRenderer();</span>
+<span class="fc" id="L170">        XYAreaRenderer r2 = TestUtils.serialised(r1);</span>
+<span class="fc" id="L171">        assertEquals(r1, r2);</span>
+<span class="fc" id="L172">    }</span>
+
+    /**
+     * Draws the chart with a {@code null} info object to make sure that
+     * no exceptions are thrown (particularly by code in the renderer).
+     */
+    @Test
+    public void testDrawWithNullInfo() {
+        try {
+<span class="fc" id="L181">            DefaultTableXYDataset&lt;String&gt; dataset = new DefaultTableXYDataset&lt;&gt;();</span>
+
+<span class="fc" id="L183">            XYSeries&lt;String&gt; s1 = new XYSeries&lt;&gt;(&quot;Series 1&quot;, true, false);</span>
+<span class="fc" id="L184">            s1.add(5.0, 5.0);</span>
+<span class="fc" id="L185">            s1.add(10.0, 15.5);</span>
+<span class="fc" id="L186">            s1.add(15.0, 9.5);</span>
+<span class="fc" id="L187">            s1.add(20.0, 7.5);</span>
+<span class="fc" id="L188">            dataset.addSeries(s1);</span>
+
+<span class="fc" id="L190">            XYSeries&lt;String&gt; s2 = new XYSeries&lt;&gt;(&quot;Series 2&quot;, true, false);</span>
+<span class="fc" id="L191">            s2.add(5.0, 5.0);</span>
+<span class="fc" id="L192">            s2.add(10.0, 15.5);</span>
+<span class="fc" id="L193">            s2.add(15.0, 9.5);</span>
+<span class="fc" id="L194">            s2.add(20.0, 3.5);</span>
+<span class="fc" id="L195">            dataset.addSeries(s2);</span>
+<span class="fc" id="L196">            XYPlot&lt;String&gt; plot = new XYPlot&lt;&gt;(dataset,</span>
+                    new NumberAxis(&quot;X&quot;), new NumberAxis(&quot;Y&quot;),
+                    new XYAreaRenderer());
+<span class="fc" id="L199">            JFreeChart chart = new JFreeChart(plot);</span>
+<span class="fc" id="L200">            /* BufferedImage image = */ chart.createBufferedImage(300, 200,</span>
+                    null);
+        }
+<span class="nc" id="L203">        catch (NullPointerException e) {</span>
+<span class="nc" id="L204">            fail(&quot;No exception should be thrown.&quot;);</span>
+<span class="fc" id="L205">        }</span>
+<span class="fc" id="L206">    }</span>
+
+    /**
+     * A check for the datasetIndex and seriesIndex fields in the LegendItem
+     * returned by the getLegendItem() method.
+     */
+    @Test
+    public void testGetLegendItemSeriesIndex() {
+<span class="fc" id="L214">        XYSeriesCollection&lt;String&gt; d1 = new XYSeriesCollection&lt;&gt;();</span>
+<span class="fc" id="L215">        XYSeries&lt;String&gt; s1 = new XYSeries&lt;&gt;(&quot;S1&quot;);</span>
+<span class="fc" id="L216">        s1.add(1.0, 1.1);</span>
+<span class="fc" id="L217">        XYSeries&lt;String&gt; s2 = new XYSeries&lt;&gt;(&quot;S2&quot;);</span>
+<span class="fc" id="L218">        s2.add(1.0, 1.1);</span>
+<span class="fc" id="L219">        d1.addSeries(s1);</span>
+<span class="fc" id="L220">        d1.addSeries(s2);</span>
+
+<span class="fc" id="L222">        XYSeriesCollection&lt;String&gt; d2 = new XYSeriesCollection&lt;&gt;();</span>
+<span class="fc" id="L223">        XYSeries&lt;String&gt; s3 = new XYSeries&lt;&gt;(&quot;S3&quot;);</span>
+<span class="fc" id="L224">        s3.add(1.0, 1.1);</span>
+<span class="fc" id="L225">        XYSeries&lt;String&gt; s4 = new XYSeries&lt;&gt;(&quot;S4&quot;);</span>
+<span class="fc" id="L226">        s4.add(1.0, 1.1);</span>
+<span class="fc" id="L227">        XYSeries&lt;String&gt; s5 = new XYSeries&lt;&gt;(&quot;S5&quot;);</span>
+<span class="fc" id="L228">        s5.add(1.0, 1.1);</span>
+<span class="fc" id="L229">        d2.addSeries(s3);</span>
+<span class="fc" id="L230">        d2.addSeries(s4);</span>
+<span class="fc" id="L231">        d2.addSeries(s5);</span>
+
+<span class="fc" id="L233">        XYAreaRenderer r = new XYAreaRenderer();</span>
+<span class="fc" id="L234">        XYPlot&lt;String&gt; plot = new XYPlot&lt;&gt;(d1, new NumberAxis(&quot;x&quot;),</span>
+                new NumberAxis(&quot;y&quot;), r);
+<span class="fc" id="L236">        plot.setDataset(1, d2);</span>
+<span class="fc" id="L237">        JFreeChart chart = new JFreeChart(plot);</span>
+<span class="fc" id="L238">        LegendItem li = r.getLegendItem(1, 2);</span>
+<span class="fc" id="L239">        assertEquals(&quot;S5&quot;, li.getLabel());</span>
+<span class="fc" id="L240">        assertEquals(1, li.getDatasetIndex());</span>
+<span class="fc" id="L241">        assertEquals(2, li.getSeriesIndex());</span>
+<span class="fc" id="L242">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span>jfreechart (Mar 14, 2025 5:50:17 p.m.)</div></body></html>

@@ -1,0 +1,501 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>MillisecondTest.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">jfreechart (Mar 14, 2025 5:50:17 p.m.)</a> &gt; <a href="../../index.html" class="el_group">jfreechart</a> &gt; <a href="../index.html" class="el_bundle">src/test/java</a> &gt; <a href="index.source.html" class="el_package">org.jfree.data.time</a> &gt; <span class="el_source">MillisecondTest.java</span></div><h1>MillisecondTest.java</h1><pre class="source lang-java linenums">/* ===========================================================
+ * JFreeChart : a free chart library for the Java(tm) platform
+ * ===========================================================
+ *
+ * (C) Copyright 2000-2022, by David Gilbert and Contributors.
+ *
+ * Project Info:  http://www.jfree.org/jfreechart/index.html
+ *
+ * This library is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 2.1 of the License, or
+ * (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public
+ * License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301,
+ * USA.
+ *
+ * [Oracle and Java are registered trademarks of Oracle and/or its affiliates. 
+ * Other names may be trademarks of their respective owners.]
+ *
+ * --------------------
+ * MillisecondTest.java
+ * --------------------
+ * (C) Copyright 2002-2022, by David Gilbert.
+ *
+ * Original Author:  David Gilbert;
+ * Contributor(s):   -;
+ *
+ */
+
+package org.jfree.data.time;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
+import java.time.ZoneOffset;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.Locale;
+import java.util.TimeZone;
+import java.util.function.Consumer;
+
+import org.jfree.chart.TestUtils;
+import org.jfree.chart.date.MonthConstants;
+
+import org.junit.jupiter.api.Test;
+
+/**
+ * Tests for the {@link Millisecond} class.
+ */
+<span class="fc" id="L60">public class MillisecondTest {</span>
+
+    /**
+     * Check that a {@link Millisecond} instance is equal to itself.
+     *
+     * SourceForge Bug ID: 558850.
+     */
+    @Test
+    public void testEqualsSelf() {
+<span class="fc" id="L69">        Millisecond millisecond = new Millisecond();</span>
+<span class="fc" id="L70">        assertEquals(millisecond, millisecond);</span>
+<span class="fc" id="L71">    }</span>
+
+    /**
+     * Tests the equals method.
+     */
+    @Test
+    public void testEquals() {
+<span class="fc" id="L78">        Day day1 = new Day(29, MonthConstants.MARCH, 2002);</span>
+<span class="fc" id="L79">        Hour hour1 = new Hour(15, day1);</span>
+<span class="fc" id="L80">        Minute minute1 = new Minute(15, hour1);</span>
+<span class="fc" id="L81">        Second second1 = new Second(34, minute1);</span>
+<span class="fc" id="L82">        Millisecond milli1 = new Millisecond(999, second1);</span>
+<span class="fc" id="L83">        Day day2 = new Day(29, MonthConstants.MARCH, 2002);</span>
+<span class="fc" id="L84">        Hour hour2 = new Hour(15, day2);</span>
+<span class="fc" id="L85">        Minute minute2 = new Minute(15, hour2);</span>
+<span class="fc" id="L86">        Second second2 = new Second(34, minute2);</span>
+<span class="fc" id="L87">        Millisecond milli2 = new Millisecond(999, second2);</span>
+<span class="fc" id="L88">        assertEquals(milli1, milli2);</span>
+<span class="fc" id="L89">    }</span>
+
+    /**
+     * In GMT, the 4.55:59.123pm on 21 Mar 2002 is
+     * java.util.Date(1016729759123L).  Use this to check the Millisecond
+     * constructor.
+     */
+    @Test
+    public void testDateConstructor1() {
+<span class="fc" id="L98">        TimeZone zone = TimeZone.getTimeZone(&quot;GMT&quot;);</span>
+<span class="fc" id="L99">        Calendar cal = Calendar.getInstance(zone);</span>
+<span class="fc" id="L100">        Locale locale = Locale.getDefault();  // locale should not matter here</span>
+<span class="fc" id="L101">        Millisecond m1 = new Millisecond(new Date(1016729759122L), zone,</span>
+                locale);
+<span class="fc" id="L103">        Millisecond m2 = new Millisecond(new Date(1016729759123L), zone,</span>
+                locale);
+
+<span class="fc" id="L106">        assertEquals(122, m1.getMillisecond());</span>
+<span class="fc" id="L107">        assertEquals(1016729759122L, m1.getLastMillisecond(cal));</span>
+
+<span class="fc" id="L109">        assertEquals(123, m2.getMillisecond());</span>
+<span class="fc" id="L110">        assertEquals(1016729759123L, m2.getFirstMillisecond(cal));</span>
+<span class="fc" id="L111">    }</span>
+
+    /**
+     * In Tallinn, the 4.55:59.123pm on 21 Mar 2002 is
+     * java.util.Date(1016722559123L).  Use this to check the Millisecond
+     * constructor.
+     */
+    @Test
+    public void testDateConstructor2() {
+<span class="fc" id="L120">        TimeZone zone = TimeZone.getTimeZone(&quot;Europe/Tallinn&quot;);</span>
+<span class="fc" id="L121">        Calendar cal = Calendar.getInstance(zone);</span>
+<span class="fc" id="L122">        Locale locale = Locale.getDefault();  // locale should not matter here</span>
+<span class="fc" id="L123">        Millisecond m1 = new Millisecond(new Date(1016722559122L), zone,</span>
+                locale);
+<span class="fc" id="L125">        Millisecond m2 = new Millisecond(new Date(1016722559123L), zone,</span>
+                locale);
+
+<span class="fc" id="L128">        assertEquals(122, m1.getMillisecond());</span>
+<span class="fc" id="L129">        assertEquals(1016722559122L, m1.getLastMillisecond(cal));</span>
+
+<span class="fc" id="L131">        assertEquals(123, m2.getMillisecond());</span>
+<span class="fc" id="L132">        assertEquals(1016722559123L, m2.getFirstMillisecond(cal));</span>
+<span class="fc" id="L133">    }</span>
+
+    /**
+     * If a thread-local calendar was set, the Date constructor should use it.
+     */
+    @Test
+    public void testDateConstructorWithThreadLocalCalendar() {
+<span class="fc" id="L140">        Consumer&lt;Integer&gt; calendarSetup = hours -&gt; RegularTimePeriod.setThreadLocalCalendarInstance(</span>
+<span class="fc" id="L141">                Calendar.getInstance(TimeZone.getTimeZone(ZoneOffset.ofHours(hours)))</span>
+        );
+<span class="fc" id="L143">        testDateConstructorWithCustomCalendar(3, calendarSetup);</span>
+<span class="fc" id="L144">        testDateConstructorWithCustomCalendar(4, calendarSetup);</span>
+<span class="fc" id="L145">    }</span>
+
+    /**
+     * If a calendar prototype was set, the Date constructor should use it.
+     */
+    @Test
+    public void testDateConstructorWithCalendarPrototype() {
+<span class="fc" id="L152">        Consumer&lt;Integer&gt; calendarSetup = hours -&gt; RegularTimePeriod.setCalendarInstancePrototype(</span>
+<span class="fc" id="L153">                Calendar.getInstance(TimeZone.getTimeZone(ZoneOffset.ofHours(hours)))</span>
+        );
+<span class="fc" id="L155">        testDateConstructorWithCustomCalendar(3, calendarSetup);</span>
+<span class="fc" id="L156">        testDateConstructorWithCustomCalendar(4, calendarSetup);</span>
+<span class="fc" id="L157">    }</span>
+
+    private void testDateConstructorWithCustomCalendar(int hoursOffset, Consumer&lt;Integer&gt; calendarSetup) {
+        try {
+<span class="fc" id="L161">            calendarSetup.accept(hoursOffset);</span>
+<span class="fc" id="L162">            Millisecond m = new Millisecond(new Date(0L));</span>
+<span class="fc" id="L163">            assertEquals(1970, m.getSecond().getMinute().getHour().getYear());</span>
+<span class="fc" id="L164">            assertEquals(1, m.getSecond().getMinute().getHour().getMonth());</span>
+<span class="fc" id="L165">            assertEquals(1, m.getSecond().getMinute().getHour().getDayOfMonth());</span>
+<span class="fc" id="L166">            assertEquals(hoursOffset, m.getSecond().getMinute().getHour().getHour());</span>
+<span class="fc" id="L167">            assertEquals(0, m.getSecond().getMinute().getMinute());</span>
+<span class="fc" id="L168">            assertEquals(0, m.getSecond().getSecond());</span>
+<span class="fc" id="L169">            assertEquals(0, m.getMillisecond());</span>
+<span class="fc" id="L170">            assertEquals(0L, m.getFirstMillisecond());</span>
+        } finally {
+            // reset everything, to avoid affecting other tests
+<span class="fc" id="L173">            RegularTimePeriod.setThreadLocalCalendarInstance(null);</span>
+<span class="fc" id="L174">            RegularTimePeriod.setCalendarInstancePrototype(null);</span>
+        }
+<span class="fc" id="L176">    }</span>
+
+    /**
+     * If a thread-local calendar was set, the millisecond-second constructor should use it.
+     */
+    @Test
+    public void testMillisecondSecondConstructorWithThreadLocalCalendar() {
+<span class="fc" id="L183">        Consumer&lt;Integer&gt; calendarSetup = hours -&gt; RegularTimePeriod.setThreadLocalCalendarInstance(</span>
+<span class="fc" id="L184">                Calendar.getInstance(TimeZone.getTimeZone(ZoneOffset.ofHours(hours)))</span>
+        );
+<span class="fc" id="L186">        testMillisecondSecondConstructorWithCustomCalendar(3, calendarSetup);</span>
+<span class="fc" id="L187">        testMillisecondSecondConstructorWithCustomCalendar(4, calendarSetup);</span>
+<span class="fc" id="L188">    }</span>
+
+    /**
+     * If a calendar prototype was set, the millisecond-second constructor should use it.
+     */
+    @Test
+    public void testMillisecondSecondConstructorWithCalendarPrototype() {
+<span class="fc" id="L195">        Consumer&lt;Integer&gt; calendarSetup = hours -&gt; RegularTimePeriod.setCalendarInstancePrototype(</span>
+<span class="fc" id="L196">                Calendar.getInstance(TimeZone.getTimeZone(ZoneOffset.ofHours(hours)))</span>
+        );
+<span class="fc" id="L198">        testMillisecondSecondConstructorWithCustomCalendar(3, calendarSetup);</span>
+<span class="fc" id="L199">        testMillisecondSecondConstructorWithCustomCalendar(4, calendarSetup);</span>
+<span class="fc" id="L200">    }</span>
+
+    private void testMillisecondSecondConstructorWithCustomCalendar(int hoursOffset, Consumer&lt;Integer&gt; calendarSetup) {
+        try {
+<span class="fc" id="L204">            calendarSetup.accept(hoursOffset);</span>
+<span class="fc" id="L205">            Millisecond m = new Millisecond(0, new Second(new Date(0L)));</span>
+<span class="fc" id="L206">            assertEquals(1970, m.getSecond().getMinute().getHour().getYear());</span>
+<span class="fc" id="L207">            assertEquals(1, m.getSecond().getMinute().getHour().getMonth());</span>
+<span class="fc" id="L208">            assertEquals(1, m.getSecond().getMinute().getHour().getDayOfMonth());</span>
+<span class="fc" id="L209">            assertEquals(hoursOffset, m.getSecond().getMinute().getHour().getHour());</span>
+<span class="fc" id="L210">            assertEquals(0, m.getSecond().getMinute().getMinute());</span>
+<span class="fc" id="L211">            assertEquals(0, m.getSecond().getSecond());</span>
+<span class="fc" id="L212">            assertEquals(0, m.getMillisecond());</span>
+<span class="fc" id="L213">            assertEquals(0L, m.getFirstMillisecond());</span>
+        } finally {
+            // reset everything, to avoid affecting other tests
+<span class="fc" id="L216">            RegularTimePeriod.setThreadLocalCalendarInstance(null);</span>
+<span class="fc" id="L217">            RegularTimePeriod.setCalendarInstancePrototype(null);</span>
+        }
+<span class="fc" id="L219">    }</span>
+
+    /**
+     * Serialize an instance, restore it, and check for equality.
+     */
+    @Test
+    public void testSerialization() {
+<span class="fc" id="L226">        Millisecond m1 = new Millisecond();</span>
+<span class="fc" id="L227">        Millisecond m2 = TestUtils.serialised(m1);</span>
+<span class="fc" id="L228">        assertEquals(m1, m2);</span>
+<span class="fc" id="L229">    }</span>
+
+    /**
+     * Two objects that are equal are required to return the same hashCode.
+     */
+    @Test
+    public void testHashcode() {
+<span class="fc" id="L236">        Millisecond m1 = new Millisecond(599, 23, 45, 7, 9, 10, 2007);</span>
+<span class="fc" id="L237">        Millisecond m2 = new Millisecond(599, 23, 45, 7, 9, 10, 2007);</span>
+<span class="fc" id="L238">        assertEquals(m1, m2);</span>
+<span class="fc" id="L239">        int hash1 = m1.hashCode();</span>
+<span class="fc" id="L240">        int hash2 = m2.hashCode();</span>
+<span class="fc" id="L241">        assertEquals(hash1, hash2);</span>
+<span class="fc" id="L242">    }</span>
+
+    /**
+     * A test for bug report 943985 - the calculation for the middle
+     * millisecond is incorrect for odd milliseconds.
+     */
+    @Test
+    public void test943985() {
+<span class="fc" id="L250">        Millisecond ms = new Millisecond(new java.util.Date(4));</span>
+<span class="fc" id="L251">        assertEquals(ms.getFirstMillisecond(), ms.getMiddleMillisecond());</span>
+<span class="fc" id="L252">        assertEquals(ms.getMiddleMillisecond(), ms.getLastMillisecond());</span>
+<span class="fc" id="L253">        ms = new Millisecond(new java.util.Date(5));</span>
+<span class="fc" id="L254">        assertEquals(ms.getFirstMillisecond(), ms.getMiddleMillisecond());</span>
+<span class="fc" id="L255">        assertEquals(ms.getMiddleMillisecond(), ms.getLastMillisecond());</span>
+<span class="fc" id="L256">    }</span>
+
+    /**
+     * The {@link Millisecond} class is immutable, so should not be
+     * {@link Cloneable}.
+     */
+    @Test
+    public void testNotCloneable() {
+<span class="fc" id="L264">        Millisecond m = new Millisecond(599, 23, 45, 7, 9, 10, 2007);</span>
+<span class="fc" id="L265">        assertFalse(m instanceof Cloneable);</span>
+<span class="fc" id="L266">    }</span>
+
+    /**
+     * Some checks for the getFirstMillisecond() method.
+     */
+    @Test
+    public void testGetFirstMillisecond() {
+<span class="fc" id="L273">        Locale saved = Locale.getDefault();</span>
+<span class="fc" id="L274">        Locale.setDefault(Locale.UK);</span>
+<span class="fc" id="L275">        TimeZone savedZone = TimeZone.getDefault();</span>
+<span class="fc" id="L276">        TimeZone.setDefault(TimeZone.getTimeZone(&quot;Europe/London&quot;));</span>
+<span class="fc" id="L277">        Millisecond m = new Millisecond(500, 15, 43, 15, 1, 4, 2006);</span>
+<span class="fc" id="L278">        assertEquals(1143902595500L, m.getFirstMillisecond());</span>
+<span class="fc" id="L279">        Locale.setDefault(saved);</span>
+<span class="fc" id="L280">        TimeZone.setDefault(savedZone);</span>
+<span class="fc" id="L281">    }</span>
+
+    /**
+     * Some checks for the getFirstMillisecond(TimeZone) method.
+     */
+    @Test
+    public void testGetFirstMillisecondWithTimeZone() {
+<span class="fc" id="L288">        Millisecond m = new Millisecond(500, 50, 59, 15, 1, 4, 1950);</span>
+<span class="fc" id="L289">        TimeZone zone = TimeZone.getTimeZone(&quot;America/Los_Angeles&quot;);</span>
+<span class="fc" id="L290">        Calendar cal = Calendar.getInstance(zone);</span>
+<span class="fc" id="L291">        assertEquals(-623289609500L, m.getFirstMillisecond(cal));</span>
+
+        // try null calendar
+<span class="fc" id="L294">        boolean pass = false;</span>
+        try {
+<span class="nc" id="L296">            m.getFirstMillisecond((Calendar) null);</span>
+        }
+<span class="fc" id="L298">        catch (NullPointerException e) {</span>
+<span class="fc" id="L299">            pass = true;</span>
+<span class="nc" id="L300">        }</span>
+<span class="fc" id="L301">        assertTrue(pass);</span>
+<span class="fc" id="L302">    }</span>
+
+    /**
+     * Some checks for the getFirstMillisecond(TimeZone) method.
+     */
+    @Test
+    public void testGetFirstMillisecondWithCalendar() {
+<span class="fc" id="L309">        Millisecond m = new Millisecond(500, 55, 40, 2, 15, 4, 2000);</span>
+<span class="fc" id="L310">        GregorianCalendar calendar = new GregorianCalendar(Locale.GERMANY);</span>
+<span class="fc" id="L311">        calendar.setTimeZone(TimeZone.getTimeZone(&quot;Europe/Frankfurt&quot;));</span>
+<span class="fc" id="L312">        assertEquals(955766455500L, m.getFirstMillisecond(calendar));</span>
+
+        // try null calendar
+<span class="fc" id="L315">        boolean pass = false;</span>
+        try {
+<span class="nc" id="L317">            m.getFirstMillisecond((Calendar) null);</span>
+        }
+<span class="fc" id="L319">        catch (NullPointerException e) {</span>
+<span class="fc" id="L320">            pass = true;</span>
+<span class="nc" id="L321">        }</span>
+<span class="fc" id="L322">        assertTrue(pass);</span>
+<span class="fc" id="L323">    }</span>
+
+    /**
+     * Some checks for the getLastMillisecond() method.
+     */
+    @Test
+    public void testGetLastMillisecond() {
+<span class="fc" id="L330">        Locale saved = Locale.getDefault();</span>
+<span class="fc" id="L331">        Locale.setDefault(Locale.UK);</span>
+<span class="fc" id="L332">        TimeZone savedZone = TimeZone.getDefault();</span>
+<span class="fc" id="L333">        TimeZone.setDefault(TimeZone.getTimeZone(&quot;Europe/London&quot;));</span>
+<span class="fc" id="L334">        Millisecond m = new Millisecond(750, 1, 1, 1, 1, 1, 1970);</span>
+<span class="fc" id="L335">        assertEquals(61750L, m.getLastMillisecond());</span>
+<span class="fc" id="L336">        Locale.setDefault(saved);</span>
+<span class="fc" id="L337">        TimeZone.setDefault(savedZone);</span>
+<span class="fc" id="L338">    }</span>
+
+    /**
+     * Some checks for the getLastMillisecond(TimeZone) method.
+     */
+    @Test
+    public void testGetLastMillisecondWithTimeZone() {
+<span class="fc" id="L345">        Millisecond m = new Millisecond(750, 55, 1, 2, 7, 7, 1950);</span>
+<span class="fc" id="L346">        TimeZone zone = TimeZone.getTimeZone(&quot;America/Los_Angeles&quot;);</span>
+<span class="fc" id="L347">        Calendar cal = Calendar.getInstance(zone);</span>
+<span class="fc" id="L348">        assertEquals(-614962684250L, m.getLastMillisecond(cal));</span>
+
+        // try null calendar
+<span class="fc" id="L351">        boolean pass = false;</span>
+        try {
+<span class="nc" id="L353">            m.getLastMillisecond((Calendar) null);</span>
+        }
+<span class="fc" id="L355">        catch (NullPointerException e) {</span>
+<span class="fc" id="L356">            pass = true;</span>
+<span class="nc" id="L357">        }</span>
+<span class="fc" id="L358">        assertTrue(pass);</span>
+<span class="fc" id="L359">    }</span>
+
+    /**
+     * Some checks for the getLastMillisecond(TimeZone) method.
+     */
+    @Test
+    public void testGetLastMillisecondWithCalendar() {
+<span class="fc" id="L366">        Millisecond m = new Millisecond(250, 50, 45, 21, 21, 4, 2001);</span>
+<span class="fc" id="L367">        GregorianCalendar calendar = new GregorianCalendar(Locale.GERMANY);</span>
+<span class="fc" id="L368">        calendar.setTimeZone(TimeZone.getTimeZone(&quot;Europe/Frankfurt&quot;));</span>
+<span class="fc" id="L369">        assertEquals(987889550250L, m.getLastMillisecond(calendar));</span>
+
+        // try null calendar
+<span class="fc" id="L372">        boolean pass = false;</span>
+        try {
+<span class="nc" id="L374">            m.getLastMillisecond((Calendar) null);</span>
+        }
+<span class="fc" id="L376">        catch (NullPointerException e) {</span>
+<span class="fc" id="L377">            pass = true;</span>
+<span class="nc" id="L378">        }</span>
+<span class="fc" id="L379">        assertTrue(pass);</span>
+<span class="fc" id="L380">    }</span>
+
+    /**
+     * Some checks for the getSerialIndex() method.
+     */
+    @Test
+    public void testGetSerialIndex() {
+<span class="fc" id="L387">        Millisecond m = new Millisecond(500, 1, 1, 1, 1, 1, 2000);</span>
+<span class="fc" id="L388">        assertEquals(3155850061500L, m.getSerialIndex());</span>
+<span class="fc" id="L389">        m = new Millisecond(500, 1, 1, 1, 1, 1, 1900);</span>
+        // TODO: this must be wrong...
+<span class="fc" id="L391">        assertEquals(176461500L, m.getSerialIndex());</span>
+<span class="fc" id="L392">    }</span>
+
+    @Test
+    public void testNextPrevious() {
+<span class="fc" id="L396">        Millisecond m = new Millisecond(555, 55, 30, 1, 12, 12, 2000);</span>
+<span class="fc" id="L397">        m = (Millisecond) m.next();</span>
+<span class="fc" id="L398">        assertEquals(2000, m.getSecond().getMinute().getHour().getYear());</span>
+<span class="fc" id="L399">        assertEquals(12, m.getSecond().getMinute().getHour().getMonth());</span>
+<span class="fc" id="L400">        assertEquals(12, m.getSecond().getMinute().getHour().getDayOfMonth());</span>
+<span class="fc" id="L401">        assertEquals(1, m.getSecond().getMinute().getHour().getHour());</span>
+<span class="fc" id="L402">        assertEquals(30, m.getSecond().getMinute().getMinute());</span>
+<span class="fc" id="L403">        assertEquals(55, m.getSecond().getSecond());</span>
+<span class="fc" id="L404">        assertEquals(556, m.getMillisecond());</span>
+<span class="fc" id="L405">        m = (Millisecond) m.previous();</span>
+<span class="fc" id="L406">        assertEquals(2000, m.getSecond().getMinute().getHour().getYear());</span>
+<span class="fc" id="L407">        assertEquals(12, m.getSecond().getMinute().getHour().getMonth());</span>
+<span class="fc" id="L408">        assertEquals(12, m.getSecond().getMinute().getHour().getDayOfMonth());</span>
+<span class="fc" id="L409">        assertEquals(1, m.getSecond().getMinute().getHour().getHour());</span>
+<span class="fc" id="L410">        assertEquals(30, m.getSecond().getMinute().getMinute());</span>
+<span class="fc" id="L411">        assertEquals(55, m.getSecond().getSecond());</span>
+<span class="fc" id="L412">        assertEquals(555, m.getMillisecond());</span>
+<span class="fc" id="L413">        m = new Millisecond(999, 59, 59, 23, 31, 12, 9999);</span>
+<span class="fc" id="L414">        assertNull(m.next());</span>
+<span class="fc" id="L415">    }</span>
+
+    /**
+     * If a thread-local calendar was set, next() and previous() should use its time zone.
+     */
+    @Test
+    public void testNextPreviousWithThreadLocalCalendar() {
+<span class="fc" id="L422">        Consumer&lt;Integer&gt; calendarSetup = hours -&gt; RegularTimePeriod.setThreadLocalCalendarInstance(</span>
+<span class="fc" id="L423">                Calendar.getInstance(TimeZone.getTimeZone(ZoneOffset.ofHours(hours)))</span>
+        );
+<span class="fc" id="L425">        testNextPreviousWithCustomCalendar(3, calendarSetup);</span>
+<span class="fc" id="L426">        testNextPreviousWithCustomCalendar(4, calendarSetup);</span>
+<span class="fc" id="L427">    }</span>
+
+    /**
+     * If a calendar prototype was set, next() should use its time zone.
+     */
+    @Test
+    public void testNextPreviousWithCalendarPrototype() {
+<span class="fc" id="L434">        Consumer&lt;Integer&gt; calendarSetup = hours -&gt; RegularTimePeriod.setCalendarInstancePrototype(</span>
+<span class="fc" id="L435">                Calendar.getInstance(TimeZone.getTimeZone(ZoneOffset.ofHours(hours)))</span>
+        );
+<span class="fc" id="L437">        testNextPreviousWithCustomCalendar(3, calendarSetup);</span>
+<span class="fc" id="L438">        testNextPreviousWithCustomCalendar(4, calendarSetup);</span>
+<span class="fc" id="L439">    }</span>
+
+    private void testNextPreviousWithCustomCalendar(int hoursOffset, Consumer&lt;Integer&gt; calendarSetup) {
+        try {
+<span class="fc" id="L443">            calendarSetup.accept(hoursOffset);</span>
+<span class="fc" id="L444">            Millisecond m = new Millisecond(new Date(0L));</span>
+<span class="fc" id="L445">            m = (Millisecond) m.next();</span>
+<span class="fc" id="L446">            assertEquals(1970, m.getSecond().getMinute().getHour().getYear());</span>
+<span class="fc" id="L447">            assertEquals(1, m.getSecond().getMinute().getHour().getMonth());</span>
+<span class="fc" id="L448">            assertEquals(1, m.getSecond().getMinute().getHour().getDayOfMonth());</span>
+<span class="fc" id="L449">            assertEquals(hoursOffset, m.getSecond().getMinute().getHour().getHour());</span>
+<span class="fc" id="L450">            assertEquals(0, m.getSecond().getMinute().getMinute());</span>
+<span class="fc" id="L451">            assertEquals(0, m.getSecond().getSecond());</span>
+<span class="fc" id="L452">            assertEquals(1L, m.getMillisecond());</span>
+<span class="fc" id="L453">            assertEquals(1L, m.getFirstMillisecond());</span>
+<span class="fc" id="L454">            m = (Millisecond) m.previous();</span>
+<span class="fc" id="L455">            assertEquals(1970, m.getSecond().getMinute().getHour().getYear());</span>
+<span class="fc" id="L456">            assertEquals(1, m.getSecond().getMinute().getHour().getMonth());</span>
+<span class="fc" id="L457">            assertEquals(1, m.getSecond().getMinute().getHour().getDayOfMonth());</span>
+<span class="fc" id="L458">            assertEquals(hoursOffset, m.getSecond().getMinute().getHour().getHour());</span>
+<span class="fc" id="L459">            assertEquals(0, m.getSecond().getMinute().getMinute());</span>
+<span class="fc" id="L460">            assertEquals(0, m.getSecond().getSecond());</span>
+<span class="fc" id="L461">            assertEquals(0L, m.getMillisecond());</span>
+<span class="fc" id="L462">            assertEquals(0L, m.getFirstMillisecond());</span>
+        } finally {
+            // reset everything, to avoid affecting other tests
+<span class="fc" id="L465">            RegularTimePeriod.setThreadLocalCalendarInstance(null);</span>
+<span class="fc" id="L466">            RegularTimePeriod.setCalendarInstancePrototype(null);</span>
+        }
+<span class="fc" id="L468">    }</span>
+
+    /**
+     * Some checks for the getStart() method.
+     */
+    @Test
+    public void testGetStart() {
+<span class="fc" id="L475">        Locale saved = Locale.getDefault();</span>
+<span class="fc" id="L476">        Locale.setDefault(Locale.ITALY);</span>
+<span class="fc" id="L477">        Calendar cal = Calendar.getInstance(Locale.ITALY);</span>
+<span class="fc" id="L478">        cal.set(2006, Calendar.JANUARY, 16, 3, 47, 55);</span>
+<span class="fc" id="L479">        cal.set(Calendar.MILLISECOND, 555);</span>
+<span class="fc" id="L480">        Millisecond m = new Millisecond(555, 55, 47, 3, 16, 1, 2006);</span>
+<span class="fc" id="L481">        assertEquals(cal.getTime(), m.getStart());</span>
+<span class="fc" id="L482">        Locale.setDefault(saved);</span>
+<span class="fc" id="L483">    }</span>
+
+    /**
+     * Some checks for the getEnd() method.
+     */
+    @Test
+    public void testGetEnd() {
+<span class="fc" id="L490">        Locale saved = Locale.getDefault();</span>
+<span class="fc" id="L491">        Locale.setDefault(Locale.ITALY);</span>
+<span class="fc" id="L492">        Calendar cal = Calendar.getInstance(Locale.ITALY);</span>
+<span class="fc" id="L493">        cal.set(2006, Calendar.JANUARY, 16, 3, 47, 55);</span>
+<span class="fc" id="L494">        cal.set(Calendar.MILLISECOND, 555);</span>
+<span class="fc" id="L495">        Millisecond m = new Millisecond(555, 55, 47, 3, 16, 1, 2006);</span>
+<span class="fc" id="L496">        assertEquals(cal.getTime(), m.getEnd());</span>
+<span class="fc" id="L497">        Locale.setDefault(saved);</span>
+<span class="fc" id="L498">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span>jfreechart (Mar 14, 2025 5:50:17 p.m.)</div></body></html>

@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>SimpleHistogramBinTest.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">jfreechart (Mar 14, 2025 5:50:17 p.m.)</a> &gt; <a href="../../index.html" class="el_group">jfreechart</a> &gt; <a href="../index.html" class="el_bundle">src/test/java</a> &gt; <a href="index.source.html" class="el_package">org.jfree.data.statistics</a> &gt; <span class="el_source">SimpleHistogramBinTest.java</span></div><h1>SimpleHistogramBinTest.java</h1><pre class="source lang-java linenums">/* ===========================================================
+ * JFreeChart : a free chart library for the Java(tm) platform
+ * ===========================================================
+ *
+ * (C) Copyright 2000-2022, by David Gilbert and Contributors.
+ *
+ * Project Info:  http://www.jfree.org/jfreechart/index.html
+ *
+ * This library is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 2.1 of the License, or
+ * (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public
+ * License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301,
+ * USA.
+ *
+ * [Oracle and Java are registered trademarks of Oracle and/or its affiliates. 
+ * Other names may be trademarks of their respective owners.]
+ *
+ * ---------------------------
+ * SimpleHistogramBinTest.java
+ * ---------------------------
+ * (C) Copyright 2005-2022, by David Gilbert and Contributors.
+ *
+ * Original Author:  David Gilbert;
+ * Contributor(s):   -;
+ *
+ */
+
+package org.jfree.data.statistics;
+
+import org.jfree.chart.TestUtils;
+import org.jfree.chart.internal.CloneUtils;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+/**
+ * Tests for the {@link SimpleHistogramBin} class.
+ */
+<span class="fc" id="L48">public class SimpleHistogramBinTest {</span>
+
+    /**
+     * Some checks for the accepts() method.
+     */
+    @Test
+    public void testAccepts() {
+<span class="fc" id="L55">        SimpleHistogramBin bin1 = new SimpleHistogramBin(1.0, 2.0);</span>
+<span class="fc" id="L56">        assertFalse(bin1.accepts(0.0));</span>
+<span class="fc" id="L57">        assertTrue(bin1.accepts(1.0));</span>
+<span class="fc" id="L58">        assertTrue(bin1.accepts(1.5));</span>
+<span class="fc" id="L59">        assertTrue(bin1.accepts(2.0));</span>
+<span class="fc" id="L60">        assertFalse(bin1.accepts(2.1));</span>
+<span class="fc" id="L61">        assertFalse(bin1.accepts(Double.NaN));</span>
+
+<span class="fc" id="L63">        SimpleHistogramBin bin2</span>
+            = new SimpleHistogramBin(1.0, 2.0, false, false);
+<span class="fc" id="L65">        assertFalse(bin2.accepts(0.0));</span>
+<span class="fc" id="L66">        assertFalse(bin2.accepts(1.0));</span>
+<span class="fc" id="L67">        assertTrue(bin2.accepts(1.5));</span>
+<span class="fc" id="L68">        assertFalse(bin2.accepts(2.0));</span>
+<span class="fc" id="L69">        assertFalse(bin2.accepts(2.1));</span>
+<span class="fc" id="L70">        assertFalse(bin2.accepts(Double.NaN));</span>
+<span class="fc" id="L71">    }</span>
+
+    /**
+     * Some checks for the overlapsWith() method.
+     */
+    @Test
+    public void testOverlapsWidth() {
+<span class="fc" id="L78">        SimpleHistogramBin b1 = new SimpleHistogramBin(1.0, 2.0);</span>
+<span class="fc" id="L79">        SimpleHistogramBin b2 = new SimpleHistogramBin(2.0, 3.0);</span>
+<span class="fc" id="L80">        SimpleHistogramBin b3 = new SimpleHistogramBin(3.0, 4.0);</span>
+<span class="fc" id="L81">        SimpleHistogramBin b4 = new SimpleHistogramBin(0.0, 5.0);</span>
+<span class="fc" id="L82">        SimpleHistogramBin b5 = new SimpleHistogramBin(2.0, 3.0, false, true);</span>
+<span class="fc" id="L83">        SimpleHistogramBin b6 = new SimpleHistogramBin(2.0, 3.0, true, false);</span>
+<span class="fc" id="L84">        assertTrue(b1.overlapsWith(b2));</span>
+<span class="fc" id="L85">        assertTrue(b2.overlapsWith(b1));</span>
+<span class="fc" id="L86">        assertFalse(b1.overlapsWith(b3));</span>
+<span class="fc" id="L87">        assertFalse(b3.overlapsWith(b1));</span>
+<span class="fc" id="L88">        assertTrue(b1.overlapsWith(b4));</span>
+<span class="fc" id="L89">        assertTrue(b4.overlapsWith(b1));</span>
+<span class="fc" id="L90">        assertFalse(b1.overlapsWith(b5));</span>
+<span class="fc" id="L91">        assertFalse(b5.overlapsWith(b1));</span>
+<span class="fc" id="L92">        assertTrue(b1.overlapsWith(b6));</span>
+<span class="fc" id="L93">        assertTrue(b6.overlapsWith(b1));</span>
+<span class="fc" id="L94">    }</span>
+
+    /**
+     * Ensure that the equals() method can distinguish all fields.
+     */
+    @Test
+    public void testEquals() {
+<span class="fc" id="L101">        SimpleHistogramBin b1 = new SimpleHistogramBin(1.0, 2.0);</span>
+<span class="fc" id="L102">        SimpleHistogramBin b2 = new SimpleHistogramBin(1.0, 2.0);</span>
+<span class="fc" id="L103">        assertEquals(b1, b2);</span>
+<span class="fc" id="L104">        assertEquals(b2, b1);</span>
+
+<span class="fc" id="L106">        b1 = new SimpleHistogramBin(1.1, 2.0, true, true);</span>
+<span class="fc" id="L107">        assertNotEquals(b1, b2);</span>
+<span class="fc" id="L108">        b2 = new SimpleHistogramBin(1.1, 2.0, true, true);</span>
+<span class="fc" id="L109">        assertEquals(b1, b2);</span>
+
+<span class="fc" id="L111">        b1 = new SimpleHistogramBin(1.1, 2.2, true, true);</span>
+<span class="fc" id="L112">        assertNotEquals(b1, b2);</span>
+<span class="fc" id="L113">        b2 = new SimpleHistogramBin(1.1, 2.2, true, true);</span>
+<span class="fc" id="L114">        assertEquals(b1, b2);</span>
+
+<span class="fc" id="L116">        b1 = new SimpleHistogramBin(1.1, 2.2, false, true);</span>
+<span class="fc" id="L117">        assertNotEquals(b1, b2);</span>
+<span class="fc" id="L118">        b2 = new SimpleHistogramBin(1.1, 2.2, false, true);</span>
+<span class="fc" id="L119">        assertEquals(b1, b2);</span>
+
+<span class="fc" id="L121">        b1 = new SimpleHistogramBin(1.1, 2.2, false, false);</span>
+<span class="fc" id="L122">        assertNotEquals(b1, b2);</span>
+<span class="fc" id="L123">        b2 = new SimpleHistogramBin(1.1, 2.2, false, false);</span>
+<span class="fc" id="L124">        assertEquals(b1, b2);</span>
+
+<span class="fc" id="L126">        b1.setItemCount(99);</span>
+<span class="fc" id="L127">        assertNotEquals(b1, b2);</span>
+<span class="fc" id="L128">        b2.setItemCount(99);</span>
+<span class="fc" id="L129">        assertEquals(b1, b2);</span>
+<span class="fc" id="L130">    }</span>
+
+    /**
+     * Some checks for the clone() method.
+     */
+    @Test
+    public void testCloning() throws CloneNotSupportedException {
+<span class="fc" id="L137">        SimpleHistogramBin b1 = new SimpleHistogramBin(1.1, 2.2, false, true);</span>
+<span class="fc" id="L138">        b1.setItemCount(99);</span>
+<span class="fc" id="L139">        SimpleHistogramBin b2 = CloneUtils.clone(b1);</span>
+<span class="fc" id="L140">        assertNotSame(b1, b2);</span>
+<span class="fc" id="L141">        assertSame(b1.getClass(), b2.getClass());</span>
+<span class="fc" id="L142">        assertEquals(b1, b2);</span>
+
+        // check that clone is independent of the original
+<span class="fc" id="L145">        b2.setItemCount(111);</span>
+<span class="fc" id="L146">        assertNotEquals(b1, b2);</span>
+<span class="fc" id="L147">    }</span>
+
+    /**
+     * Serialize an instance, restore it, and check for equality.
+     */
+    @Test
+    public void testSerialization() {
+<span class="fc" id="L154">        SimpleHistogramBin b1 = new SimpleHistogramBin(1.0, 2.0, false, true);</span>
+<span class="fc" id="L155">        b1.setItemCount(123);</span>
+<span class="fc" id="L156">        SimpleHistogramBin b2 = TestUtils.serialised(b1);</span>
+<span class="fc" id="L157">        assertEquals(b1, b2);</span>
+<span class="fc" id="L158">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span>jfreechart (Mar 14, 2025 5:50:17 p.m.)</div></body></html>

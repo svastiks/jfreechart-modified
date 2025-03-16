@@ -1,0 +1,388 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>RendererUtilsTest.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">jfreechart (Mar 14, 2025 5:50:17 p.m.)</a> &gt; <a href="../../index.html" class="el_group">jfreechart</a> &gt; <a href="../index.html" class="el_bundle">src/test/java</a> &gt; <a href="index.source.html" class="el_package">org.jfree.chart.renderer</a> &gt; <span class="el_source">RendererUtilsTest.java</span></div><h1>RendererUtilsTest.java</h1><pre class="source lang-java linenums">/* ===========================================================
+ * JFreeChart : a free chart library for the Java(tm) platform
+ * ===========================================================
+ *
+ * (C) Copyright 2000-2022, by David Gilbert and Contributors.
+ *
+ * Project Info:  http://www.jfree.org/jfreechart/index.html
+ *
+ * This library is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 2.1 of the License, or
+ * (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public
+ * License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301,
+ * USA.
+ *
+ * [Oracle and Java are registered trademarks of Oracle and/or its affiliates. 
+ * Other names may be trademarks of their respective owners.]
+ *
+ * ----------------------
+ * RendererUtilsTest.java
+ * ----------------------
+ * (C) Copyright 2007-2022, by David Gilbert and Contributors.
+ *
+ * Original Author:  David Gilbert;
+ * Contributor(s):   -;
+ *
+ */
+
+package org.jfree.chart.renderer;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.jfree.data.DomainOrder;
+import org.jfree.data.xy.DefaultXYDataset;
+import org.jfree.data.xy.XYSeries;
+import org.jfree.data.xy.XYSeriesCollection;
+import org.junit.jupiter.api.Test;
+
+/**
+ * Some checks for the {@link RendererUtils} class.
+ */
+<span class="fc" id="L50">public class RendererUtilsTest {</span>
+
+    /**
+     * Some checks for the findLiveItemsLowerBound() method when the dataset is
+     * unordered.
+     */
+    @Test
+    public void testFindLiveItemsLowerBound_Unordered() {
+<span class="fc" id="L58">        DefaultXYDataset&lt;String&gt; d = new DefaultXYDataset&lt;&gt;();</span>
+
+        // check a series with no items
+<span class="fc" id="L61">        d.addSeries(&quot;S1&quot;, new double[][] {{}, {}});</span>
+<span class="fc" id="L62">        assertEquals(0, RendererUtils.findLiveItemsLowerBound(d, 0, 10.0,</span>
+                11.0));
+
+        // check a series with one item
+<span class="fc" id="L66">        d.addSeries(&quot;S2&quot;, new double[][] {{0.0}, {9.9}});</span>
+<span class="fc" id="L67">        assertEquals(0, RendererUtils.findLiveItemsLowerBound(d, 1, 0.0,</span>
+                1.1));
+<span class="fc" id="L69">        assertEquals(0, RendererUtils.findLiveItemsLowerBound(d, 1, 2.0,</span>
+                3.3));
+
+        // check a series with two items
+<span class="fc" id="L73">        d.addSeries(&quot;S3&quot;, new double[][] {{0.0, 1.0}, {9.9, 9.9}});</span>
+<span class="fc" id="L74">        assertEquals(0, RendererUtils.findLiveItemsLowerBound(d, 2, 0.0, 1.1));</span>
+<span class="fc" id="L75">        assertEquals(1, RendererUtils.findLiveItemsLowerBound(d, 2, 1.0, 2.2));</span>
+<span class="fc" id="L76">        assertEquals(1, RendererUtils.findLiveItemsLowerBound(d, 2, 2.0, 3.3));</span>
+<span class="fc" id="L77">        assertEquals(1, RendererUtils.findLiveItemsLowerBound(d, 2, 3.0, 4.4));</span>
+
+        // check a series with three items
+<span class="fc" id="L80">        d.addSeries(&quot;S4&quot;, new double[][] {{1.0, 2.0, 1.5}, {9.9, 9.9, 9.9}});</span>
+<span class="fc" id="L81">        assertEquals(0, RendererUtils.findLiveItemsLowerBound(d, 3, 0.0, 1.1));</span>
+<span class="fc" id="L82">        assertEquals(0, RendererUtils.findLiveItemsLowerBound(d, 3, 1.0, 2.2));</span>
+<span class="fc" id="L83">        assertEquals(1, RendererUtils.findLiveItemsLowerBound(d, 3, 2.0, 3.3));</span>
+<span class="fc" id="L84">        assertEquals(2, RendererUtils.findLiveItemsLowerBound(d, 3, 3.0, 4.4));</span>
+
+        // check a series with four items
+<span class="fc" id="L87">        d.addSeries(&quot;S5&quot;, new double[][] {{1.0, 2.0, 1.5, 1.8}, {9.9, 9.9,</span>
+                9.9, 9.9}});
+<span class="fc" id="L89">        assertEquals(0, RendererUtils.findLiveItemsLowerBound(d, 4, 0.0, 1.1));</span>
+<span class="fc" id="L90">        assertEquals(0, RendererUtils.findLiveItemsLowerBound(d, 4, 1.0, 2.2));</span>
+<span class="fc" id="L91">        assertEquals(1, RendererUtils.findLiveItemsLowerBound(d, 4, 2.0, 3.3));</span>
+<span class="fc" id="L92">        assertEquals(3, RendererUtils.findLiveItemsLowerBound(d, 4, 3.0, 4.4));</span>
+<span class="fc" id="L93">        assertEquals(3, RendererUtils.findLiveItemsLowerBound(d, 4, 4.0, 5.5));</span>
+<span class="fc" id="L94">    }</span>
+
+    /**
+     * Some checks for the findLiveItemsLowerBound() method when the dataset is
+     * ASCENDING.
+     */
+    @Test
+    public void testFindLiveItemsLowerBound_Ascending() {
+<span class="fc" id="L102">        var d = new DefaultXYDataset&lt;String&gt;() {</span>
+            @Override
+            public DomainOrder getDomainOrder() {
+                // we're doing this for testing only, and make sure that we
+                // only add data in ascending order by x-value
+<span class="fc" id="L107">                return DomainOrder.ASCENDING;</span>
+            }
+        };
+        // check a series with no items
+<span class="fc" id="L111">        d.addSeries(&quot;S1&quot;, new double[][] {{}, {}});</span>
+<span class="fc" id="L112">        assertEquals(0, RendererUtils.findLiveItemsLowerBound(d, 0, 10.0, 11.1));</span>
+
+        // check a series with one item
+<span class="fc" id="L115">        d.addSeries(&quot;S2&quot;, new double[][] {{1.0}, {9.9}});</span>
+<span class="fc" id="L116">        assertEquals(0, RendererUtils.findLiveItemsLowerBound(d, 1, 0.0, 1.1));</span>
+<span class="fc" id="L117">        assertEquals(0, RendererUtils.findLiveItemsLowerBound(d, 1, 2.0, 2.2));</span>
+
+        // check a series with two items
+<span class="fc" id="L120">        d.addSeries(&quot;S3&quot;, new double[][] {{1.0, 2.0}, {9.9, 9.9}});</span>
+<span class="fc" id="L121">        assertEquals(0, RendererUtils.findLiveItemsLowerBound(d, 2, 0.0, 1.1));</span>
+<span class="fc" id="L122">        assertEquals(0, RendererUtils.findLiveItemsLowerBound(d, 2, 1.0, 2.2));</span>
+<span class="fc" id="L123">        assertEquals(1, RendererUtils.findLiveItemsLowerBound(d, 2, 2.0, 3.3));</span>
+<span class="fc" id="L124">        assertEquals(1, RendererUtils.findLiveItemsLowerBound(d, 2, 3.0, 4.4));</span>
+
+        // check a series with three items
+<span class="fc" id="L127">        d.addSeries(&quot;S4&quot;, new double[][] {{1.0, 2.0, 3.0}, {9.9, 9.9, 9.9}});</span>
+<span class="fc" id="L128">        assertEquals(0, RendererUtils.findLiveItemsLowerBound(d, 3, 0.0, 1.1));</span>
+<span class="fc" id="L129">        assertEquals(0, RendererUtils.findLiveItemsLowerBound(d, 3, 1.0, 2.2));</span>
+<span class="fc" id="L130">        assertEquals(1, RendererUtils.findLiveItemsLowerBound(d, 3, 2.0, 3.3));</span>
+<span class="fc" id="L131">        assertEquals(2, RendererUtils.findLiveItemsLowerBound(d, 3, 3.0, 4.4));</span>
+
+        // check a series with four items
+<span class="fc" id="L134">        d.addSeries(&quot;S5&quot;, new double[][] {{1.0, 2.0, 3.0, 4.0}, {9.9, 9.9,</span>
+                9.9, 9.9}});
+<span class="fc" id="L136">        assertEquals(0, RendererUtils.findLiveItemsLowerBound(d, 4, 0.0, 1.1));</span>
+<span class="fc" id="L137">        assertEquals(0, RendererUtils.findLiveItemsLowerBound(d, 4, 1.0, 2.2));</span>
+<span class="fc" id="L138">        assertEquals(1, RendererUtils.findLiveItemsLowerBound(d, 4, 2.0, 3.3));</span>
+<span class="fc" id="L139">        assertEquals(2, RendererUtils.findLiveItemsLowerBound(d, 4, 3.0, 4.4));</span>
+<span class="fc" id="L140">        assertEquals(3, RendererUtils.findLiveItemsLowerBound(d, 4, 4.0, 5.5));</span>
+
+        // check a series with repeating items
+<span class="fc" id="L143">        d.addSeries(&quot;S5&quot;, new double[][] {{1.0, 2.0, 2.0, 2.0, 3.0}, {9.9, 9.9,</span>
+                9.9, 9.9, 9.9}});
+<span class="fc" id="L145">        assertEquals(0, RendererUtils.findLiveItemsLowerBound(d, 4, 0.0, 4.0));</span>
+<span class="fc" id="L146">        assertEquals(0, RendererUtils.findLiveItemsLowerBound(d, 4, 1.0, 4.0));</span>
+<span class="fc" id="L147">        assertEquals(1, RendererUtils.findLiveItemsLowerBound(d, 4, 2.0, 4.0));</span>
+<span class="fc" id="L148">        assertEquals(4, RendererUtils.findLiveItemsLowerBound(d, 4, 3.0, 4.0));</span>
+
+<span class="fc" id="L150">    }</span>
+
+    /**
+     * Some checks for the findLiveItemsLowerBound() method when the dataset is
+     * DESCENDING.
+     */
+    @Test
+    public void testFindLiveItemsLowerBound_Descending() {
+<span class="fc" id="L158">        var d = new DefaultXYDataset&lt;String&gt;() {</span>
+            @Override
+            public DomainOrder getDomainOrder() {
+                // we're doing this for testing only, and make sure that we
+                // only add data in descending order by x-value
+<span class="fc" id="L163">                return DomainOrder.DESCENDING;</span>
+            }
+        };
+        // check a series with no items
+<span class="fc" id="L167">        d.addSeries(&quot;S1&quot;, new double[][] {{}, {}});</span>
+<span class="fc" id="L168">        assertEquals(0, RendererUtils.findLiveItemsLowerBound(d, 0, 10.0, 11.0));</span>
+
+        // check a series with one item
+<span class="fc" id="L171">        d.addSeries(&quot;S2&quot;, new double[][] {{1.0}, {9.9}});</span>
+<span class="fc" id="L172">        assertEquals(0, RendererUtils.findLiveItemsLowerBound(d, 1, 0.0, 1.0));</span>
+<span class="fc" id="L173">        assertEquals(0, RendererUtils.findLiveItemsLowerBound(d, 1, 1.1, 2.0));</span>
+
+        // check a series with two items
+<span class="fc" id="L176">        d.addSeries(&quot;S3&quot;, new double[][] {{2.0, 1.0}, {9.9, 9.9}});</span>
+<span class="fc" id="L177">        assertEquals(1, RendererUtils.findLiveItemsLowerBound(d, 2, 0.1, 0.5));</span>
+<span class="fc" id="L178">        assertEquals(1, RendererUtils.findLiveItemsLowerBound(d, 2, 0.1, 1.0));</span>
+<span class="fc" id="L179">        assertEquals(0, RendererUtils.findLiveItemsLowerBound(d, 2, 1.1, 2.0));</span>
+<span class="fc" id="L180">        assertEquals(0, RendererUtils.findLiveItemsLowerBound(d, 2, 2.2, 3.0));</span>
+<span class="fc" id="L181">        assertEquals(0, RendererUtils.findLiveItemsLowerBound(d, 2, 3.3, 4.0));</span>
+
+        // check a series with three items
+<span class="fc" id="L184">        d.addSeries(&quot;S4&quot;, new double[][] {{3.0, 2.0, 1.0}, {9.9, 9.9, 9.9}});</span>
+<span class="fc" id="L185">        assertEquals(2, RendererUtils.findLiveItemsLowerBound(d, 3, 0.0, 1.0));</span>
+<span class="fc" id="L186">        assertEquals(1, RendererUtils.findLiveItemsLowerBound(d, 3, 1.0, 2.0));</span>
+<span class="fc" id="L187">        assertEquals(0, RendererUtils.findLiveItemsLowerBound(d, 3, 2.0, 3.0));</span>
+<span class="fc" id="L188">        assertEquals(0, RendererUtils.findLiveItemsLowerBound(d, 3, 3.0, 4.0));</span>
+
+        // check a series with four items
+<span class="fc" id="L191">        d.addSeries(&quot;S5&quot;, new double[][] {{4.0, 3.0, 2.0, 1.0}, {9.9, 9.9,</span>
+                9.9, 9.9}});
+<span class="fc" id="L193">        assertEquals(3, RendererUtils.findLiveItemsLowerBound(d, 4, 0.1, 0.5));</span>
+<span class="fc" id="L194">        assertEquals(3, RendererUtils.findLiveItemsLowerBound(d, 4, 0.1, 1.0));</span>
+<span class="fc" id="L195">        assertEquals(2, RendererUtils.findLiveItemsLowerBound(d, 4, 1.1, 2.0));</span>
+<span class="fc" id="L196">        assertEquals(1, RendererUtils.findLiveItemsLowerBound(d, 4, 2.2, 3.0));</span>
+<span class="fc" id="L197">        assertEquals(0, RendererUtils.findLiveItemsLowerBound(d, 4, 3.3, 4.0));</span>
+<span class="fc" id="L198">        assertEquals(0, RendererUtils.findLiveItemsLowerBound(d, 4, 4.4, 5.0));</span>
+
+        // check a series with repeating items
+<span class="fc" id="L201">        d.addSeries(&quot;S6&quot;, new double[][] {{3.0, 2.0, 2.0, 2.0, 1.0}, {9.9, 9.9,</span>
+                9.9, 9.9, 9.9}});
+<span class="fc" id="L203">        assertEquals(0, RendererUtils.findLiveItemsLowerBound(d, 5, 0.0, 3.0));</span>
+<span class="fc" id="L204">        assertEquals(1, RendererUtils.findLiveItemsLowerBound(d, 5, 0.0, 2.0));</span>
+<span class="fc" id="L205">        assertEquals(4, RendererUtils.findLiveItemsLowerBound(d, 5, 0.0, 1.0));</span>
+<span class="fc" id="L206">        assertEquals(4, RendererUtils.findLiveItemsLowerBound(d, 5, 0.0, 0.5));</span>
+<span class="fc" id="L207">    }</span>
+
+    /**
+     * Some checks for the findLiveItemsUpperBound() method when the dataset is
+     * unordered.
+     */
+    @Test
+    public void testFindLiveItemsUpperBound_Unordered() {
+<span class="fc" id="L215">        DefaultXYDataset&lt;String&gt; d = new DefaultXYDataset&lt;&gt;();</span>
+
+        // check a series with no items
+<span class="fc" id="L218">        d.addSeries(&quot;S1&quot;, new double[][] {{}, {}});</span>
+<span class="fc" id="L219">        assertEquals(0, RendererUtils.findLiveItemsUpperBound(d, 0, 10.0, 11.0));</span>
+
+        // check a series with one item
+<span class="fc" id="L222">        d.addSeries(&quot;S2&quot;, new double[][] {{1.0}, {9.9}});</span>
+<span class="fc" id="L223">        assertEquals(0, RendererUtils.findLiveItemsUpperBound(d, 1, 0.0, 1.1));</span>
+<span class="fc" id="L224">        assertEquals(0, RendererUtils.findLiveItemsUpperBound(d, 1, 2.0, 3.3));</span>
+
+        // check a series with two items
+<span class="fc" id="L227">        d.addSeries(&quot;S3&quot;, new double[][] {{1.0, 2.0}, {9.9, 9.9}});</span>
+<span class="fc" id="L228">        assertEquals(0, RendererUtils.findLiveItemsUpperBound(d, 2, 0.0, 1.1));</span>
+<span class="fc" id="L229">        assertEquals(1, RendererUtils.findLiveItemsUpperBound(d, 2, 1.0, 2.2));</span>
+<span class="fc" id="L230">        assertEquals(1, RendererUtils.findLiveItemsUpperBound(d, 2, 2.0, 3.3));</span>
+<span class="fc" id="L231">        assertEquals(1, RendererUtils.findLiveItemsUpperBound(d, 2, 3.0, 4.4));</span>
+
+        // check a series with three items
+<span class="fc" id="L234">        d.addSeries(&quot;S4&quot;, new double[][] {{1.0, 2.0, 1.5}, {9.9, 9.9, 9.9}});</span>
+<span class="fc" id="L235">        assertEquals(0, RendererUtils.findLiveItemsUpperBound(d, 3, 0.0, 1.1));</span>
+<span class="fc" id="L236">        assertEquals(2, RendererUtils.findLiveItemsUpperBound(d, 3, 1.0, 2.2));</span>
+<span class="fc" id="L237">        assertEquals(2, RendererUtils.findLiveItemsUpperBound(d, 3, 2.0, 3.3));</span>
+<span class="fc" id="L238">        assertEquals(2, RendererUtils.findLiveItemsUpperBound(d, 3, 3.0, 4.4));</span>
+
+        // check a series with four items
+<span class="fc" id="L241">        d.addSeries(&quot;S5&quot;, new double[][] {{1.0, 2.0, 1.5, 1.8}, {9.9, 9.9,</span>
+                9.9, 9.9}});
+<span class="fc" id="L243">        assertEquals(0, RendererUtils.findLiveItemsUpperBound(d, 4, 0.0, 1.1));</span>
+<span class="fc" id="L244">        assertEquals(3, RendererUtils.findLiveItemsUpperBound(d, 4, 1.0, 2.2));</span>
+<span class="fc" id="L245">        assertEquals(3, RendererUtils.findLiveItemsUpperBound(d, 4, 2.0, 3.3));</span>
+<span class="fc" id="L246">        assertEquals(3, RendererUtils.findLiveItemsUpperBound(d, 4, 3.0, 4.4));</span>
+<span class="fc" id="L247">        assertEquals(3, RendererUtils.findLiveItemsUpperBound(d, 4, 4.0, 5.5));</span>
+<span class="fc" id="L248">    }</span>
+
+    /**
+     * Some checks for the findLiveItemsUpperBound() method when the dataset is
+     * ASCENDING.
+     */
+    @Test
+    public void testFindLiveItemsUpperBound_Ascending() {
+<span class="fc" id="L256">        var d = new DefaultXYDataset&lt;String&gt;() {</span>
+            @Override
+            public DomainOrder getDomainOrder() {
+                // we're doing this for testing only, and make sure that we
+                // only add data in ascending order by x-value
+<span class="fc" id="L261">                return DomainOrder.ASCENDING;</span>
+            }
+        };
+        // check a series with no items
+<span class="fc" id="L265">        d.addSeries(&quot;S1&quot;, new double[][] {{}, {}});</span>
+<span class="fc" id="L266">        assertEquals(0, RendererUtils.findLiveItemsUpperBound(d, 0, 10.0, 11.1));</span>
+
+        // check a series with one item
+<span class="fc" id="L269">        d.addSeries(&quot;S2&quot;, new double[][] {{1.0}, {9.9}});</span>
+<span class="fc" id="L270">        assertEquals(0, RendererUtils.findLiveItemsUpperBound(d, 1, 0.0, 1.1));</span>
+<span class="fc" id="L271">        assertEquals(0, RendererUtils.findLiveItemsUpperBound(d, 1, 2.0, 2.2));</span>
+
+        // check a series with two items
+<span class="fc" id="L274">        d.addSeries(&quot;S3&quot;, new double[][] {{1.0, 2.0}, {9.9, 9.9}});</span>
+<span class="fc" id="L275">        assertEquals(0, RendererUtils.findLiveItemsUpperBound(d, 2, 0.0, 1.0));</span>
+<span class="fc" id="L276">        assertEquals(1, RendererUtils.findLiveItemsUpperBound(d, 2, 1.0, 2.2));</span>
+<span class="fc" id="L277">        assertEquals(1, RendererUtils.findLiveItemsUpperBound(d, 2, 2.0, 3.3));</span>
+<span class="fc" id="L278">        assertEquals(1, RendererUtils.findLiveItemsUpperBound(d, 2, 3.0, 4.4));</span>
+
+        // check a series with three items
+<span class="fc" id="L281">        d.addSeries(&quot;S4&quot;, new double[][] {{1.0, 2.0, 3.0}, {9.9, 9.9, 9.9}});</span>
+<span class="fc" id="L282">        assertEquals(0, RendererUtils.findLiveItemsUpperBound(d, 3, 0.0, 1.1));</span>
+<span class="fc" id="L283">        assertEquals(1, RendererUtils.findLiveItemsUpperBound(d, 3, 1.0, 2.2));</span>
+<span class="fc" id="L284">        assertEquals(2, RendererUtils.findLiveItemsUpperBound(d, 3, 2.0, 3.3));</span>
+<span class="fc" id="L285">        assertEquals(2, RendererUtils.findLiveItemsUpperBound(d, 3, 3.0, 4.4));</span>
+
+        // check a series with four items
+<span class="fc" id="L288">        d.addSeries(&quot;S5&quot;, new double[][] {{1.0, 2.0, 3.0, 4.0}, {9.9, 9.9,</span>
+                9.9, 9.9}});
+<span class="fc" id="L290">        assertEquals(0, RendererUtils.findLiveItemsUpperBound(d, 4, 0.0, 1.1));</span>
+<span class="fc" id="L291">        assertEquals(1, RendererUtils.findLiveItemsUpperBound(d, 4, 1.0, 2.2));</span>
+<span class="fc" id="L292">        assertEquals(2, RendererUtils.findLiveItemsUpperBound(d, 4, 2.0, 3.3));</span>
+<span class="fc" id="L293">        assertEquals(3, RendererUtils.findLiveItemsUpperBound(d, 4, 3.0, 4.4));</span>
+<span class="fc" id="L294">        assertEquals(3, RendererUtils.findLiveItemsUpperBound(d, 4, 4.0, 5.5));</span>
+
+        // check a series with repeating items
+<span class="fc" id="L297">        d.addSeries(&quot;S5&quot;, new double[][] {{1.0, 2.0, 2.0, 2.0, 3.0}, {9.9, 9.9,</span>
+                9.9, 9.9, 9.9}});
+<span class="fc" id="L299">        assertEquals(0, RendererUtils.findLiveItemsUpperBound(d, 4, 0.0, 1.0));</span>
+<span class="fc" id="L300">        assertEquals(3, RendererUtils.findLiveItemsUpperBound(d, 4, 0.0, 2.0));</span>
+<span class="fc" id="L301">        assertEquals(4, RendererUtils.findLiveItemsUpperBound(d, 4, 0.0, 3.0));</span>
+<span class="fc" id="L302">        assertEquals(4, RendererUtils.findLiveItemsUpperBound(d, 4, 0.0, 4.0));</span>
+
+<span class="fc" id="L304">    }</span>
+
+    /**
+     * Some checks for the findLiveItemsUpperBound() method when the dataset is
+     * DESCENDING.
+     */
+    @Test
+    public void testFindLiveItemsUpperBound_Descending() {
+<span class="fc" id="L312">        var d = new DefaultXYDataset&lt;String&gt;() {</span>
+            @Override
+            public DomainOrder getDomainOrder() {
+                // we're doing this for testing only, and make sure that we
+                // only add data in descending order by x-value
+<span class="fc" id="L317">                return DomainOrder.DESCENDING;</span>
+            }
+        };
+        // check a series with no items
+<span class="fc" id="L321">        d.addSeries(&quot;S1&quot;, new double[][] {{}, {}});</span>
+<span class="fc" id="L322">        assertEquals(0, RendererUtils.findLiveItemsUpperBound(d, 0, 10.0, 11.0));</span>
+
+        // check a series with one item
+<span class="fc" id="L325">        d.addSeries(&quot;S2&quot;, new double[][] {{1.0}, {9.9}});</span>
+<span class="fc" id="L326">        assertEquals(0, RendererUtils.findLiveItemsUpperBound(d, 1, 0.0, 1.0));</span>
+<span class="fc" id="L327">        assertEquals(0, RendererUtils.findLiveItemsUpperBound(d, 1, 1.1, 2.0));</span>
+
+        // check a series with two items
+<span class="fc" id="L330">        d.addSeries(&quot;S3&quot;, new double[][] {{2.0, 1.0}, {9.9, 9.9}});</span>
+<span class="fc" id="L331">        assertEquals(1, RendererUtils.findLiveItemsUpperBound(d, 2, 0.1, 0.5));</span>
+<span class="fc" id="L332">        assertEquals(1, RendererUtils.findLiveItemsUpperBound(d, 2, 0.1, 1.0));</span>
+<span class="fc" id="L333">        assertEquals(0, RendererUtils.findLiveItemsUpperBound(d, 2, 1.1, 2.0));</span>
+<span class="fc" id="L334">        assertEquals(0, RendererUtils.findLiveItemsUpperBound(d, 2, 2.2, 3.0));</span>
+<span class="fc" id="L335">        assertEquals(0, RendererUtils.findLiveItemsUpperBound(d, 2, 3.3, 4.0));</span>
+
+        // check a series with three items
+<span class="fc" id="L338">        d.addSeries(&quot;S4&quot;, new double[][] {{3.0, 2.0, 1.0}, {9.9, 9.9, 9.9}});</span>
+<span class="fc" id="L339">        assertEquals(2, RendererUtils.findLiveItemsUpperBound(d, 3, 0.0, 1.0));</span>
+<span class="fc" id="L340">        assertEquals(2, RendererUtils.findLiveItemsUpperBound(d, 3, 1.0, 2.0));</span>
+<span class="fc" id="L341">        assertEquals(1, RendererUtils.findLiveItemsUpperBound(d, 3, 2.0, 3.0));</span>
+<span class="fc" id="L342">        assertEquals(0, RendererUtils.findLiveItemsUpperBound(d, 3, 3.0, 4.0));</span>
+
+        // check a series with four items
+<span class="fc" id="L345">        d.addSeries(&quot;S5&quot;, new double[][] {{4.0, 3.0, 2.0, 1.0}, {9.9, 9.9,</span>
+                9.9, 9.9}});
+<span class="fc" id="L347">        assertEquals(3, RendererUtils.findLiveItemsUpperBound(d, 4, 0.1, 0.5));</span>
+<span class="fc" id="L348">        assertEquals(3, RendererUtils.findLiveItemsUpperBound(d, 4, 0.1, 1.0));</span>
+<span class="fc" id="L349">        assertEquals(2, RendererUtils.findLiveItemsUpperBound(d, 4, 1.1, 2.0));</span>
+<span class="fc" id="L350">        assertEquals(1, RendererUtils.findLiveItemsUpperBound(d, 4, 2.2, 3.0));</span>
+<span class="fc" id="L351">        assertEquals(0, RendererUtils.findLiveItemsUpperBound(d, 4, 3.3, 4.0));</span>
+<span class="fc" id="L352">        assertEquals(0, RendererUtils.findLiveItemsUpperBound(d, 4, 4.4, 5.0));</span>
+
+        // check a series with repeating items
+<span class="fc" id="L355">        d.addSeries(&quot;S6&quot;, new double[][] {{3.0, 2.0, 2.0, 2.0, 1.0}, {9.9, 9.9,</span>
+                9.9, 9.9, 9.9}});
+<span class="fc" id="L357">        assertEquals(4, RendererUtils.findLiveItemsUpperBound(d, 5, 0.0, 5.0));</span>
+<span class="fc" id="L358">        assertEquals(4, RendererUtils.findLiveItemsUpperBound(d, 5, 1.0, 5.0));</span>
+<span class="fc" id="L359">        assertEquals(3, RendererUtils.findLiveItemsUpperBound(d, 5, 2.0, 5.0));</span>
+<span class="fc" id="L360">        assertEquals(0, RendererUtils.findLiveItemsUpperBound(d, 5, 3.0, 5.0));</span>
+<span class="fc" id="L361">    }</span>
+
+    /**
+     * Checks the bounds calculation for a series where the x-ordering is not
+     * known.  See bug 3561093.
+     */
+    @Test
+    public void test3561093() {
+<span class="fc" id="L369">        XYSeries&lt;String&gt; s = new XYSeries&lt;&gt;(&quot;S1&quot;, false);</span>
+<span class="fc" id="L370">        s.add(0.0, 0.0);</span>
+<span class="fc" id="L371">        s.add(21.0, 0.0);</span>
+<span class="fc" id="L372">        s.add(2.0, 0.0);</span>
+<span class="fc" id="L373">        s.add(23.0, 0.0);</span>
+<span class="fc" id="L374">        XYSeriesCollection&lt;String&gt; dataset = new XYSeriesCollection&lt;&gt;();</span>
+<span class="fc" id="L375">        dataset.addSeries(s);</span>
+        
+<span class="fc" id="L377">        assertEquals(1, RendererUtils.findLiveItemsLowerBound(dataset, 0, </span>
+                10.0, 20.0));
+<span class="fc" id="L379">        assertEquals(2, RendererUtils.findLiveItemsUpperBound(dataset, 0, </span>
+                10.0, 20.0));
+        
+<span class="fc" id="L382">        int[] bounds = RendererUtils.findLiveItems(dataset, 0, 10.0, 20.0);</span>
+<span class="fc" id="L383">        assertEquals(1, bounds[0]);</span>
+<span class="fc" id="L384">        assertEquals(2, bounds[1]);</span>
+<span class="fc" id="L385">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span>jfreechart (Mar 14, 2025 5:50:17 p.m.)</div></body></html>

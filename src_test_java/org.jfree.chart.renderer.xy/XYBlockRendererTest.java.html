@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>XYBlockRendererTest.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">jfreechart (Mar 14, 2025 5:50:17 p.m.)</a> &gt; <a href="../../index.html" class="el_group">jfreechart</a> &gt; <a href="../index.html" class="el_bundle">src/test/java</a> &gt; <a href="index.source.html" class="el_package">org.jfree.chart.renderer.xy</a> &gt; <span class="el_source">XYBlockRendererTest.java</span></div><h1>XYBlockRendererTest.java</h1><pre class="source lang-java linenums">/* ===========================================================
+ * JFreeChart : a free chart library for the Java(tm) platform
+ * ===========================================================
+ *
+ * (C) Copyright 2000-2022, by David Gilbert and Contributors.
+ *
+ * Project Info:  http://www.jfree.org/jfreechart/index.html
+ *
+ * This library is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 2.1 of the License, or
+ * (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public
+ * License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301,
+ * USA.
+ *
+ * [Oracle and Java are registered trademarks of Oracle and/or its affiliates. 
+ * Other names may be trademarks of their respective owners.]
+ *
+ * ------------------------
+ * XYBlockRendererTest.java
+ * ------------------------
+ * (C) Copyright 2006-2022, by David Gilbert and Contributors.
+ *
+ * Original Author:  David Gilbert;
+ * Contributor(s):   -;
+ *
+ */
+
+package org.jfree.chart.renderer.xy;
+
+import java.awt.Color;
+
+import org.jfree.chart.TestUtils;
+
+import org.jfree.chart.renderer.GrayPaintScale;
+import org.jfree.chart.renderer.LookupPaintScale;
+import org.jfree.chart.internal.CloneUtils;
+import org.jfree.chart.api.PublicCloneable;
+import org.jfree.data.Range;
+import org.jfree.data.xy.DefaultXYZDataset;
+import org.jfree.data.xy.XYSeriesCollection;
+import org.jfree.data.xy.XYSeries;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+/**
+ * Tests for the {@link XYBlockRenderer} class.
+ */
+<span class="fc" id="L58">public class XYBlockRendererTest {</span>
+
+    private static final double EPSILON = 0.0000000001;
+
+    /**
+     * Test that the equals() method distinguishes all fields.
+     */
+    @Test
+    public void testEquals() {
+
+        // default instances
+<span class="fc" id="L69">        XYBlockRenderer r1 = new XYBlockRenderer();</span>
+<span class="fc" id="L70">        XYBlockRenderer r2 = new XYBlockRenderer();</span>
+<span class="fc" id="L71">        assertEquals(r1, r2);</span>
+<span class="fc" id="L72">        assertEquals(r2, r1);</span>
+
+        // blockHeight
+<span class="fc" id="L75">        r1.setBlockHeight(2.0);</span>
+<span class="fc" id="L76">        assertNotEquals(r1, r2);</span>
+<span class="fc" id="L77">        r2.setBlockHeight(2.0);</span>
+<span class="fc" id="L78">        assertEquals(r1, r2);</span>
+
+        // blockWidth
+<span class="fc" id="L81">        r1.setBlockWidth(2.0);</span>
+<span class="fc" id="L82">        assertNotEquals(r1, r2);</span>
+<span class="fc" id="L83">        r2.setBlockWidth(2.0);</span>
+<span class="fc" id="L84">        assertEquals(r1, r2);</span>
+
+        // paintScale
+<span class="fc" id="L87">        r1.setPaintScale(new GrayPaintScale(0.0, 1.0));</span>
+<span class="fc" id="L88">        assertNotEquals(r1, r2);</span>
+<span class="fc" id="L89">        r2.setPaintScale(new GrayPaintScale(0.0, 1.0));</span>
+<span class="fc" id="L90">        assertEquals(r1, r2);</span>
+
+<span class="fc" id="L92">    }</span>
+
+    /**
+     * Two objects that are equal are required to return the same hashCode.
+     */
+    @Test
+    public void testHashcode() {
+<span class="fc" id="L99">        XYBlockRenderer r1 = new XYBlockRenderer();</span>
+<span class="fc" id="L100">        XYBlockRenderer r2 = new XYBlockRenderer();</span>
+<span class="fc" id="L101">        assertEquals(r1, r2);</span>
+<span class="fc" id="L102">        int h1 = r1.hashCode();</span>
+<span class="fc" id="L103">        int h2 = r2.hashCode();</span>
+<span class="fc" id="L104">        assertEquals(h1, h2);</span>
+<span class="fc" id="L105">    }</span>
+
+    /**
+     * Confirm that cloning works.
+     * 
+     * @throws java.lang.CloneNotSupportedException
+     */
+    @Test
+    public void testCloning() throws CloneNotSupportedException {
+<span class="fc" id="L114">        XYBlockRenderer r1 = new XYBlockRenderer();</span>
+<span class="fc" id="L115">        LookupPaintScale scale1 = new LookupPaintScale();</span>
+<span class="fc" id="L116">        r1.setPaintScale(scale1);</span>
+<span class="fc" id="L117">        XYBlockRenderer r2 = CloneUtils.clone(r1);</span>
+<span class="fc" id="L118">        assertNotSame(r1, r2);</span>
+<span class="fc" id="L119">        assertSame(r1.getClass(), r2.getClass());</span>
+<span class="fc" id="L120">        assertEquals(r1, r2);</span>
+
+        // check independence
+<span class="fc" id="L123">        scale1.add(0.5, Color.RED);</span>
+<span class="fc" id="L124">        assertNotEquals(r1, r2);</span>
+<span class="fc" id="L125">        LookupPaintScale scale2 = (LookupPaintScale) r2.getPaintScale();</span>
+<span class="fc" id="L126">        scale2.add(0.5, Color.RED);</span>
+<span class="fc" id="L127">        assertEquals(r1, r2);</span>
+<span class="fc" id="L128">    }</span>
+
+    /**
+     * Verify that this class implements {@link PublicCloneable}.
+     */
+    @Test
+    public void testPublicCloneable() {
+<span class="fc" id="L135">        XYBlockRenderer r1 = new XYBlockRenderer();</span>
+<span class="fc" id="L136">        assertTrue(r1 instanceof PublicCloneable);</span>
+<span class="fc" id="L137">    }</span>
+
+    /**
+     * Serialize an instance, restore it, and check for equality.
+     */
+    @Test
+    public void testSerialization() {
+<span class="fc" id="L144">        XYBlockRenderer r1 = new XYBlockRenderer();</span>
+<span class="fc" id="L145">        XYBlockRenderer r2 = TestUtils.serialised(r1);</span>
+<span class="fc" id="L146">        assertEquals(r1, r2);</span>
+<span class="fc" id="L147">    }</span>
+
+    /**
+     * A simple test for bug 1766646.
+     */
+    @Test
+    public void testBug1766646A() {
+<span class="fc" id="L154">        XYBlockRenderer r = new XYBlockRenderer();</span>
+<span class="fc" id="L155">        Range range = r.findDomainBounds(null);</span>
+<span class="fc" id="L156">        assertNull(range);</span>
+<span class="fc" id="L157">        DefaultXYZDataset&lt;String&gt; emptyDataset = new DefaultXYZDataset&lt;&gt;();</span>
+<span class="fc" id="L158">        range = r.findDomainBounds(emptyDataset);</span>
+<span class="fc" id="L159">        assertNull(range);</span>
+<span class="fc" id="L160">    }</span>
+
+    /**
+     * A simple test for bug 1766646.
+     */
+    @Test
+    public void testBug1766646B() {
+<span class="fc" id="L167">        XYBlockRenderer r = new XYBlockRenderer();</span>
+<span class="fc" id="L168">        Range range = r.findRangeBounds(null);</span>
+<span class="fc" id="L169">        assertNull(range);</span>
+<span class="fc" id="L170">        DefaultXYZDataset&lt;String&gt; emptyDataset = new DefaultXYZDataset&lt;&gt;();</span>
+<span class="fc" id="L171">        range = r.findRangeBounds(emptyDataset);</span>
+<span class="fc" id="L172">        assertNull(range);</span>
+<span class="fc" id="L173">    }</span>
+
+    /**
+     * Some tests for the findRangeBounds() method.
+     */
+    @Test
+    public void testFindRangeBounds() {
+<span class="fc" id="L180">        XYBlockRenderer renderer = new XYBlockRenderer();</span>
+<span class="fc" id="L181">        assertNull(renderer.findRangeBounds(null));</span>
+
+<span class="fc" id="L183">        XYSeriesCollection&lt;String&gt; dataset = new XYSeriesCollection&lt;&gt;();</span>
+<span class="fc" id="L184">        XYSeries&lt;String&gt; series = new XYSeries&lt;&gt;(&quot;S1&quot;);</span>
+<span class="fc" id="L185">        series.add(1.0, null);</span>
+<span class="fc" id="L186">        dataset.addSeries(series);</span>
+<span class="fc" id="L187">        Range r = renderer.findRangeBounds(dataset);</span>
+<span class="fc" id="L188">        assertNull(r);</span>
+<span class="fc" id="L189">    }</span>
+    
+    /**
+     * Some tests for the findDomainBounds() method.
+     */
+    @Test
+    public void testFindDomainBounds() {
+<span class="fc" id="L196">        XYBlockRenderer renderer = new XYBlockRenderer();</span>
+<span class="fc" id="L197">        assertNull(renderer.findRangeBounds(null));</span>
+
+<span class="fc" id="L199">        XYSeriesCollection&lt;String&gt; dataset = new XYSeriesCollection&lt;&gt;();</span>
+<span class="fc" id="L200">        XYSeries&lt;String&gt; series = new XYSeries&lt;&gt;(&quot;S1&quot;);</span>
+<span class="fc" id="L201">        series.add(1.0, null);</span>
+<span class="fc" id="L202">        dataset.addSeries(series);</span>
+<span class="fc" id="L203">        Range r = renderer.findDomainBounds(dataset);</span>
+<span class="fc" id="L204">        assertEquals(0.5, r.getLowerBound(), EPSILON);</span>
+<span class="fc" id="L205">        assertEquals(1.5, r.getUpperBound(), EPSILON);</span>
+
+<span class="fc" id="L207">        dataset.removeAllSeries();</span>
+<span class="fc" id="L208">        r = renderer.findDomainBounds(dataset);</span>
+<span class="fc" id="L209">        assertNull(r);</span>
+<span class="fc" id="L210">    }    </span>
+           
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span>jfreechart (Mar 14, 2025 5:50:17 p.m.)</div></body></html>

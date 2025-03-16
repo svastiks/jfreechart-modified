@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>MeterPlotTest.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">jfreechart (Mar 14, 2025 5:50:17 p.m.)</a> &gt; <a href="../../index.html" class="el_group">jfreechart</a> &gt; <a href="../index.html" class="el_bundle">src/test/java</a> &gt; <a href="index.source.html" class="el_package">org.jfree.chart.plot</a> &gt; <span class="el_source">MeterPlotTest.java</span></div><h1>MeterPlotTest.java</h1><pre class="source lang-java linenums">/* ===========================================================
+ * JFreeChart : a free chart library for the Java(tm) platform
+ * ===========================================================
+ *
+ * (C) Copyright 2000-2022, by David Gilbert and Contributors.
+ *
+ * Project Info:  http://www.jfree.org/jfreechart/index.html
+ *
+ * This library is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 2.1 of the License, or
+ * (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public
+ * License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301,
+ * USA.
+ *
+ * [Oracle and Java are registered trademarks of Oracle and/or its affiliates. 
+ * Other names may be trademarks of their respective owners.]
+ *
+ * ------------------
+ * MeterPlotTest.java
+ * ------------------
+ * (C) Copyright 2003-2022, by David Gilbert and Contributors.
+ *
+ * Original Author:  David Gilbert;
+ * Contributor(s):   -;
+ *
+ */
+
+package org.jfree.chart.plot;
+
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.GradientPaint;
+import java.text.DecimalFormat;
+
+import org.jfree.chart.TestUtils;
+import org.jfree.chart.internal.CloneUtils;
+
+import org.jfree.data.Range;
+import org.jfree.data.general.DefaultValueDataset;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+/**
+ * Tests for the {@link MeterPlot} class.
+ */
+<span class="fc" id="L56">public class MeterPlotTest {</span>
+
+    /**
+     * Test the equals method to ensure that it can distinguish the required
+     * fields.  Note that the dataset is NOT considered in the equals test.
+     */
+    @Test
+    public void testEquals() {
+<span class="fc" id="L64">        MeterPlot plot1 = new MeterPlot();</span>
+<span class="fc" id="L65">        MeterPlot plot2 = new MeterPlot();</span>
+<span class="fc" id="L66">        assertEquals(plot1, plot2);</span>
+
+        // units
+<span class="fc" id="L69">        plot1.setUnits(&quot;mph&quot;);</span>
+<span class="fc" id="L70">        assertNotEquals(plot1, plot2);</span>
+<span class="fc" id="L71">        plot2.setUnits(&quot;mph&quot;);</span>
+<span class="fc" id="L72">        assertEquals(plot1, plot2);</span>
+
+        // range
+<span class="fc" id="L75">        plot1.setRange(new Range(50.0, 70.0));</span>
+<span class="fc" id="L76">        assertNotEquals(plot1, plot2);</span>
+<span class="fc" id="L77">        plot2.setRange(new Range(50.0, 70.0));</span>
+<span class="fc" id="L78">        assertEquals(plot1, plot2);</span>
+
+        // interval
+<span class="fc" id="L81">        plot1.addInterval(new MeterInterval(&quot;Normal&quot;, new Range(55.0, 60.0)));</span>
+<span class="fc" id="L82">        assertNotEquals(plot1, plot2);</span>
+<span class="fc" id="L83">        plot2.addInterval(new MeterInterval(&quot;Normal&quot;, new Range(55.0, 60.0)));</span>
+<span class="fc" id="L84">        assertEquals(plot1, plot2);</span>
+
+        // dial outline paint
+<span class="fc" id="L87">        plot1.setDialOutlinePaint(new GradientPaint(1.0f, 2.0f, Color.RED,</span>
+                3.0f, 4.0f, Color.BLUE));
+<span class="fc" id="L89">        assertNotEquals(plot1, plot2);</span>
+<span class="fc" id="L90">        plot2.setDialOutlinePaint(new GradientPaint(1.0f, 2.0f, Color.RED,</span>
+                3.0f, 4.0f, Color.BLUE));
+<span class="fc" id="L92">        assertEquals(plot1, plot2);</span>
+
+        // dial shape
+<span class="fc" id="L95">        plot1.setDialShape(DialShape.CHORD);</span>
+<span class="fc" id="L96">        assertNotEquals(plot1, plot2);</span>
+<span class="fc" id="L97">        plot2.setDialShape(DialShape.CHORD);</span>
+<span class="fc" id="L98">        assertEquals(plot1, plot2);</span>
+
+        // dial background paint
+<span class="fc" id="L101">        plot1.setDialBackgroundPaint(new GradientPaint(9.0f, 8.0f, Color.RED,</span>
+                7.0f, 6.0f, Color.BLUE));
+<span class="fc" id="L103">        assertNotEquals(plot1, plot2);</span>
+<span class="fc" id="L104">        plot2.setDialBackgroundPaint(new GradientPaint(9.0f, 8.0f, Color.RED,</span>
+                7.0f, 6.0f, Color.BLUE));
+<span class="fc" id="L106">        assertEquals(plot1, plot2);</span>
+
+        // dial outline paint
+<span class="fc" id="L109">        plot1.setDialOutlinePaint(new GradientPaint(1.0f, 2.0f, Color.GREEN,</span>
+                3.0f, 4.0f, Color.RED));
+<span class="fc" id="L111">        assertNotEquals(plot1, plot2);</span>
+<span class="fc" id="L112">        plot2.setDialOutlinePaint(new GradientPaint(1.0f, 2.0f, Color.GREEN,</span>
+                3.0f, 4.0f, Color.RED));
+<span class="fc" id="L114">        assertEquals(plot1, plot2);</span>
+
+        // needle paint
+<span class="fc" id="L117">        plot1.setNeedlePaint(new GradientPaint(9.0f, 8.0f, Color.RED,</span>
+                7.0f, 6.0f, Color.BLUE));
+<span class="fc" id="L119">        assertNotEquals(plot1, plot2);</span>
+<span class="fc" id="L120">        plot2.setNeedlePaint(new GradientPaint(9.0f, 8.0f, Color.RED,</span>
+                7.0f, 6.0f, Color.BLUE));
+<span class="fc" id="L122">        assertEquals(plot1, plot2);</span>
+
+        // value visible
+<span class="fc" id="L125">        plot1.setValueVisible(false);</span>
+<span class="fc" id="L126">        assertNotEquals(plot1, plot2);</span>
+<span class="fc" id="L127">        plot2.setValueVisible(false);</span>
+<span class="fc" id="L128">        assertEquals(plot1, plot2);</span>
+
+        // value font
+<span class="fc" id="L131">        plot1.setValueFont(new Font(&quot;Serif&quot;, Font.PLAIN, 6));</span>
+<span class="fc" id="L132">        assertNotEquals(plot1, plot2);</span>
+<span class="fc" id="L133">        plot2.setValueFont(new Font(&quot;Serif&quot;, Font.PLAIN, 6));</span>
+<span class="fc" id="L134">        assertEquals(plot1, plot2);</span>
+
+        // value paint
+<span class="fc" id="L137">        plot1.setValuePaint(new GradientPaint(1.0f, 2.0f, Color.BLACK,</span>
+                3.0f, 4.0f, Color.WHITE));
+<span class="fc" id="L139">        assertNotEquals(plot1, plot2);</span>
+<span class="fc" id="L140">        plot2.setValuePaint(new GradientPaint(1.0f, 2.0f, Color.BLACK,</span>
+                3.0f, 4.0f, Color.WHITE));
+<span class="fc" id="L142">        assertEquals(plot1, plot2);</span>
+
+        // tick labels visible
+<span class="fc" id="L145">        plot1.setTickLabelsVisible(false);</span>
+<span class="fc" id="L146">        assertNotEquals(plot1, plot2);</span>
+<span class="fc" id="L147">        plot2.setTickLabelsVisible(false);</span>
+<span class="fc" id="L148">        assertEquals(plot1, plot2);</span>
+
+        // tick label font
+<span class="fc" id="L151">        plot1.setTickLabelFont(new Font(&quot;Serif&quot;, Font.PLAIN, 6));</span>
+<span class="fc" id="L152">        assertNotEquals(plot1, plot2);</span>
+<span class="fc" id="L153">        plot2.setTickLabelFont(new Font(&quot;Serif&quot;, Font.PLAIN, 6));</span>
+<span class="fc" id="L154">        assertEquals(plot1, plot2);</span>
+
+        // tick label paint
+<span class="fc" id="L157">        plot1.setTickLabelPaint(Color.RED);</span>
+<span class="fc" id="L158">        assertNotEquals(plot1, plot2);</span>
+<span class="fc" id="L159">        plot2.setTickLabelPaint(Color.RED);</span>
+<span class="fc" id="L160">        assertEquals(plot1, plot2);</span>
+
+        // tick label format
+<span class="fc" id="L163">        plot1.setTickLabelFormat(new DecimalFormat(&quot;0&quot;));</span>
+<span class="fc" id="L164">        assertNotEquals(plot1, plot2);</span>
+<span class="fc" id="L165">        plot2.setTickLabelFormat(new DecimalFormat(&quot;0&quot;));</span>
+<span class="fc" id="L166">        assertEquals(plot1, plot2);</span>
+
+        // tick paint
+<span class="fc" id="L169">        plot1.setTickPaint(Color.GREEN);</span>
+<span class="fc" id="L170">        assertNotEquals(plot1, plot2);</span>
+<span class="fc" id="L171">        plot2.setTickPaint(Color.GREEN);</span>
+<span class="fc" id="L172">        assertEquals(plot1, plot2);</span>
+
+        // tick size
+<span class="fc" id="L175">        plot1.setTickSize(1.23);</span>
+<span class="fc" id="L176">        assertNotEquals(plot1, plot2);</span>
+<span class="fc" id="L177">        plot2.setTickSize(1.23);</span>
+<span class="fc" id="L178">        assertEquals(plot1, plot2);</span>
+
+        // draw border
+<span class="pc bpc" id="L181" title="1 of 2 branches missed.">        plot1.setDrawBorder(!plot1.getDrawBorder());</span>
+<span class="fc" id="L182">        assertNotEquals(plot1, plot2);</span>
+<span class="fc" id="L183">        plot2.setDrawBorder(plot1.getDrawBorder());</span>
+<span class="fc" id="L184">        assertEquals(plot1, plot2);</span>
+
+        // meter angle
+<span class="fc" id="L187">        plot1.setMeterAngle(22);</span>
+<span class="fc" id="L188">        assertNotEquals(plot1, plot2);</span>
+<span class="fc" id="L189">        plot2.setMeterAngle(22);</span>
+<span class="fc" id="L190">        assertEquals(plot1, plot2);</span>
+
+<span class="fc" id="L192">    }</span>
+
+    /**
+     * Confirm that cloning works.
+     */
+    @Test
+    public void testCloning() throws CloneNotSupportedException {
+<span class="fc" id="L199">        MeterPlot p1 = new MeterPlot();</span>
+<span class="fc" id="L200">        MeterPlot p2 = CloneUtils.clone(p1);</span>
+<span class="fc" id="L201">        assertNotSame(p1, p2);</span>
+<span class="fc" id="L202">        assertSame(p1.getClass(), p2.getClass());</span>
+<span class="fc" id="L203">        assertEquals(p1, p2);</span>
+
+        // the clone and the original share a reference to the SAME dataset
+<span class="fc" id="L206">        assertSame(p1.getDataset(), p2.getDataset());</span>
+
+        // try a few checks to ensure that the clone is independent of the
+        // original
+<span class="fc" id="L210">        p1.getTickLabelFormat().setMinimumIntegerDigits(99);</span>
+<span class="fc" id="L211">        assertNotEquals(p1, p2);</span>
+<span class="fc" id="L212">        p2.getTickLabelFormat().setMinimumIntegerDigits(99);</span>
+<span class="fc" id="L213">        assertEquals(p1, p2);</span>
+
+<span class="fc" id="L215">        p1.addInterval(new MeterInterval(&quot;Test&quot;, new Range(1.234, 5.678)));</span>
+<span class="fc" id="L216">        assertNotEquals(p1, p2);</span>
+<span class="fc" id="L217">        p2.addInterval(new MeterInterval(&quot;Test&quot;, new Range(1.234, 5.678)));</span>
+<span class="fc" id="L218">        assertEquals(p1, p2);</span>
+
+<span class="fc" id="L220">    }</span>
+
+    /**
+     * Serialize an instance, restore it, and check for equality.
+     */
+    @Test
+    public void testSerialization1() {
+<span class="fc" id="L227">        MeterPlot p1 = new MeterPlot(null);</span>
+<span class="fc" id="L228">        p1.setDialBackgroundPaint(new GradientPaint(1.0f, 2.0f, Color.RED,</span>
+                3.0f, 4.0f, Color.BLUE));
+<span class="fc" id="L230">        p1.setDialOutlinePaint(new GradientPaint(4.0f, 3.0f, Color.RED,</span>
+                2.0f, 1.0f, Color.BLUE));
+<span class="fc" id="L232">        p1.setNeedlePaint(new GradientPaint(1.0f, 2.0f, Color.RED,</span>
+                3.0f, 4.0f, Color.BLUE));
+<span class="fc" id="L234">        p1.setTickLabelPaint(new GradientPaint(1.0f, 2.0f, Color.RED,</span>
+                3.0f, 4.0f, Color.BLUE));
+<span class="fc" id="L236">        p1.setTickPaint(new GradientPaint(1.0f, 2.0f, Color.RED,</span>
+                3.0f, 4.0f, Color.BLUE));
+<span class="fc" id="L238">        MeterPlot p2 = TestUtils.serialised(p1);</span>
+<span class="fc" id="L239">        assertEquals(p1, p2);</span>
+<span class="fc" id="L240">    }</span>
+
+    /**
+     * Serialize an instance, restore it, and check for equality.
+     */
+    @Test
+    public void testSerialization2() {
+<span class="fc" id="L247">        MeterPlot p1 = new MeterPlot(new DefaultValueDataset(1.23));</span>
+<span class="fc" id="L248">        MeterPlot p2 = TestUtils.serialised(p1);</span>
+<span class="fc" id="L249">        assertEquals(p1, p2);</span>
+
+<span class="fc" id="L251">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span>jfreechart (Mar 14, 2025 5:50:17 p.m.)</div></body></html>

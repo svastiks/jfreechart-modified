@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>XYTaskDatasetTest.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">jfreechart (Mar 14, 2025 5:50:17 p.m.)</a> &gt; <a href="../../index.html" class="el_group">jfreechart</a> &gt; <a href="../index.html" class="el_bundle">src/test/java</a> &gt; <a href="index.source.html" class="el_package">org.jfree.data.gantt</a> &gt; <span class="el_source">XYTaskDatasetTest.java</span></div><h1>XYTaskDatasetTest.java</h1><pre class="source lang-java linenums">/* ===========================================================
+ * JFreeChart : a free chart library for the Java(tm) platform
+ * ===========================================================
+ *
+ * (C) Copyright 2000-2022, by David Gilbert and Contributors.
+ *
+ * Project Info:  http://www.jfree.org/jfreechart/index.html
+ *
+ * This library is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 2.1 of the License, or
+ * (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public
+ * License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301,
+ * USA.
+ *
+ * [Oracle and Java are registered trademarks of Oracle and/or its affiliates. 
+ * Other names may be trademarks of their respective owners.]
+ *
+ * ----------------------
+ * XYTaskDatasetTest.java
+ * ----------------------
+ * (C) Copyright 2008-2022, by David Gilbert and Contributors.
+ *
+ * Original Author:  David Gilbert;
+ * Contributor(s):   -;
+ *
+ */
+
+package org.jfree.data.gantt;
+
+import java.util.Date;
+
+import org.jfree.chart.TestUtils;
+import org.jfree.chart.internal.CloneUtils;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+/**
+ * Tests for the {@link XYTaskDataset} class.
+ */
+<span class="fc" id="L50">public class XYTaskDatasetTest {</span>
+
+    /**
+     * Some checks for the equals() method.
+     */
+    @Test
+    public void testEquals() {
+<span class="fc" id="L57">        TaskSeries&lt;String&gt; s1 = new TaskSeries&lt;&gt;(&quot;Series&quot;);</span>
+<span class="fc" id="L58">        s1.add(new Task(&quot;Task 1&quot;, new Date(0L), new Date(1L)));</span>
+<span class="fc" id="L59">        s1.add(new Task(&quot;Task 2&quot;, new Date(10L), new Date(11L)));</span>
+<span class="fc" id="L60">        s1.add(new Task(&quot;Task 3&quot;, new Date(20L), new Date(21L)));</span>
+<span class="fc" id="L61">        TaskSeriesCollection&lt;String, String&gt; u1 = new TaskSeriesCollection&lt;&gt;();</span>
+<span class="fc" id="L62">        u1.add(s1);</span>
+<span class="fc" id="L63">        XYTaskDataset d1 = new XYTaskDataset(u1);</span>
+<span class="fc" id="L64">        TaskSeries&lt;String&gt; s2 = new TaskSeries&lt;&gt;(&quot;Series&quot;);</span>
+<span class="fc" id="L65">        s2.add(new Task(&quot;Task 1&quot;, new Date(0L), new Date(1L)));</span>
+<span class="fc" id="L66">        s2.add(new Task(&quot;Task 2&quot;, new Date(10L), new Date(11L)));</span>
+<span class="fc" id="L67">        s2.add(new Task(&quot;Task 3&quot;, new Date(20L), new Date(21L)));</span>
+<span class="fc" id="L68">        TaskSeriesCollection&lt;String, String&gt; u2 = new TaskSeriesCollection&lt;&gt;();</span>
+<span class="fc" id="L69">        u2.add(s2);</span>
+<span class="fc" id="L70">        XYTaskDataset d2 = new XYTaskDataset(u2);</span>
+<span class="fc" id="L71">        assertEquals(d1, d2);</span>
+
+<span class="fc" id="L73">        d1.setSeriesWidth(0.123);</span>
+<span class="fc" id="L74">        assertNotEquals(d1, d2);</span>
+<span class="fc" id="L75">        d2.setSeriesWidth(0.123);</span>
+<span class="fc" id="L76">        assertEquals(d1, d2);</span>
+
+<span class="fc" id="L78">        d1.setTransposed(true);</span>
+<span class="fc" id="L79">        assertNotEquals(d1, d2);</span>
+<span class="fc" id="L80">        d2.setTransposed(true);</span>
+<span class="fc" id="L81">        assertEquals(d1, d2);</span>
+
+<span class="fc" id="L83">        s1.add(new Task(&quot;Task 2&quot;, new Date(10L), new Date(11L)));</span>
+<span class="fc" id="L84">        assertNotEquals(d1, d2);</span>
+<span class="fc" id="L85">        s2.add(new Task(&quot;Task 2&quot;, new Date(10L), new Date(11L)));</span>
+<span class="fc" id="L86">        assertEquals(d1, d2);</span>
+<span class="fc" id="L87">    }</span>
+
+    /**
+     * Confirm that cloning works.
+     */
+    @Test
+    public void testCloning() throws CloneNotSupportedException {
+<span class="fc" id="L94">        TaskSeries&lt;String&gt; s1 = new TaskSeries&lt;&gt;(&quot;Series&quot;);</span>
+<span class="fc" id="L95">        s1.add(new Task(&quot;Task 1&quot;, new Date(0L), new Date(1L)));</span>
+<span class="fc" id="L96">        TaskSeriesCollection&lt;String, String&gt; u1 = new TaskSeriesCollection&lt;&gt;();</span>
+<span class="fc" id="L97">        u1.add(s1);</span>
+<span class="fc" id="L98">        XYTaskDataset d1 = new XYTaskDataset(u1);</span>
+<span class="fc" id="L99">        XYTaskDataset d2 = CloneUtils.clone(d1);</span>
+<span class="fc" id="L100">        assertNotSame(d1, d2);</span>
+<span class="fc" id="L101">        assertSame(d1.getClass(), d2.getClass());</span>
+<span class="fc" id="L102">        assertEquals(d1, d2);</span>
+
+        // basic check for independence
+<span class="fc" id="L105">        s1.add(new Task(&quot;Task 2&quot;, new Date(10L), new Date(11L)));</span>
+<span class="fc" id="L106">        assertNotEquals(d1, d2);</span>
+<span class="fc" id="L107">        TaskSeriesCollection&lt;String, String&gt; u2 = d2.getTasks();</span>
+<span class="fc" id="L108">        TaskSeries&lt;String&gt; s2 = u2.getSeries(&quot;Series&quot;);</span>
+<span class="fc" id="L109">        s2.add(new Task(&quot;Task 2&quot;, new Date(10L), new Date(11L)));</span>
+<span class="fc" id="L110">        assertEquals(d1, d2);</span>
+<span class="fc" id="L111">    }</span>
+
+    /**
+     * Serialize an instance, restore it, and check for equality.
+     */
+    @Test
+    public void testSerialization() {
+<span class="fc" id="L118">        TaskSeries&lt;String&gt; s1 = new TaskSeries&lt;&gt;(&quot;Series&quot;);</span>
+<span class="fc" id="L119">        s1.add(new Task(&quot;Task 1&quot;, new Date(0L), new Date(1L)));</span>
+<span class="fc" id="L120">        TaskSeriesCollection&lt;String, String&gt; u1 = new TaskSeriesCollection&lt;&gt;();</span>
+<span class="fc" id="L121">        u1.add(s1);</span>
+<span class="fc" id="L122">        XYTaskDataset d1 = new XYTaskDataset(u1);</span>
+<span class="fc" id="L123">        XYTaskDataset d2 = TestUtils.serialised(d1);</span>
+<span class="fc" id="L124">        assertEquals(d1, d2);</span>
+
+        // basic check for independence
+<span class="fc" id="L127">        s1.add(new Task(&quot;Task 2&quot;, new Date(10L), new Date(11L)));</span>
+<span class="fc" id="L128">        assertNotEquals(d1, d2);</span>
+<span class="fc" id="L129">        TaskSeriesCollection&lt;String, String&gt; u2 = d2.getTasks();</span>
+<span class="fc" id="L130">        TaskSeries&lt;String&gt; s2 = u2.getSeries(&quot;Series&quot;);</span>
+<span class="fc" id="L131">        s2.add(new Task(&quot;Task 2&quot;, new Date(10L), new Date(11L)));</span>
+<span class="fc" id="L132">        assertEquals(d1, d2);</span>
+<span class="fc" id="L133">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span>jfreechart (Mar 14, 2025 5:50:17 p.m.)</div></body></html>

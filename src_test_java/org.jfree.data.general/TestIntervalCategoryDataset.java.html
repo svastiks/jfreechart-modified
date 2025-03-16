@@ -1,0 +1,470 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>TestIntervalCategoryDataset.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">jfreechart (Mar 14, 2025 5:50:17 p.m.)</a> &gt; <a href="../../index.html" class="el_group">jfreechart</a> &gt; <a href="../index.html" class="el_bundle">src/test/java</a> &gt; <a href="index.source.html" class="el_package">org.jfree.data.general</a> &gt; <span class="el_source">TestIntervalCategoryDataset.java</span></div><h1>TestIntervalCategoryDataset.java</h1><pre class="source lang-java linenums">/* ===========================================================
+ * JFreeChart : a free chart library for the Java(tm) platform
+ * ===========================================================
+ *
+ * (C) Copyright 2000-2022, by David Gilbert and Contributors.
+ *
+ * Project Info:  http://www.jfree.org/jfreechart/index.html
+ *
+ * This library is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 2.1 of the License, or
+ * (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public
+ * License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301,
+ * USA.
+ *
+ * [Oracle and Java are registered trademarks of Oracle and/or its affiliates. 
+ * Other names may be trademarks of their respective owners.]
+ *
+ * --------------------------------
+ * TestIntervalCategoryDataset.java
+ * --------------------------------
+ * (C) Copyright 2009-2022, by David Gilbert.
+ *
+ * Original Author:  David Gilbert;
+ * Contributor(s):   -;
+ *
+ */
+
+package org.jfree.data.general;
+
+import java.io.Serializable;
+import java.util.List;
+import org.jfree.chart.internal.CloneUtils;
+import org.jfree.chart.api.PublicCloneable;
+
+import org.jfree.data.KeyedObjects2D;
+import org.jfree.data.UnknownKeyException;
+import org.jfree.data.category.IntervalCategoryDataset;
+/**
+ * A test implementation of the {@link IntervalCategoryDataset} interface.
+ */
+public class TestIntervalCategoryDataset&lt;R extends Comparable&lt;R&gt;, 
+        C extends Comparable&lt;C&gt;&gt;  extends AbstractDataset
+        implements IntervalCategoryDataset&lt;R, C&gt;, PublicCloneable, Serializable {
+
+    /** For serialization. */
+    private static final long serialVersionUID = -8168173757291644622L;
+
+    /** A storage structure for the data. */
+    private KeyedObjects2D&lt;R, C&gt; data;
+
+    /**
+     * Creates a new (empty) dataset.
+     */
+<span class="fc" id="L63">    public TestIntervalCategoryDataset() {</span>
+<span class="fc" id="L64">        this.data = new KeyedObjects2D&lt;&gt;();</span>
+<span class="fc" id="L65">    }</span>
+
+    /**
+     * Returns the number of rows in the table.
+     *
+     * @return The row count.
+     *
+     * @see #getColumnCount()
+     */
+    @Override
+    public int getRowCount() {
+<span class="fc" id="L76">        return this.data.getRowCount();</span>
+    }
+
+    /**
+     * Returns the number of columns in the table.
+     *
+     * @return The column count.
+     *
+     * @see #getRowCount()
+     */
+    @Override
+    public int getColumnCount() {
+<span class="fc" id="L88">        return this.data.getColumnCount();</span>
+    }
+
+    /**
+     * Returns a value from the table.
+     *
+     * @param row  the row index (zero-based).
+     * @param column  the column index (zero-based).
+     *
+     * @return The value (possibly {@code null}).
+     *
+     * @see #addValue(Number, Comparable, Comparable)
+     * @see #removeValue(Comparable, Comparable)
+     */
+    @Override
+    public Number getValue(int row, int column) {
+<span class="fc" id="L104">        IntervalDataItem item = (IntervalDataItem) this.data.getObject(row,</span>
+                column);
+<span class="pc bpc" id="L106" title="1 of 2 branches missed.">        if (item == null) {</span>
+<span class="nc" id="L107">            return null;</span>
+        }
+<span class="fc" id="L109">        return item.getValue();</span>
+    }
+
+    /**
+     * Returns the key for the specified row.
+     *
+     * @param row  the row index (zero-based).
+     *
+     * @return The row key.
+     *
+     * @see #getRowIndex(Comparable)
+     * @see #getRowKeys()
+     * @see #getColumnKey(int)
+     */
+    @Override
+    public R getRowKey(int row) {
+<span class="nc" id="L125">        return this.data.getRowKey(row);</span>
+    }
+
+    /**
+     * Returns the row index for a given key.
+     *
+     * @param key  the row key ({@code null} not permitted).
+     *
+     * @return The row index.
+     *
+     * @see #getRowKey(int)
+     */
+    @Override
+    public int getRowIndex(R key) {
+        // defer null argument check
+<span class="nc" id="L140">        return this.data.getRowIndex(key);</span>
+    }
+
+    /**
+     * Returns the row keys.
+     *
+     * @return The keys.
+     *
+     * @see #getRowKey(int)
+     */
+    @Override
+    public List&lt;R&gt; getRowKeys() {
+<span class="nc" id="L152">        return this.data.getRowKeys();</span>
+    }
+
+    /**
+     * Returns a column key.
+     *
+     * @param column  the column index (zero-based).
+     *
+     * @return The column key.
+     *
+     * @see #getColumnIndex(Comparable)
+     */
+    @Override
+    public C getColumnKey(int column) {
+<span class="nc" id="L166">        return this.data.getColumnKey(column);</span>
+    }
+
+    /**
+     * Returns the column index for a given key.
+     *
+     * @param key  the column key ({@code null} not permitted).
+     *
+     * @return The column index.
+     *
+     * @see #getColumnKey(int)
+     */
+    @Override
+    public int getColumnIndex(C key) {
+        // defer null argument check
+<span class="nc" id="L181">        return this.data.getColumnIndex(key);</span>
+    }
+
+    /**
+     * Returns the column keys.
+     *
+     * @return The keys.
+     *
+     * @see #getColumnKey(int)
+     */
+    @Override
+    public List&lt;C&gt; getColumnKeys() {
+<span class="nc" id="L193">        return this.data.getColumnKeys();</span>
+    }
+
+    /**
+     * Returns the value for a pair of keys.
+     *
+     * @param rowKey  the row key ({@code null} not permitted).
+     * @param columnKey  the column key ({@code null} not permitted).
+     *
+     * @return The value (possibly {@code null}).
+     *
+     * @throws UnknownKeyException if either key is not defined in the dataset.
+     *
+     * @see #addValue(Number, Comparable, Comparable)
+     */
+    @Override
+    public Number getValue(R rowKey, C columnKey) {
+<span class="nc" id="L210">        IntervalDataItem item = (IntervalDataItem) this.data.getObject(rowKey,</span>
+                columnKey);
+<span class="nc bnc" id="L212" title="All 2 branches missed.">        if (item == null) {</span>
+<span class="nc" id="L213">            return null;</span>
+        }
+<span class="nc" id="L215">        return item.getValue();</span>
+    }
+
+    /**
+     * Adds a value to the table.  Performs the same function as setValue().
+     *
+     * @param value  the value.
+     * @param rowKey  the row key.
+     * @param columnKey  the column key.
+     *
+     * @see #getValue(Comparable, Comparable)
+     * @see #removeValue(Comparable, Comparable)
+     */
+    public void addItem(Number value, Number lower, Number upper,
+            R rowKey, C columnKey) {
+<span class="fc" id="L230">        IntervalDataItem item = new IntervalDataItem(value, lower, upper);</span>
+<span class="fc" id="L231">        this.data.addObject(item, rowKey, columnKey);</span>
+<span class="fc" id="L232">        fireDatasetChanged();</span>
+<span class="fc" id="L233">    }</span>
+
+    /**
+     * Adds a value to the table.
+     *
+     * @param value  the value.
+     * @param rowKey  the row key.
+     * @param columnKey  the column key.
+     *
+     * @see #getValue(Comparable, Comparable)
+     */
+    public void addItem(double value, double lower, double upper,
+            R rowKey, C columnKey) {
+<span class="fc" id="L246">        addItem(Double.valueOf(value), Double.valueOf(lower), Double.valueOf(upper),</span>
+                rowKey, columnKey);
+<span class="fc" id="L248">    }</span>
+
+    /**
+     * Adds or updates a value in the table and sends a
+     * {@link DatasetChangeEvent} to all registered listeners.
+     *
+     * @param value  the value ({@code null} permitted).
+     * @param rowKey  the row key ({@code null} not permitted).
+     * @param columnKey  the column key ({@code null} not permitted).
+     *
+     * @see #getValue(Comparable, Comparable)
+     */
+    public void setItem(Number value, Number lower, Number upper,
+            R rowKey, C columnKey) {
+<span class="nc" id="L262">        IntervalDataItem item = new IntervalDataItem(value, lower, upper);</span>
+<span class="nc" id="L263">        this.data.addObject(item, rowKey, columnKey);</span>
+<span class="nc" id="L264">        fireDatasetChanged();</span>
+<span class="nc" id="L265">    }</span>
+
+    /**
+     * Adds or updates a value in the table and sends a
+     * {@link DatasetChangeEvent} to all registered listeners.
+     *
+     * @param value  the value.
+     * @param rowKey  the row key ({@code null} not permitted).
+     * @param columnKey  the column key ({@code null} not permitted).
+     *
+     * @see #getValue(Comparable, Comparable)
+     */
+    public void setItem(double value, double lower, double upper,
+            R rowKey, C columnKey) {
+<span class="nc" id="L279">        setItem(Double.valueOf(value), Double.valueOf(lower), Double.valueOf(upper),</span>
+                rowKey, columnKey);
+<span class="nc" id="L281">    }</span>
+
+    /**
+     * Removes a value from the dataset and sends a {@link DatasetChangeEvent}
+     * to all registered listeners.
+     *
+     * @param rowKey  the row key.
+     * @param columnKey  the column key.
+     *
+     * @see #addValue(Number, Comparable, Comparable)
+     */
+    public void removeItem(R rowKey, C columnKey) {
+<span class="nc" id="L293">        this.data.removeObject(rowKey, columnKey);</span>
+<span class="nc" id="L294">        fireDatasetChanged();</span>
+<span class="nc" id="L295">    }</span>
+
+    /**
+     * Removes a row from the dataset and sends a {@link DatasetChangeEvent}
+     * to all registered listeners.
+     *
+     * @param rowIndex  the row index.
+     *
+     * @see #removeColumn(int)
+     */
+    public void removeRow(int rowIndex) {
+<span class="nc" id="L306">        this.data.removeRow(rowIndex);</span>
+<span class="nc" id="L307">        fireDatasetChanged();</span>
+<span class="nc" id="L308">    }</span>
+
+    /**
+     * Removes a row from the dataset and sends a {@link DatasetChangeEvent}
+     * to all registered listeners.
+     *
+     * @param rowKey  the row key.
+     *
+     * @see #removeColumn(Comparable)
+     */
+    public void removeRow(R rowKey) {
+<span class="nc" id="L319">        this.data.removeRow(rowKey);</span>
+<span class="nc" id="L320">        fireDatasetChanged();</span>
+<span class="nc" id="L321">    }</span>
+
+    /**
+     * Removes a column from the dataset and sends a {@link DatasetChangeEvent}
+     * to all registered listeners.
+     *
+     * @param columnIndex  the column index.
+     *
+     * @see #removeRow(int)
+     */
+    public void removeColumn(int columnIndex) {
+<span class="nc" id="L332">        this.data.removeColumn(columnIndex);</span>
+<span class="nc" id="L333">        fireDatasetChanged();</span>
+<span class="nc" id="L334">    }</span>
+
+    /**
+     * Removes a column from the dataset and sends a {@link DatasetChangeEvent}
+     * to all registered listeners.
+     *
+     * @param columnKey  the column key ({@code null} not permitted).
+     *
+     * @see #removeRow(Comparable)
+     *
+     * @throws UnknownKeyException if {@code columnKey} is not defined
+     *         in the dataset.
+     */
+    public void removeColumn(C columnKey) {
+<span class="nc" id="L348">        this.data.removeColumn(columnKey);</span>
+<span class="nc" id="L349">        fireDatasetChanged();</span>
+<span class="nc" id="L350">    }</span>
+
+    /**
+     * Clears all data from the dataset and sends a {@link DatasetChangeEvent}
+     * to all registered listeners.
+     */
+    public void clear() {
+<span class="nc" id="L357">        this.data.clear();</span>
+<span class="nc" id="L358">        fireDatasetChanged();</span>
+<span class="nc" id="L359">    }</span>
+
+    /**
+     * Tests this dataset for equality with an arbitrary object.
+     *
+     * @param obj  the object ({@code null} permitted).
+     *
+     * @return A boolean.
+     */
+    @Override
+    public boolean equals(Object obj) {
+<span class="nc bnc" id="L370" title="All 2 branches missed.">        if (obj == this) {</span>
+<span class="nc" id="L371">            return true;</span>
+        }
+<span class="nc bnc" id="L373" title="All 2 branches missed.">        if (!(obj instanceof TestIntervalCategoryDataset)) {</span>
+<span class="nc" id="L374">            return false;</span>
+        }
+<span class="nc" id="L376">        TestIntervalCategoryDataset&lt;R, C&gt; that = (TestIntervalCategoryDataset) obj;</span>
+<span class="nc bnc" id="L377" title="All 2 branches missed.">        if (!getRowKeys().equals(that.getRowKeys())) {</span>
+<span class="nc" id="L378">            return false;</span>
+        }
+<span class="nc bnc" id="L380" title="All 2 branches missed.">        if (!getColumnKeys().equals(that.getColumnKeys())) {</span>
+<span class="nc" id="L381">            return false;</span>
+        }
+<span class="nc" id="L383">        int rowCount = getRowCount();</span>
+<span class="nc" id="L384">        int colCount = getColumnCount();</span>
+<span class="nc bnc" id="L385" title="All 2 branches missed.">        for (int r = 0; r &lt; rowCount; r++) {</span>
+<span class="nc bnc" id="L386" title="All 2 branches missed.">            for (int c = 0; c &lt; colCount; c++) {</span>
+<span class="nc" id="L387">                Number v1 = getValue(r, c);</span>
+<span class="nc" id="L388">                Number v2 = that.getValue(r, c);</span>
+<span class="nc bnc" id="L389" title="All 2 branches missed.">                if (v1 == null) {</span>
+<span class="nc bnc" id="L390" title="All 2 branches missed.">                    if (v2 != null) {</span>
+<span class="nc" id="L391">                        return false;</span>
+                    }
+                }
+<span class="nc bnc" id="L394" title="All 2 branches missed.">                else if (!v1.equals(v2)) {</span>
+<span class="nc" id="L395">                    return false;</span>
+                }
+            }
+        }
+<span class="nc" id="L399">        return true;</span>
+    }
+
+    /**
+     * Returns a hash code for the dataset.
+     *
+     * @return A hash code.
+     */
+    @Override
+    public int hashCode() {
+<span class="nc" id="L409">        return this.data.hashCode();</span>
+    }
+
+    /**
+     * Returns a clone of the dataset.
+     *
+     * @return A clone.
+     *
+     * @throws CloneNotSupportedException if there is a problem cloning the
+     *         dataset.
+     */
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+<span class="nc" id="L422">        TestIntervalCategoryDataset&lt;R, C&gt; clone = (TestIntervalCategoryDataset)</span>
+<span class="nc" id="L423">                super.clone();</span>
+<span class="nc" id="L424">        clone.data = CloneUtils.clone(this.data);</span>
+<span class="nc" id="L425">        return clone;</span>
+    }
+
+    @Override
+    public Number getStartValue(int series, int category) {
+<span class="fc" id="L430">        IntervalDataItem item = (IntervalDataItem) this.data.getObject(series,</span>
+                category);
+<span class="pc bpc" id="L432" title="1 of 2 branches missed.">        if (item == null) {</span>
+<span class="nc" id="L433">            return null;</span>
+        }
+<span class="fc" id="L435">        return item.getLowerBound();</span>
+    }
+
+    @Override
+    public Number getStartValue(R series, C category) {
+<span class="nc" id="L440">        IntervalDataItem item = (IntervalDataItem) this.data.getObject(series,</span>
+                category);
+<span class="nc bnc" id="L442" title="All 2 branches missed.">        if (item == null) {</span>
+<span class="nc" id="L443">            return null;</span>
+        }
+<span class="nc" id="L445">        return item.getLowerBound();</span>
+    }
+
+    @Override
+    public Number getEndValue(int series, int category) {
+<span class="fc" id="L450">        IntervalDataItem item = (IntervalDataItem) this.data.getObject(series,</span>
+                category);
+<span class="pc bpc" id="L452" title="1 of 2 branches missed.">        if (item == null) {</span>
+<span class="nc" id="L453">            return null;</span>
+        }
+<span class="fc" id="L455">        return item.getUpperBound();</span>
+    }
+
+    @Override
+    public Number getEndValue(R series, C category) {
+<span class="nc" id="L460">        IntervalDataItem item = (IntervalDataItem) this.data.getObject(series,</span>
+                category);
+<span class="nc bnc" id="L462" title="All 2 branches missed.">        if (item == null) {</span>
+<span class="nc" id="L463">            return null;</span>
+        }
+<span class="nc" id="L465">        return item.getUpperBound();</span>
+    }
+
+}
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span>jfreechart (Mar 14, 2025 5:50:17 p.m.)</div></body></html>

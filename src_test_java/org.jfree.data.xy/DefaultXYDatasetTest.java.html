@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>DefaultXYDatasetTest.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">jfreechart (Mar 14, 2025 5:50:17 p.m.)</a> &gt; <a href="../../index.html" class="el_group">jfreechart</a> &gt; <a href="../index.html" class="el_bundle">src/test/java</a> &gt; <a href="index.source.html" class="el_package">org.jfree.data.xy</a> &gt; <span class="el_source">DefaultXYDatasetTest.java</span></div><h1>DefaultXYDatasetTest.java</h1><pre class="source lang-java linenums">/* ===========================================================
+ * JFreeChart : a free chart library for the Java(tm) platform
+ * ===========================================================
+ *
+ * (C) Copyright 2000-2022, by David Gilbert and Contributors.
+ *
+ * Project Info:  http://www.jfree.org/jfreechart/index.html
+ *
+ * This library is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 2.1 of the License, or
+ * (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public
+ * License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301,
+ * USA.
+ *
+ * [Oracle and Java are registered trademarks of Oracle and/or its affiliates. 
+ * Other names may be trademarks of their respective owners.]
+ *
+ * --------------------------
+ * DefaultXYDatasetTests.java
+ * --------------------------
+ * (C) Copyright 2006-2022, by David Gilbert and Contributors.
+ *
+ * Original Author:  David Gilbert;
+ * Contributor(s):   -;
+ *
+ */
+
+package org.jfree.data.xy;
+
+import org.jfree.chart.TestUtils;
+import org.jfree.chart.internal.CloneUtils;
+import org.jfree.chart.api.PublicCloneable;
+
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+/**
+ * Tests for {@link DefaultXYDataset}.
+ */
+<span class="fc" id="L50">public class DefaultXYDatasetTest {</span>
+
+    /**
+     * Confirm that the equals method can distinguish all the required fields.
+     */
+    @Test
+    public void testEquals() {
+<span class="fc" id="L57">        DefaultXYDataset&lt;String&gt; d1 = new DefaultXYDataset&lt;&gt;();</span>
+<span class="fc" id="L58">        DefaultXYDataset&lt;String&gt; d2 = new DefaultXYDataset&lt;&gt;();</span>
+<span class="fc" id="L59">        assertEquals(d1, d2);</span>
+<span class="fc" id="L60">        assertEquals(d2, d1);</span>
+
+<span class="fc" id="L62">        double[] x1 = new double[] {1.0, 2.0, 3.0};</span>
+<span class="fc" id="L63">        double[] y1 = new double[] {4.0, 5.0, 6.0};</span>
+<span class="fc" id="L64">        double[][] data1 = new double[][] {x1, y1};</span>
+<span class="fc" id="L65">        double[] x2 = new double[] {1.0, 2.0, 3.0};</span>
+<span class="fc" id="L66">        double[] y2 = new double[] {4.0, 5.0, 6.0};</span>
+<span class="fc" id="L67">        double[][] data2 = new double[][] {x2, y2};</span>
+<span class="fc" id="L68">        d1.addSeries(&quot;S1&quot;, data1);</span>
+<span class="fc" id="L69">        assertNotEquals(d1, d2);</span>
+<span class="fc" id="L70">        d2.addSeries(&quot;S1&quot;, data2);</span>
+<span class="fc" id="L71">        assertEquals(d1, d2);</span>
+<span class="fc" id="L72">    }</span>
+
+    /**
+     * Confirm that cloning works.
+     */
+    @Test
+    public void testCloning() throws CloneNotSupportedException {
+<span class="fc" id="L79">        DefaultXYDataset&lt;String&gt; d1 = new DefaultXYDataset&lt;&gt;();</span>
+<span class="fc" id="L80">        DefaultXYDataset&lt;String&gt; d2 = CloneUtils.clone(d1);</span>
+<span class="fc" id="L81">        assertNotSame(d1, d2);</span>
+<span class="fc" id="L82">        assertSame(d1.getClass(), d2.getClass());</span>
+<span class="fc" id="L83">        assertEquals(d1, d2);</span>
+
+        // try a dataset with some content...
+<span class="fc" id="L86">        double[] x1 = new double[] {1.0, 2.0, 3.0};</span>
+<span class="fc" id="L87">        double[] y1 = new double[] {4.0, 5.0, 6.0};</span>
+<span class="fc" id="L88">        double[][] data1 = new double[][] {x1, y1};</span>
+<span class="fc" id="L89">        d1.addSeries(&quot;S1&quot;, data1);</span>
+<span class="fc" id="L90">        d2 = CloneUtils.clone(d1);</span>
+<span class="fc" id="L91">        assertNotSame(d1, d2);</span>
+<span class="fc" id="L92">        assertSame(d1.getClass(), d2.getClass());</span>
+<span class="fc" id="L93">        assertEquals(d1, d2);</span>
+
+        // check that the clone doesn't share the same underlying arrays.
+<span class="fc" id="L96">        x1[1] = 2.2;</span>
+<span class="fc" id="L97">        assertNotEquals(d1, d2);</span>
+<span class="fc" id="L98">        x1[1] = 2.0;</span>
+<span class="fc" id="L99">        assertEquals(d1, d2);</span>
+<span class="fc" id="L100">    }</span>
+
+    /**
+     * Verify that this class implements {@link PublicCloneable}.
+     */
+    @Test
+    public void testPublicCloneable() {
+<span class="fc" id="L107">        DefaultXYDataset&lt;String&gt; d1 = new DefaultXYDataset&lt;&gt;();</span>
+<span class="fc" id="L108">        assertTrue(d1 instanceof PublicCloneable);</span>
+<span class="fc" id="L109">    }</span>
+
+    /**
+     * Serialize an instance, restore it, and check for equality.
+     */
+    @Test
+    public void testSerialization() {
+<span class="fc" id="L116">        DefaultXYDataset&lt;String&gt; d1 = new DefaultXYDataset&lt;&gt;();</span>
+<span class="fc" id="L117">        DefaultXYDataset&lt;String&gt; d2 = TestUtils.serialised(d1);</span>
+<span class="fc" id="L118">        assertEquals(d1, d2);</span>
+
+        // try a dataset with some content...
+<span class="fc" id="L121">        double[] x1 = new double[] {1.0, 2.0, 3.0};</span>
+<span class="fc" id="L122">        double[] y1 = new double[] {4.0, 5.0, 6.0};</span>
+<span class="fc" id="L123">        double[][] data1 = new double[][] {x1, y1};</span>
+<span class="fc" id="L124">        d1.addSeries(&quot;S1&quot;, data1);</span>
+<span class="fc" id="L125">        d2 = TestUtils.serialised(d1);</span>
+<span class="fc" id="L126">        assertEquals(d1, d2);</span>
+<span class="fc" id="L127">    }</span>
+
+    /**
+     * Some checks for the getSeriesKey(int) method.
+     */
+    @Test
+    public void testGetSeriesKey() {
+<span class="fc" id="L134">        DefaultXYDataset&lt;String&gt; d = createSampleDataset1();</span>
+<span class="fc" id="L135">        assertEquals(&quot;S1&quot;, d.getSeriesKey(0));</span>
+<span class="fc" id="L136">        assertEquals(&quot;S2&quot;, d.getSeriesKey(1));</span>
+
+        // check for series key out of bounds
+<span class="fc" id="L139">        boolean pass = false;</span>
+        try {
+<span class="nc" id="L141">            /*Comparable k =*/ d.getSeriesKey(-1);</span>
+        }
+<span class="fc" id="L143">        catch (IllegalArgumentException e) {</span>
+<span class="fc" id="L144">            pass = true;</span>
+<span class="nc" id="L145">        }</span>
+<span class="fc" id="L146">        assertTrue(pass);</span>
+
+<span class="fc" id="L148">        pass = false;</span>
+        try {
+<span class="nc" id="L150">            /*Comparable k =*/ d.getSeriesKey(2);</span>
+        }
+<span class="fc" id="L152">        catch (IllegalArgumentException e) {</span>
+<span class="fc" id="L153">            pass = true;</span>
+<span class="nc" id="L154">        }</span>
+<span class="fc" id="L155">        assertTrue(pass);</span>
+<span class="fc" id="L156">    }</span>
+
+    /**
+     * Some checks for the indexOf(Comparable) method.
+     */
+    @Test
+    public void testIndexOf() {
+<span class="fc" id="L163">        DefaultXYDataset&lt;String&gt; d = createSampleDataset1();</span>
+<span class="fc" id="L164">        assertEquals(0, d.indexOf(&quot;S1&quot;));</span>
+<span class="fc" id="L165">        assertEquals(1, d.indexOf(&quot;S2&quot;));</span>
+<span class="fc" id="L166">        assertEquals(-1, d.indexOf(&quot;Green Eggs and Ham&quot;));</span>
+<span class="fc" id="L167">        assertEquals(-1, d.indexOf(null));</span>
+<span class="fc" id="L168">    }</span>
+
+    static final double EPSILON = 0.0000000001;
+
+    /**
+     * Some tests for the addSeries() method.
+     */
+    @Test
+    public void testAddSeries() {
+<span class="fc" id="L177">        DefaultXYDataset&lt;String&gt; d = new DefaultXYDataset&lt;&gt;();</span>
+<span class="fc" id="L178">        d.addSeries(&quot;S1&quot;, new double[][] {{1.0}, {2.0}});</span>
+<span class="fc" id="L179">        assertEquals(1, d.getSeriesCount());</span>
+<span class="fc" id="L180">        assertEquals(&quot;S1&quot;, d.getSeriesKey(0));</span>
+
+        // check that adding a series will overwrite the old series
+<span class="fc" id="L183">        d.addSeries(&quot;S1&quot;, new double[][] {{11.0}, {12.0}});</span>
+<span class="fc" id="L184">        assertEquals(1, d.getSeriesCount());</span>
+<span class="fc" id="L185">        assertEquals(12.0, d.getYValue(0, 0), EPSILON);</span>
+
+        // check null key
+<span class="fc" id="L188">        boolean pass = false;</span>
+        try
+        {
+<span class="nc" id="L191">          d.addSeries(null, new double[][] {{1.0}, {2.0}});</span>
+        }
+<span class="fc" id="L193">        catch (IllegalArgumentException e)</span>
+        {
+<span class="fc" id="L195">          pass = true;</span>
+<span class="nc" id="L196">        }</span>
+<span class="fc" id="L197">        assertTrue(pass);</span>
+<span class="fc" id="L198">    }</span>
+
+    /**
+     * Creates a sample dataset for testing.
+     *
+     * @return A sample dataset.
+     */
+    public DefaultXYDataset&lt;String&gt; createSampleDataset1() {
+<span class="fc" id="L206">        DefaultXYDataset&lt;String&gt; d = new DefaultXYDataset&lt;&gt;();</span>
+<span class="fc" id="L207">        double[] x1 = new double[] {1.0, 2.0, 3.0};</span>
+<span class="fc" id="L208">        double[] y1 = new double[] {4.0, 5.0, 6.0};</span>
+<span class="fc" id="L209">        double[][] data1 = new double[][] {x1, y1};</span>
+<span class="fc" id="L210">        d.addSeries(&quot;S1&quot;, data1);</span>
+
+<span class="fc" id="L212">        double[] x2 = new double[] {1.0, 2.0, 3.0};</span>
+<span class="fc" id="L213">        double[] y2 = new double[] {4.0, 5.0, 6.0};</span>
+<span class="fc" id="L214">        double[][] data2 = new double[][] {x2, y2};</span>
+<span class="fc" id="L215">        d.addSeries(&quot;S2&quot;, data2);</span>
+<span class="fc" id="L216">        return d;</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span>jfreechart (Mar 14, 2025 5:50:17 p.m.)</div></body></html>

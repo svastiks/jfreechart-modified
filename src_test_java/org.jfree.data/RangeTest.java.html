@@ -1,0 +1,352 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>RangeTest.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">jfreechart (Mar 14, 2025 5:50:17 p.m.)</a> &gt; <a href="../../index.html" class="el_group">jfreechart</a> &gt; <a href="../index.html" class="el_bundle">src/test/java</a> &gt; <a href="index.source.html" class="el_package">org.jfree.data</a> &gt; <span class="el_source">RangeTest.java</span></div><h1>RangeTest.java</h1><pre class="source lang-java linenums">/* ===========================================================
+ * JFreeChart : a free chart library for the Java(tm) platform
+ * ===========================================================
+ *
+ * (C) Copyright 2000-2022, by David Gilbert and Contributors.
+ *
+ * Project Info:  http://www.jfree.org/jfreechart/index.html
+ *
+ * This library is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 2.1 of the License, or
+ * (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public
+ * License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301,
+ * USA.
+ *
+ * [Oracle and Java are registered trademarks of Oracle and/or its affiliates. 
+ * Other names may be trademarks of their respective owners.]
+ *
+ * --------------
+ * RangeTest.java
+ * --------------
+ * (C) Copyright 2003-2022, by David Gilbert and Contributors.
+ *
+ * Original Author:  David Gilbert;
+ * Contributor(s):   Sergei Ivanov;
+ * 
+ */
+
+package org.jfree.data;
+
+import org.jfree.chart.TestUtils;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+/**
+ * Tests for the {@link Range} class.
+ */
+<span class="fc" id="L47">public class RangeTest {</span>
+
+    /**
+     * Confirm that the constructor initializes all the required fields.
+     */
+    @Test
+    public void testConstructor() {
+<span class="fc" id="L54">        Range r1 = new Range(0.1, 1000.0);</span>
+<span class="fc" id="L55">        assertEquals(r1.getLowerBound(), 0.1, 0.0d);</span>
+<span class="fc" id="L56">        assertEquals(r1.getUpperBound(), 1000.0, 0.0d);</span>
+
+        try {
+<span class="nc" id="L59">            Range r2 = new Range(10.0, 0.0);</span>
+<span class="nc" id="L60">            fail(&quot;Lower bound cannot be greater than the upper&quot;);</span>
+        }
+<span class="fc" id="L62">        catch (Exception e) {</span>
+            // expected
+<span class="nc" id="L64">        }</span>
+<span class="fc" id="L65">    }</span>
+
+    /**
+     * Confirm that the equals method can distinguish all the required fields.
+     */
+    @Test
+    public void testEquals() {
+<span class="fc" id="L72">        Range r1 = new Range(0.0, 1.0);</span>
+<span class="fc" id="L73">        Range r2 = new Range(0.0, 1.0);</span>
+<span class="fc" id="L74">        assertEquals(r1, r2);</span>
+<span class="fc" id="L75">        assertEquals(r2, r1);</span>
+
+<span class="fc" id="L77">        r1 = new Range(0.0, 1.0);</span>
+<span class="fc" id="L78">        r2 = new Range(0.5, 1.0);</span>
+<span class="fc" id="L79">        assertNotEquals(r1, r2);</span>
+
+<span class="fc" id="L81">        r1 = new Range(0.0, 1.0);</span>
+<span class="fc" id="L82">        r2 = new Range(0.0, 2.0);</span>
+<span class="fc" id="L83">        assertNotEquals(r1, r2);</span>
+
+        // a Range object cannot be equal to a different object type
+<span class="fc" id="L86">        assertFalse(r1.equals(0.0));</span>
+<span class="fc" id="L87">    }</span>
+
+    /**
+     * Two objects that are equal are required to return the same hashCode.
+     */
+    @Test
+    public void testHashCode() {
+<span class="fc" id="L94">        Range a1 = new Range(1.0, 100.0);</span>
+<span class="fc" id="L95">        Range a2 = new Range(1.0, 100.0);</span>
+<span class="fc" id="L96">        assertEquals(a1.hashCode(), a2.hashCode());</span>
+
+<span class="fc" id="L98">        a1 = new Range(-100.0, 2.0);</span>
+<span class="fc" id="L99">        a2 = new Range(-100.0, 2.0);</span>
+<span class="fc" id="L100">        assertEquals(a1.hashCode(), a2.hashCode());</span>
+<span class="fc" id="L101">    }</span>
+
+    /**
+     * Simple tests for the contains() method.
+     */
+    @Test
+    public void testContains() {
+<span class="fc" id="L108">        Range r1 = new Range(0.0, 1.0);</span>
+<span class="fc" id="L109">        assertFalse(r1.contains(Double.NaN));</span>
+<span class="fc" id="L110">        assertFalse(r1.contains(Double.NEGATIVE_INFINITY));</span>
+<span class="fc" id="L111">        assertFalse(r1.contains(-1.0));</span>
+<span class="fc" id="L112">        assertTrue(r1.contains(0.0));</span>
+<span class="fc" id="L113">        assertTrue(r1.contains(0.5));</span>
+<span class="fc" id="L114">        assertTrue(r1.contains(1.0));</span>
+<span class="fc" id="L115">        assertFalse(r1.contains(2.0));</span>
+<span class="fc" id="L116">        assertFalse(r1.contains(Double.POSITIVE_INFINITY));</span>
+<span class="fc" id="L117">    }</span>
+
+    /**
+     * Tests the constrain() method for various values.
+     */
+    @Test
+    public void testConstrain() {
+<span class="fc" id="L124">        Range r1 = new Range(0.0, 1.0);</span>
+
+<span class="fc" id="L126">        double d = r1.constrain(0.5);</span>
+<span class="fc" id="L127">        assertEquals(0.5, d, 0.0000001);</span>
+
+<span class="fc" id="L129">        d = r1.constrain(0.0);</span>
+<span class="fc" id="L130">        assertEquals(0.0, d, 0.0000001);</span>
+
+<span class="fc" id="L132">        d = r1.constrain(1.0);</span>
+<span class="fc" id="L133">        assertEquals(1.0, d, 0.0000001);</span>
+
+<span class="fc" id="L135">        d = r1.constrain(-1.0);</span>
+<span class="fc" id="L136">        assertEquals(0.0, d, 0.0000001);</span>
+
+<span class="fc" id="L138">        d = r1.constrain(2.0);</span>
+<span class="fc" id="L139">        assertEquals(1.0, d, 0.0000001);</span>
+
+<span class="fc" id="L141">        d = r1.constrain(Double.POSITIVE_INFINITY);</span>
+<span class="fc" id="L142">        assertEquals(1.0, d, 0.0000001);</span>
+
+<span class="fc" id="L144">        d = r1.constrain(Double.NEGATIVE_INFINITY);</span>
+<span class="fc" id="L145">        assertEquals(0.0, d, 0.0000001);</span>
+
+<span class="fc" id="L147">        d = r1.constrain(Double.NaN);</span>
+<span class="fc" id="L148">        assertTrue(Double.isNaN(d));</span>
+<span class="fc" id="L149">    }</span>
+
+    /**
+     * Simple tests for the intersects() method.
+     */
+    @Test
+    public void testIntersects() {
+<span class="fc" id="L156">        Range r1 = new Range(0.0, 1.0);</span>
+<span class="fc" id="L157">        assertFalse(r1.intersects(-2.0, -1.0));</span>
+<span class="fc" id="L158">        assertFalse(r1.intersects(-2.0, 0.0));</span>
+<span class="fc" id="L159">        assertTrue(r1.intersects(-2.0, 0.5));</span>
+<span class="fc" id="L160">        assertTrue(r1.intersects(-2.0, 1.0));</span>
+<span class="fc" id="L161">        assertTrue(r1.intersects(-2.0, 1.5));</span>
+<span class="fc" id="L162">        assertTrue(r1.intersects(0.0, 0.5));</span>
+<span class="fc" id="L163">        assertTrue(r1.intersects(0.0, 1.0));</span>
+<span class="fc" id="L164">        assertTrue(r1.intersects(0.0, 1.5));</span>
+<span class="fc" id="L165">        assertTrue(r1.intersects(0.5, 0.6));</span>
+<span class="fc" id="L166">        assertTrue(r1.intersects(0.5, 1.0));</span>
+<span class="fc" id="L167">        assertTrue(r1.intersects(0.5, 1.5));</span>
+<span class="fc" id="L168">        assertFalse(r1.intersects(1.0, 1.1));</span>
+<span class="fc" id="L169">        assertFalse(r1.intersects(1.5, 2.0));</span>
+<span class="fc" id="L170">    }</span>
+
+    /**
+     * A simple test for the expand() method.
+     */
+    @Test
+    public void testExpand() {
+<span class="fc" id="L177">        Range r1 = new Range(0.0, 100.0);</span>
+<span class="fc" id="L178">        Range r2 = Range.expand(r1, 0.10, 0.10);</span>
+<span class="fc" id="L179">        assertEquals(-10.0, r2.getLowerBound(), 0.001);</span>
+<span class="fc" id="L180">        assertEquals(110.0, r2.getUpperBound(), 0.001);</span>
+
+        // Expand by 0% does not change the range
+<span class="fc" id="L183">        r2 = Range.expand(r1, 0.0, 0.0);</span>
+<span class="fc" id="L184">        assertEquals(r1, r2);</span>
+
+        try {
+<span class="nc" id="L187">            Range.expand(null, 0.1, 0.1);</span>
+<span class="nc" id="L188">            fail(&quot;Null value is accepted&quot;);</span>
+        }
+<span class="fc" id="L190">        catch (Exception e) {</span>
+            // expected
+<span class="nc" id="L192">        }</span>
+
+        // Lower &gt; upper: mid-point is used
+<span class="fc" id="L195">        r2 = Range.expand(r1, -0.8, -0.5);</span>
+<span class="fc" id="L196">        assertEquals(65.0, r2.getLowerBound(), 0.001);</span>
+<span class="fc" id="L197">        assertEquals(65.0, r2.getUpperBound(), 0.001);</span>
+<span class="fc" id="L198">    }</span>
+
+    /**
+     * A simple test for the scale() method.
+     */
+    @Test
+    public void testShift() {
+<span class="fc" id="L205">        Range r1 = new Range(10.0, 20.0);</span>
+<span class="fc" id="L206">        Range r2 = Range.shift(r1, 20.0);</span>
+<span class="fc" id="L207">        assertEquals(30.0, r2.getLowerBound(), 0.001);</span>
+<span class="fc" id="L208">        assertEquals(40.0, r2.getUpperBound(), 0.001);</span>
+
+<span class="fc" id="L210">        r1 = new Range(0.0, 100.0);</span>
+<span class="fc" id="L211">        r2 = Range.shift(r1, -50.0, true);</span>
+<span class="fc" id="L212">        assertEquals(-50.0, r2.getLowerBound(), 0.001);</span>
+<span class="fc" id="L213">        assertEquals(50.0, r2.getUpperBound(), 0.001);</span>
+
+<span class="fc" id="L215">        r1 = new Range(-10.0, 20.0);</span>
+<span class="fc" id="L216">        r2 = Range.shift(r1, 20.0, true);</span>
+<span class="fc" id="L217">        assertEquals(10.0, r2.getLowerBound(), 0.001);</span>
+<span class="fc" id="L218">        assertEquals(40.0, r2.getUpperBound(), 0.001);</span>
+
+<span class="fc" id="L220">        r1 = new Range(-10.0, 20.0);</span>
+<span class="fc" id="L221">        r2 = Range.shift(r1, -30.0, true);</span>
+<span class="fc" id="L222">        assertEquals(-40.0, r2.getLowerBound(), 0.001);</span>
+<span class="fc" id="L223">        assertEquals(-10.0, r2.getUpperBound(), 0.001);</span>
+
+<span class="fc" id="L225">        r1 = new Range(-10.0, 20.0);</span>
+<span class="fc" id="L226">        r2 = Range.shift(r1, 20.0, false);</span>
+<span class="fc" id="L227">        assertEquals(0.0, r2.getLowerBound(), 0.001);</span>
+<span class="fc" id="L228">        assertEquals(40.0, r2.getUpperBound(), 0.001);</span>
+
+<span class="fc" id="L230">        r1 = new Range(-10.0, 20.0);</span>
+<span class="fc" id="L231">        r2 = Range.shift(r1, -30.0, false);</span>
+<span class="fc" id="L232">        assertEquals(-40.0, r2.getLowerBound(), 0.001);</span>
+<span class="fc" id="L233">        assertEquals(0.0, r2.getUpperBound(), 0.001);</span>
+
+        // Shifting with a delta of 0 does not change the range
+<span class="fc" id="L236">        r2 = Range.shift(r1, 0.0);</span>
+<span class="fc" id="L237">        assertEquals(r1, r2);</span>
+
+        try {
+<span class="nc" id="L240">            Range.shift(null, 0.1);</span>
+<span class="nc" id="L241">            fail(&quot;Null value is accepted&quot;);</span>
+<span class="fc" id="L242">        } catch (Exception e) {</span>
+            // expected
+<span class="nc" id="L244">        }</span>
+<span class="fc" id="L245">    }</span>
+
+    /**
+     * A simple test for the scale() method.
+     */
+    @Test
+    public void testScale() {
+<span class="fc" id="L252">        Range r1 = new Range(0.0, 100.0);</span>
+<span class="fc" id="L253">        Range r2 = Range.scale(r1, 0.10);</span>
+<span class="fc" id="L254">        assertEquals(0.0, r2.getLowerBound(), 0.001);</span>
+<span class="fc" id="L255">        assertEquals(10.0, r2.getUpperBound(), 0.001);</span>
+
+<span class="fc" id="L257">        r1 = new Range(-10.0, 100.0);</span>
+<span class="fc" id="L258">        r2 = Range.scale(r1, 2.0);</span>
+<span class="fc" id="L259">        assertEquals(-20.0, r2.getLowerBound(), 0.001);</span>
+<span class="fc" id="L260">        assertEquals(200.0, r2.getUpperBound(), 0.001);</span>
+
+        // Scaling with a factor of 1 does not change the range
+<span class="fc" id="L263">        r2 = Range.scale(r1, 1.0);</span>
+<span class="fc" id="L264">        assertEquals(r1, r2);</span>
+
+        try {
+<span class="nc" id="L267">            Range.scale(null, 0.1);</span>
+<span class="nc" id="L268">            fail(&quot;Null value is accepted&quot;);</span>
+<span class="fc" id="L269">        } catch (Exception e) {</span>
+            // expected
+<span class="nc" id="L271">        }</span>
+
+        try {
+<span class="nc" id="L274">            Range.scale(r1, -0.5);</span>
+<span class="nc" id="L275">            fail(&quot;Negative factor accepted&quot;);</span>
+<span class="fc" id="L276">        } catch (Exception e) {</span>
+            // expected
+<span class="nc" id="L278">        }</span>
+<span class="fc" id="L279">    }</span>
+
+    /**
+     * Serialize an instance, restore it, and check for equality.
+     */
+    @Test
+    public void testSerialization() {
+<span class="fc" id="L286">        Range r1 = new Range(25.0, 133.42);</span>
+<span class="fc" id="L287">        Range r2 = TestUtils.serialised(r1);</span>
+<span class="fc" id="L288">        assertEquals(r1, r2);</span>
+<span class="fc" id="L289">    }</span>
+
+    private static final double EPSILON = 0.0000000001;
+
+    /**
+     * Some checks for the combine method.
+     */
+    @Test
+    public void testCombine() {
+<span class="fc" id="L298">        Range r1 = new Range(1.0, 2.0);</span>
+<span class="fc" id="L299">        Range r2 = new Range(1.5, 2.5);</span>
+
+<span class="fc" id="L301">        assertNull(Range.combine(null, null));</span>
+<span class="fc" id="L302">        assertEquals(r1, Range.combine(r1, null));</span>
+<span class="fc" id="L303">        assertEquals(r2, Range.combine(null, r2));</span>
+<span class="fc" id="L304">        assertEquals(new Range(1.0, 2.5), Range.combine(r1, r2));</span>
+
+<span class="fc" id="L306">        Range r3 = new Range(Double.NaN, 1.3);</span>
+<span class="fc" id="L307">        Range rr = Range.combine(r1, r3);</span>
+<span class="fc" id="L308">        assertTrue(Double.isNaN(rr.getLowerBound()));</span>
+<span class="fc" id="L309">        assertEquals(2.0, rr.getUpperBound(), EPSILON);</span>
+
+<span class="fc" id="L311">        Range r4 = new Range(1.7, Double.NaN);</span>
+<span class="fc" id="L312">        rr = Range.combine(r4, r1);</span>
+<span class="fc" id="L313">        assertEquals(1.0, rr.getLowerBound(), EPSILON);</span>
+<span class="fc" id="L314">        assertTrue(Double.isNaN(rr.getUpperBound()));</span>
+<span class="fc" id="L315">    }</span>
+
+    /**
+     * Some checks for the combineIgnoringNaN() method.
+     */
+    @Test
+    public void testCombineIgnoringNaN() {
+<span class="fc" id="L322">        Range r1 = new Range(1.0, 2.0);</span>
+<span class="fc" id="L323">        Range r2 = new Range(1.5, 2.5);</span>
+
+<span class="fc" id="L325">        assertNull(Range.combineIgnoringNaN(null, null));</span>
+<span class="fc" id="L326">        assertEquals(r1, Range.combineIgnoringNaN(r1, null));</span>
+<span class="fc" id="L327">        assertEquals(r2, Range.combineIgnoringNaN(null, r2));</span>
+<span class="fc" id="L328">        assertEquals(new Range(1.0, 2.5), Range.combineIgnoringNaN(r1, r2));</span>
+
+<span class="fc" id="L330">        Range r3 = new Range(Double.NaN, 1.3);</span>
+<span class="fc" id="L331">        Range rr = Range.combineIgnoringNaN(r1, r3);</span>
+<span class="fc" id="L332">        assertEquals(1.0, rr.getLowerBound(), EPSILON);</span>
+<span class="fc" id="L333">        assertEquals(2.0, rr.getUpperBound(), EPSILON);</span>
+
+<span class="fc" id="L335">        Range r4 = new Range(1.7, Double.NaN);</span>
+<span class="fc" id="L336">        rr = Range.combineIgnoringNaN(r4, r1);</span>
+<span class="fc" id="L337">        assertEquals(1.0, rr.getLowerBound(), EPSILON);</span>
+<span class="fc" id="L338">        assertEquals(2.0, rr.getUpperBound(), EPSILON);</span>
+<span class="fc" id="L339">    }</span>
+    
+    /**
+     * Tests for the isNaNRange() method.
+     */
+    @Test
+    public void testIsNaNRange() {
+<span class="fc" id="L346">        assertTrue(new Range(Double.NaN, Double.NaN).isNaNRange());</span>
+<span class="fc" id="L347">        assertFalse(new Range(1.0, 2.0).isNaNRange());</span>
+<span class="fc" id="L348">        assertFalse(new Range(Double.NaN, 2.0).isNaNRange());</span>
+<span class="fc" id="L349">        assertFalse(new Range(1.0, Double.NaN).isNaNRange());</span>
+<span class="fc" id="L350">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span>jfreechart (Mar 14, 2025 5:50:17 p.m.)</div></body></html>
