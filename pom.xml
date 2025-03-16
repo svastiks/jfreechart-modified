@@ -96,6 +96,46 @@
         <testSourceDirectory>src/test/java</testSourceDirectory>
         <plugins>
             <plugin>
+                <groupId>org.pitest</groupId>
+                <artifactId>pitest-maven</artifactId>
+                <version>1.18.2</version>
+                <configuration>
+                    <timeoutConstant>8000</timeoutConstant>
+                    <threads>4</threads>
+                    
+                    <targetClasses>
+                        <param>org.jfree.chart.plot.XYPlot</param>
+                        <param>org.jfree.chart.plot.CategoryPlot</param>
+                        <param>org.jfree.chart.plot.ThermometerPlot</param>
+                        <param>org.jfree.chart.plot.PolarPlot</param>
+                        <param>org.jfree.chart.plot.RingPlot</param>
+                        <param>org.jfree.chart.plot.Plot</param>
+                        <param>org.jfree.chart.plot.CombinedRangeXYPlot</param>
+                        <param>org.jfree.chart.plot.CombinedDomainXYPlot</param>
+                        <param>org.jfree.chart.plot.CombinedDomainCategoryPlot</param>
+                        <param>org.jfree.data.time.TimeSeries</param>
+                    </targetClasses>
+                    
+                    <targetTests>
+                        <param>org.jfree.chart.plot.XYPlotTest</param>
+                        <param>org.jfree.chart.plot.CategoryPlotTest</param>
+                        <param>org.jfree.chart.plot.ThermometerPlotTest</param>
+                        <param>org.jfree.chart.plot.PolarPlotTest</param>
+                        <param>org.jfree.chart.plot.RingPlotTest</param>
+                        <param>org.jfree.chart.plot.PlotTest</param>
+                        <param>org.jfree.chart.plot.CombinedRangeXYPlotTest</param>
+                        <param>org.jfree.chart.plot.CombinedDomainXYPlotTest</param>
+                        <param>org.jfree.chart.plot.CombinedDomainCategoryPlotTest</param>
+                        <param>org.jfree.data.time.TimeSeriesTest</param>
+                    </targetTests>
+                    
+                    <mutators>
+                        <mutator>DEFAULTS</mutator>
+                    </mutators>
+                </configuration>
+            </plugin>
+
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-clean-plugin</artifactId>
                 <version>3.2.0</version>
